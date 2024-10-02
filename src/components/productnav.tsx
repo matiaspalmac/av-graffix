@@ -4,95 +4,95 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 
 const productCategories = [
   {
-    name: "Etiquetas Adhesivas",
+    name: "Etiquetas adhesivas",
     subcategories: [
-      "ETIQUETAS ADHESIVAS PVC ALTA CALIDAD",
-      "ETIQUETAS ADHESIVAS PVC METALIZADA",
-      "ETIQUETAS ADHESIVAS PVC EFECTO ESPEJO",
-      "ETIQUETAS ADHESIVAS PVC REMOVIBLES",
-      "ETIQUETAS ADHESIVAS PVC PARA PISO",
-      "ETIQUETA ADHESIVAS PVC SIN IMPRESIÓN",
-      "ETIQUETAS ADHESIVAS SUSTENTABLES LIBRES PVC",
-      "ETIQUETAS ADHESIVAS DE PAPEL",
-      "ETIQUETAS ADHESIVAS DE PAPEL KRAFT"
+      "Etiquetas adhesivas PVC alta calidad",
+      "Etiquetas adhesivas PVC metalizada",
+      "Etiquetas adhesivas PVC efecto espejo",
+      "Etiquetas adhesivas PVC removibles",
+      "Etiquetas adhesivas PVC para piso",
+      "Etiqueta adhesivas PVC sin impresión",
+      "Etiquetas adhesivas sustentables libres PVC",
+      "Etiquetas adhesivas de papel",
+      "Etiquetas adhesivas de papel kraft"
     ]
   },
   {
     name: "Carpetas",
     subcategories: [
       "Carpetas",
-      "Carpetas con Solapa"
+      "Carpetas con solapa"
     ]
   },
   {
     name: "Cuadernos",
     subcategories: [
-      "Cuadernos Corporativos",
+      "Cuadernos corporativos",
       "Moleskines",
     ]
   },
   {
     name: "Calendarios",
     subcategories: [
-      "Calendario Mural",
-      "Calendario de Escritorio",
+      "Calendario mural",
+      "Calendario de escritorio",
     ]
   },
   {
-    name: "Soportes Rigidos",
+    name: "Soportes rígidos",
     subcategories: [
       "Foam",
       "Trovicel / Sintra",
       "Pai",
-      "Acrilico",
-      "Aluminio Compuesto",
-      "Carton Panal Abeja",
-      "Micro Corrugado",
+      "Acrílico",
+      "Aluminio compuesto",
+      "Cartón panal abeja",
+      "Micro corrugado",
     ]
   },
   {
     name: "Pendones",
     subcategories: [
-      "Pendon Roller",
-      "Pendon Araña X",
-      "Mini Pendon Araña X",
-      "Mini Pendon Tipo T",
-      "Pendon Colgante",
-      "Panel Araña",
-      "Lienzos - Tela PVC",
+      "Pendón roller",
+      "Pendón araña X",
+      "Mini pendón araña X",
+      "Mini pendón tipo T",
+      "Pendón colgante",
+      "Panel araña",
+      "Lienzos - tela PVC",
     ]
   },
   {
     name: "Libros",
     subcategories: [
-      "Libros Tapa Blanda",
+      "Libros tapa blanda",
     ]
   },
   {
     name: "Afiches",
     subcategories: [
-      "Afiches Offset",
-      "Afiches Digital",
+      "Afiches offset",
+      "Afiches digital",
     ]
   },
   {
-    name: "Papeleria",
+    name: "Papelería",
     subcategories: [
-      "Hojas Corporativas",
+      "Hojas corporativas",
       "Sobres",
       "Tarjetones"
     ]
   },
   {
-    name: "Mas Productos",
+    name: "Más productos",
     subcategories: [
       "Volantes",
       "Diplomas",
-      "Tarjetas de Presentación",
-      "Tripticos",
+      "Tarjetas de presentación",
+      "Trípticos",
       "Imanes",
-      "Marcos de Aluminio",
-      "Posa Vasos"
+      "Marcos de aluminio",
+      "Posa vasos"
     ]
   }
 ]

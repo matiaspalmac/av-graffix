@@ -10,9 +10,9 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const slides = [
-    { image: "/placeholder.svg?height=800&width=1200", title: "Diseño Gráfico Integral" },
-    { image: "/placeholder.svg?height=800&width=1200", title: "Impresión de Alta Calidad" },
-    { image: "/placeholder.svg?height=800&width=1200", title: "Publicidad Impactante" },
+    { image: "https://i.imgur.com/AzGFOLC.jpeg", title: "Diseño Gráfico Integral" },
+    { image: "https://i.imgur.com/MB14mFE.jpeg", title: "Impresión de Alta Calidad" },
+    { image: "https://i.imgur.com/GWaSeBh.jpeg", title: "Publicidad Impactante" },
   ]
 
   const products = [
@@ -44,8 +44,8 @@ export default function Home() {
           <Image
             src={slides[currentSlide].image}
             alt={slides[currentSlide].title}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: "cover" }}
             quality={100}
           />
           <div className="absolute inset-0 bg-black bg-opacity-50" />

@@ -12,7 +12,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/">
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-MLGpz042DLuxay6semGCDZeP8oiiuB.jpg"
+            src="https://i.imgur.com/g1iUY9k.png"
             alt="AV GRAFFIX Logo"
             width={100}
             height={50}
