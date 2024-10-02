@@ -1,6 +1,15 @@
+'use client'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 export default function ContactPage() {
+  // Form submission to gmail
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const data = Object.fromEntries(formData)
+    console.log(data)
+  }
+  
   return (
     <div className="min-h-screen bg-white text-black">
       <main className="container mx-auto px-4 py-16">
@@ -9,7 +18,7 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div>
             <h2 className="text-2xl font-semibold mb-6">Envíanos un mensaje</h2>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="name" className="block mb-1 font-medium">Nombre</label>
                 <input type="text" id="name" name="name" className="w-full p-2 border rounded" required />

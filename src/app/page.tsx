@@ -15,6 +15,11 @@ export default function Home() {
     { image: "https://i.imgur.com/GWaSeBh.jpeg", title: "Publicidad Impactante" },
   ]
 
+  const companies = [
+    { name: "Aguas Araucanía", image: "https://i.imgur.com/Xt5wLsB.jpeg" },
+    { name: "Automoviles DECAR", image: "https://i.imgur.com/ivqY3Ot.png" }
+  ];
+
   const products = [
     { name: "Etiquetas Adhesivas", image: "https://i.imgur.com/g1iUY9k.png" },
     { name: "Folletería", image: "https://i.imgur.com/g1iUY9k.png" },
@@ -92,6 +97,27 @@ export default function Home() {
           </div>
         </div>
       </section>
+        
+        {/* Companies Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold mb-12 text-center">Empresas que confían en nosotros</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+              {companies.map((company, index) => (
+                <div key={index} className="text-center">
+                  <Image
+                    src={company.image}
+                    alt={company.name}
+                    width={200}
+                    height={200}
+                    className="rounded-full mx-auto mb-4"
+                  />
+                  <h3 className="text-xl font-semibold mb-2">{company.name}</h3>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
     </div>
   )
 }
