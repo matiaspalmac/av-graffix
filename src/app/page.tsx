@@ -16,18 +16,21 @@ export default function Home() {
   ]
 
   const products = [
-    { name: "Etiquetas Adhesivas", image: "/placeholder.svg?height=300&width=300" },
-    { name: "Folletería", image: "/placeholder.svg?height=300&width=300" },
-    { name: "Papelería Corporativa", image: "/placeholder.svg?height=300&width=300" },
-    { name: "Productos Promocionales", image: "/placeholder.svg?height=300&width=300" },
-  ]
+    { name: "Etiquetas Adhesivas", image: "https://i.imgur.com/g1iUY9k.png" },
+    { name: "Folletería", image: "https://i.imgur.com/g1iUY9k.png" },
+    { name: "Papelería Corporativa", image: "https://i.imgur.com/g1iUY9k.png" },
+    { name: "Productos Promocionales", image: "https://i.imgur.com/g1iUY9k.png" },
+    { name: "Branding", image: "https://i.imgur.com/g1iUY9k.png" },
+    { name: "Soportes Gráficos", image: "https://i.imgur.com/g1iUY9k.png" }
+];
+
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
     }, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [slides.length])
 
   return (
     <div className="min-h-screen bg-white text-black">      

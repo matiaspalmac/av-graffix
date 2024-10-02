@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 const productCategories = [
@@ -12,7 +12,7 @@ const productCategories = [
       "Etiquetas adhesivas PVC removibles",
       "Etiquetas adhesivas PVC para piso",
       "Etiqueta adhesivas PVC sin impresión",
-      "Etiquetas adhesivas sustentables libres PVC",
+      "Etiquetas adhesivas sustentables libr  es PVC",
       "Etiquetas adhesivas de papel",
       "Etiquetas adhesivas de papel kraft"
     ]
@@ -99,9 +99,23 @@ const productCategories = [
 
 export default function ProductNav() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
+  const navRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setOpenCategory(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [navRef])
 
   return (
-    <nav className="bg-gray-100 py-4">
+    <nav ref={navRef} className="bg-gray-100 py-4">
       <div className="container mx-auto px-4">
         <ul className="flex flex-wrap justify-center space-x-4">
           {productCategories.map((category) => (

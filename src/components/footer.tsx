@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Footer() {
   return (
@@ -7,7 +8,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-lg font-semibold mb-4">AV GRAFFIX</h3>
-            <p>Diseño Gráfico Integral • Impresión • Publicidad</p>
+            <Image src="https://i.imgur.com/g1iUY9k.png" alt="AV GRAFFIX Logo" width={100} height={50} />
+            <p className="mt-4">Diseño Gráfico Integral • Impresión • Publicidad</p>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Contacto</h3>

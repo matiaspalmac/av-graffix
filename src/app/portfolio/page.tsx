@@ -1,12 +1,12 @@
 import Image from 'next/image'
 
 const portfolioItems = [
-  { image: "/placeholder.svg?height=300&width=400", company: "Empresa A", description: "Pendón Roller" },
-  { image: "/placeholder.svg?height=300&width=400", company: "Empresa B", description: "Diseño de Logotipo" },
-  { image: "/placeholder.svg?height=300&width=400", company: "Empresa C", description: "Folleto Promocional" },
-  { image: "/placeholder.svg?height=300&width=400", company: "Empresa D", description: "Tarjetas de Presentación" },
-  { image: "/placeholder.svg?height=300&width=400", company: "Empresa E", description: "Etiquetas Adhesivas" },
-  { image: "/placeholder.svg?height=300&width=400", company: "Empresa F", description: "Diseño de Empaque" },
+  { image: "https://i.imgur.com/g1iUY9k.png", company: "Empresa A", description: "Pendón Roller" },
+  { image: "https://i.imgur.com/g1iUY9k.png", company: "Empresa B", description: "Diseño de Logotipo" },
+  { image: "https://i.imgur.com/g1iUY9k.png", company: "Empresa C", description: "Folleto Promocional" },
+  { image: "https://i.imgur.com/g1iUY9k.png", company: "Empresa D", description: "Tarjetas de Presentación" },
+  { image: "https://i.imgur.com/g1iUY9k.png", company: "Empresa E", description: "Etiquetas Adhesivas" },
+  { image: "https://i.imgur.com/g1iUY9k.png", company: "Empresa F", description: "Diseño de Empaque" },
 ]
 
 export default function PortfolioPage() {

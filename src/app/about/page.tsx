@@ -2,9 +2,7 @@ import Image from 'next/image'
 
 export default function AboutPage() {
   const team = [
-    { name: 'Analia Valdebenito', role: 'Role 1', image: '/placeholder.svg?height=200&width=200&text=Analia Valdebenito' },
-    { name: 'Team Member 2', role: 'Role 2', image: '/placeholder.svg?height=200&width=200&text=Team Member 2' },
-    { name: 'Team Member 3', role: 'Role 3', image: '/placeholder.svg?height=200&width=200&text=Team Member 3' }
+    { name: 'Patricia Valdebenito', role: 'Diseñadora Grafica', image: 'https://i.imgur.com/g1iUY9k.png' }
   ]
 
   return (
@@ -15,7 +13,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
           <div>
             <Image
-              src="/placeholder.svg?height=400&width=600"
+              src="https://i.imgur.com/g1iUY9k.png"
               alt="AV GRAFFIX Team"
               width={600}
               height={400}
