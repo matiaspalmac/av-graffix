@@ -17,7 +17,10 @@ export default function Home() {
 
   const companies = [
     { name: "Aguas Araucanía", image: "https://i.imgur.com/Xt5wLsB.jpeg" },
-    { name: "Automoviles DECAR", image: "https://i.imgur.com/ivqY3Ot.png" }
+    { name: "Automoviles DECAR", image: "https://i.imgur.com/ivqY3Ot.png" },
+    { name: "Super Cerdo", image: "https://i.imgur.com/LiYLFjU.png" },
+    { name: "Super Pollo", image: "https://i.imgur.com/yQWm1x4.png" },
+    { name: "La Crianza", image: "https://i.imgur.com/JZlgXuD.png" }
   ];
 
   const products = [
@@ -97,27 +100,29 @@ export default function Home() {
           </div>
         </div>
       </section>
-        
-        {/* Companies Section */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-12 text-center">Empresas que confían en nosotros</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-              {companies.map((company, index) => (
-                <div key={index} className="text-center">
+
+      {/* Companies Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-12 text-center">Empresas que confían en nosotros</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+            {companies.map((company, index) => (
+              <div key={index} className="flex flex-col items-center">
+                <div className="w-32 h-32 flex items-center justify-center">
                   <Image
                     src={company.image}
                     alt={company.name}
-                    width={200}
-                    height={200}
-                    className="rounded-full mx-auto mb-4"
+                    width={128}
+                    height={128}
+                    className="rounded-full"
                   />
-                  <h3 className="text-xl font-semibold mb-2">{company.name}</h3>
                 </div>
-              ))}
-            </div>
+                <h3 className="text-xl font-semibold mt-4">{company.name}</h3>
+              </div>
+            ))}
           </div>
-        </section>
-    </div>
+        </div>
+      </section>
+  </div>
   )
 }
