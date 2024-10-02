@@ -17,7 +17,7 @@ export default function Home() {
 
   const companies = [
     { name: "Aguas Araucanía", image: "https://i.imgur.com/Xt5wLsB.jpeg" },
-    { name: "Automoviles DECAR", image: "https://i.imgur.com/ivqY3Ot.png" },
+    { name: "DECAR", image: "https://i.imgur.com/1wsWrFQ.jpeg" },
     { name: "Super Cerdo", image: "https://i.imgur.com/LiYLFjU.png" },
     { name: "Super Pollo", image: "https://i.imgur.com/yQWm1x4.png" },
     { name: "La Crianza", image: "https://i.imgur.com/JZlgXuD.png" }
