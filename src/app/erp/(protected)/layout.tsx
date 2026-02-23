@@ -23,7 +23,7 @@ export default async function ProtectedErpLayout({ children }: { children: React
             <ErpTopbar userName={session.user.name} role={session.user.role} />
             <main className="p-4 sm:p-6 lg:p-8 flex-1">{children}</main>
             <footer className="px-4 sm:px-6 lg:px-8 py-4 border-t border-zinc-200 dark:border-zinc-800 text-center text-sm text-zinc-600 dark:text-zinc-400">
-              {company.nameCommercial} – {company.city} – {company.phone} | © 2024 ERP
+              {company.nameCommercial} – {company.city} – {company.phone} | © 2026 ERP
             </footer>
           </div>
         </div>

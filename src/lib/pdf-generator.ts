@@ -165,7 +165,7 @@ export async function generateQuotationHTML(quoteId: number): Promise<string> {
           <div class="footer">
             <p>Este documento es una cotización válida hasta ${validUntil}.</p>
             <p>${company.nameCommercial} – ${company.city} – ${company.phone}</p>
-            <p>Generado el ${issueDate} © 2024</p>
+            <p>Generado el ${issueDate} © 2026</p>
           </div>
         </div>
       </body>
@@ -296,7 +296,7 @@ export async function generateInvoiceHTML(invoiceId: number): Promise<string> {
           </div>
           
           <div class="footer">
-            <p>${company.nameCommercial} – ${company.city} – ${company.phone} | Factura generada por ERP © 2024</p>
+            <p>${company.nameCommercial} – ${company.city} – ${company.phone} | Factura generada por ERP © 2026</p>
           </div>
         </div>
       </body>
