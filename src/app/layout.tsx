@@ -3,16 +3,24 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import ProductNav from "@/components/productnav";
+import StickyNav from "@/components/sticky-nav";
 import Footer from "@/components/footer";
+import WhatsAppCTA from "@/components/whatsapp-cta";
+import ScrollToTop from "@/components/scroll-to-top";
 
 const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-outfit",
-  weight: ["300", "400", "500", "600", "700", "800", "900"]
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "AV GRAFFIX | Agencia de Diseño y Producción",
+  metadataBase: new URL("https://avgraffix.vercel.app"),
+  title: {
+    default: "AV GRAFFIX | Agencia de Diseño y Producción",
+    template: "%s | AV GRAFFIX",
+  },
   description: "Agencia líder en diseño gráfico, producción pre-prensa y publicidad en la región de la Araucanía. Acompañamos el crecimiento de tu marca.",
   keywords: ["Diseño Gráfico", "Producción", "Publicidad", "Araucanía", "Temuco", "Branding", "Imprenta"],
   authors: [{ name: "AV GRAFFIX" }],
@@ -23,7 +31,7 @@ export const metadata: Metadata = {
     siteName: "AV GRAFFIX",
     images: [
       {
-        url: "/logo.png?v=2026",
+        url: "/logo.png",
         width: 1200,
         height: 630,
         alt: "AV GRAFFIX Logo",
@@ -36,14 +44,51 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AV GRAFFIX | Diseño Gráfico Integral",
     description: "Agencia líder en diseño gráfico, producción pre-prensa y publicidad en la región de la Araucanía.",
-    images: ["/logo.png?v=2026"],
+    images: ["/logo.png"],
   },
   icons: {
-    icon: "/logo.png?v=2026",
-    shortcut: "/logo.png?v=2026",
-    apple: "/logo.png?v=2026",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
   manifest: "/site.webmanifest",
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "AV GRAFFIX",
+  image: "https://avgraffix.vercel.app/logo.png",
+  url: "https://avgraffix.vercel.app",
+  telephone: "+56992791148",
+  email: "avgraffix@gmail.com",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Temuco",
+    addressRegion: "Araucanía",
+    addressCountry: "CL",
+  },
+  description:
+    "Agencia líder en diseño gráfico, producción pre-prensa y publicidad en la región de la Araucanía.",
+  foundingDate: "2006-11",
+  sameAs: [
+    "https://www.instagram.com/publicidad.avgraffix/",
+    "https://www.facebook.com/publicidad.avgraffix/",
+  ],
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "09:00",
+      closes: "18:00",
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: "Saturday",
+      opens: "10:00",
+      closes: "14:00",
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -54,6 +99,10 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -71,10 +120,21 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} font-sans antialiased bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500`}
       >
-        <Header />
-        <ProductNav />
-        {children}
+        {/* Skip to content - accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-6 focus:py-3 focus:bg-brand-600 focus:text-white focus:rounded-lg focus:font-bold focus:shadow-xl focus:outline-none"
+        >
+          Saltar al contenido
+        </a>
+        <StickyNav>
+          <Header />
+          <ProductNav />
+        </StickyNav>
+        <main id="main-content">{children}</main>
         <Footer />
+        <WhatsAppCTA />
+        <ScrollToTop />
       </body>
     </html>
   );

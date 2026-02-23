@@ -1,96 +1,129 @@
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Palette, FileText, Image as ImageIcon, Gift, Layers } from 'lucide-react'
+import { productCategories } from '@/lib/data'
+import type { Metadata } from 'next'
 
-const productCategories = [
-    {
-        name: "Branding",
-        subcategories: [
-            "Diseño de imágenes corporativas (logotipos)",
-            "Aplicación de norma gráfica"
-        ]
-    },
-    {
-        name: "Papelería Corporativa",
-        subcategories: [
-            "Tarjetas de presentación",
-            "Sobres",
-            "Hojas",
-            "Tarjetones de invitación"
-        ]
-    },
-    {
-        name: "Folletería Promocional",
-        subcategories: [
-            "Dípticos",
-            "Trípticos",
-            "Folletos",
-            "Volantes"
-        ]
-    },
-    {
-        name: "Productos Promocionales",
-        subcategories: [
-            "Pendones Roller",
-            "Lienzos",
-            "Banderas",
-            "Toldos",
-            "Chapitas",
-            "Adhesivos"
-        ]
-    },
-    {
-        name: "Soportes Gráficos",
-        subcategories: [
-            "Telones",
-            "Window Vision",
-            "Señaléticas",
-            "Paneles",
-            "Panaflex",
-            "Letreros metálicos",
-            "Acrílicos",
-            "Maderas",
-            "Trovisel",
-            "Vidrios"
-        ]
-    }
-]
+export const metadata: Metadata = {
+  title: 'Catálogo de Productos',
+  description: 'Explora nuestro catálogo completo de productos: branding, papelería corporativa, folletería, productos promocionales y soportes gráficos en Temuco.',
+  openGraph: {
+    title: 'Catálogo de Productos | AV GRAFFIX',
+    description: 'Catálogo completo de soluciones en impresión y soportes gráficos.',
+  },
+}
+
+const categoryIcons = [Palette, FileText, ImageIcon, Gift, Layers]
 
 export default function CatalogoPage() {
-    return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans">
-            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+  return (
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans">
 
-                <div className="text-center mb-24 relative">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-4 text-zinc-900 dark:text-white relative z-10">Catálogo de <span className="text-red-600 dark:text-red-500">Productos</span></h1>
-                    <div className="h-1 w-20 bg-red-600 dark:bg-red-500 mx-auto rounded-full shadow-sm dark:shadow-[0_0_10px_rgba(239,68,68,0.4)]"></div>
-                    <p className="mt-8 text-xl font-light text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
-                        Explora nuestro abanico completo de soluciones en impresión y soportes. Desde papelería hasta gigantografías, todo con extrema precisión y calidad premium.
-                    </p>
-                </div>
-
-                <div className="space-y-16">
-                    {productCategories.map((category, index) => (
-                        <div key={index} className="bg-white dark:bg-zinc-900/40 p-10 md:p-14 rounded-3xl border border-black/5 dark:border-white/5 shadow-xl dark:shadow-none hover:border-red-500/20 transition-all duration-500">
-                            <h2 className="text-3xl font-bold mb-8 text-zinc-900 dark:text-white capitalize border-b border-zinc-200 dark:border-zinc-800 pb-4">{category.name}</h2>
-                            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {category.subcategories.map((item, idx) => (
-                                    <li key={idx} className="flex items-center group">
-                                        <span className="w-2 h-2 rounded-full bg-red-600 mr-4 group-hover:scale-150 transition-transform"></span>
-                                        <span className="text-lg text-zinc-700 dark:text-zinc-300 group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors cursor-pointer">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-24 text-center">
-                    <h2 className="text-3xl font-bold tracking-tight mb-8 text-zinc-900 dark:text-white">¿No encuentras lo que buscas?</h2>
-                    <Link href="/contact" className="inline-flex items-center gap-3 bg-red-600 text-white px-10 py-5 rounded-full text-lg font-bold tracking-wide hover:bg-red-700 hover:scale-105 transition-all shadow-lg hover:shadow-red-500/25">
-                        Solicita una Cotización Especial <ArrowRight size={20} />
-                    </Link>
-                </div>
-            </main>
+      {/* Hero Header */}
+      <section className="relative py-32 overflow-hidden bg-zinc-900 dark:bg-zinc-950">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-600/5 rounded-full blur-3xl" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl">
+            <p className="text-brand-500 text-sm font-bold tracking-[0.3em] uppercase mb-4">Productos</p>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-white">
+              Catálogo de{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-400">Productos</span>
+            </h1>
+            <p className="text-xl md:text-2xl font-light text-zinc-400 leading-relaxed max-w-2xl">
+              Explora nuestro abanico completo de soluciones en impresión y soportes. Todo con extrema precisión y calidad premium.
+            </p>
+          </div>
         </div>
-    )
+      </section>
+
+      {/* Quick Jump Nav */}
+      <section className="relative z-20 -mt-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl dark:shadow-none border border-black/5 dark:border-white/5 p-4">
+            <div className="flex flex-wrap justify-center gap-2">
+              {productCategories.map((cat, i) => {
+                const Icon = categoryIcons[i]
+                return (
+                  <a
+                    key={i}
+                    href={`#cat-${i}`}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-brand-50 dark:hover:bg-brand-950/20 hover:text-brand-600 dark:hover:text-brand-500 transition-all duration-200"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {cat.name}
+                  </a>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="space-y-12">
+          {productCategories.map((category, index) => {
+            const Icon = categoryIcons[index]
+            return (
+              <div
+                key={index}
+                id={`cat-${index}`}
+                className="scroll-mt-32 group bg-white dark:bg-zinc-900/40 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden"
+              >
+                {/* Category Header */}
+                <div className="flex items-center gap-6 p-8 md:p-10 border-b border-zinc-100 dark:border-zinc-800">
+                  <div className="w-14 h-14 bg-brand-50 dark:bg-brand-950/30 border border-brand-100 dark:border-brand-900/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-brand-600 group-hover:text-white group-hover:border-brand-600 transition-all duration-300">
+                    <Icon className="w-7 h-7 text-brand-600 dark:text-brand-500 group-hover:text-white transition-colors" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold tracking-[0.2em] uppercase text-brand-600 dark:text-brand-500">
+                      Categoría 0{index + 1}
+                    </span>
+                    <h2 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white capitalize group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                      {category.name}
+                    </h2>
+                  </div>
+                  <div className="ml-auto hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-sm font-bold">
+                    {category.subcategories.length}
+                  </div>
+                </div>
+
+                {/* Subcategories */}
+                <div className="p-8 md:p-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {category.subcategories.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group/item cursor-default"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-brand-600 dark:bg-brand-500 group-hover/item:scale-150 transition-transform flex-shrink-0" />
+                        <span className="text-zinc-700 dark:text-zinc-300 group-hover/item:text-brand-600 dark:group-hover/item:text-brand-500 transition-colors font-medium">
+                          {item}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* CTA */}
+        <div className="mt-24">
+          <div className="bg-zinc-900 dark:bg-zinc-900 rounded-[2.5rem] p-12 md:p-20 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
+            <div className="relative z-10">
+              <h2 className="text-3xl md:text-4xl font-black tracking-tight mb-6 text-white">¿No encuentras lo que buscas?</h2>
+              <p className="text-zinc-400 text-lg font-light mb-10 max-w-xl mx-auto">
+                Fabricamos productos personalizados según tus necesidades específicas. Cuéntanos tu idea.
+              </p>
+              <Link href="/contact" className="inline-flex items-center gap-3 bg-brand-600 text-white px-10 py-5 rounded-full text-lg font-bold tracking-wide hover:bg-brand-700 hover:scale-105 transition-all shadow-lg hover:shadow-brand-500/25">
+                Solicita una Cotización Especial <ArrowRight size={20} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
 }

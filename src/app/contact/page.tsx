@@ -1,119 +1,169 @@
-'use client'
-import { Mail, Phone, MapPin, Instagram, Facebook, Twitter } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Mail, Phone, MapPin, Instagram, Facebook, Clock, MessageCircle } from 'lucide-react'
+import ContactForm from '@/components/contact-form'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Contacto',
+  description: 'Contáctanos para iniciar tu proyecto de diseño gráfico, impresión o publicidad en Temuco, Araucanía. Respuesta en 24 horas.',
+  openGraph: {
+    title: 'Contacto | AV GRAFFIX',
+    description: 'Contáctanos para iniciar tu proyecto de diseño gráfico, impresión o publicidad en Temuco, Araucanía.',
+  },
+}
+
+const contactInfo = [
+  {
+    icon: <Mail className="w-5 h-5" />,
+    label: 'Email',
+    value: 'avgraffix@gmail.com',
+    href: 'mailto:avgraffix@gmail.com',
+  },
+  {
+    icon: <Phone className="w-5 h-5" />,
+    label: 'WhatsApp',
+    value: '+569 9279 1148',
+    href: 'https://wa.me/56992791148',
+  },
+  {
+    icon: <MapPin className="w-5 h-5" />,
+    label: 'Ubicación',
+    value: 'Temuco, Araucanía',
+  },
+]
 
 export default function ContactPage() {
-  // Form submission redirect to WhatsApp
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.target as HTMLFormElement)
-    const name = formData.get('name') as string
-    const email = formData.get('email') as string
-    const message = formData.get('message') as string
-
-    // Número de WhatsApp (Formato internacional sin el +)
-    const whatsappNumber = '56992791148' // Reemplazar con el móvil real si hay uno diferente
-    const text = `Hola AV GRAFFIX, mi nombre es ${name} (${email}).%0A%0ATengo el siguiente proyecto en mente:%0A${message}`
-
-    window.open(`https://wa.me/${whatsappNumber}?text=${text}`, '_blank')
-  }
-
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans">
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
 
-        <div className="text-center mb-20 relative">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-4 text-zinc-900 dark:text-white relative z-10">Conecta con <span className="text-red-600 dark:text-red-500">Nosotros</span></h1>
-          <div className="h-1 w-20 bg-red-600 dark:bg-red-500 mx-auto rounded-full shadow-sm dark:shadow-[0_0_10px_rgba(239,68,68,0.4)]"></div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-20">
-
-          <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-8 md:p-12 rounded-3xl shadow-xl dark:shadow-none relative overflow-hidden">
-              <h2 className="text-3xl font-bold tracking-tight mb-8 text-zinc-900 dark:text-white">Inicia tu Proyecto</h2>
-
-              <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-semibold tracking-wide uppercase text-zinc-500 dark:text-zinc-400">Nombre Completo</label>
-                    <input type="text" id="name" name="name" className="w-full px-4 py-4 bg-zinc-50 dark:bg-zinc-950 border border-black/5 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 outline-none transition-all duration-300 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600" placeholder="John Doe" required />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-semibold tracking-wide uppercase text-zinc-500 dark:text-zinc-400">Email Profesional</label>
-                    <input type="email" id="email" name="email" className="w-full px-4 py-4 bg-zinc-50 dark:bg-zinc-950 border border-black/5 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 outline-none transition-all duration-300 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600" placeholder="john@empresa.com" required />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-semibold tracking-wide uppercase text-zinc-500 dark:text-zinc-400">Detalles del Proyecto</label>
-                  <textarea id="message" name="message" rows={6} className="w-full px-4 py-4 bg-zinc-50 dark:bg-zinc-950 border border-black/5 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 outline-none transition-all duration-300 resize-none text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600" placeholder="Cuéntanos qué tienes en mente..." required></textarea>
-                </div>
-
-                <button type="submit" className="w-full sm:w-auto bg-red-600 text-white px-10 py-4 rounded-full font-bold tracking-wide hover:bg-red-700 hover:scale-[1.02] transform transition-all shadow-lg hover:shadow-red-500/25">
-                  Enviar Mensaje
-                </button>
-              </form>
-            </div>
+      {/* Hero Header */}
+      <section className="relative py-32 overflow-hidden bg-zinc-900 dark:bg-zinc-950">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
+        <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-brand-600/5 rounded-full blur-3xl" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl">
+            <p className="text-brand-500 text-sm font-bold tracking-[0.3em] uppercase mb-4">Hablemos</p>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 text-white">
+              Conecta con{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-400">Nosotros</span>
+            </h1>
+            <p className="text-xl md:text-2xl font-light text-zinc-400 leading-relaxed max-w-2xl">
+              Estamos listos para transformar tus ideas en piezas gráficas memorables. Respuesta en menos de 24 horas.
+            </p>
           </div>
+        </div>
+      </section>
 
-          <div className="lg:col-span-2 space-y-12">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight mb-8 text-zinc-900 dark:text-white">Información de Contacto</h2>
-              <div className="space-y-6">
-                <div className="flex items-center group">
-                  <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 text-red-600 dark:text-red-500 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
-                    <Mail className="w-5 h-5" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-lg text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">avgraffix@gmail.com</span>
-                    <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">info.avgraffix@gmail.com</span>
-                  </div>
+      {/* Contact Cards Strip */}
+      <section className="relative z-20 -mt-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {contactInfo.map((info, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl dark:shadow-none border border-black/5 dark:border-white/5 p-6 flex items-center gap-4 group hover:border-brand-500/20 transition-all duration-300"
+              >
+                <div className="w-12 h-12 bg-brand-50 dark:bg-brand-950/30 text-brand-600 dark:text-brand-500 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
+                  {info.icon}
                 </div>
-                <a href="https://wa.me/56992791148" className="flex items-center group">
-                  <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 text-red-600 dark:text-red-500 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">+569 9279 1148</span>
-                </a>
-                <div className="flex items-center group cursor-default">
-                  <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 text-red-600 dark:text-red-500 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <span className="text-lg text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">Temuco, Araucanía</span>
+                <div>
+                  <p className="text-xs font-bold tracking-widest uppercase text-zinc-400 dark:text-zinc-500">{info.label}</p>
+                  {info.href ? (
+                    <a href={info.href} className="text-zinc-900 dark:text-white font-medium hover:text-brand-600 dark:hover:text-brand-500 transition-colors">
+                      {info.value}
+                    </a>
+                  ) : (
+                    <p className="text-zinc-900 dark:text-white font-medium">{info.value}</p>
+                  )}
                 </div>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <div className="bg-zinc-100 dark:bg-zinc-900/50 p-8 rounded-3xl border border-black/5 dark:border-white/5">
-              <h3 className="text-xl font-bold mb-6 text-zinc-900 dark:text-white">Horario de Atención</h3>
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
+
+          {/* Form */}
+          <div className="lg:col-span-3">
+            <ContactForm />
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Schedule */}
+            <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-8 rounded-3xl shadow-sm">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-brand-50 dark:bg-brand-950/30 text-brand-600 dark:text-brand-500 rounded-xl flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white">Horario de Atención</h3>
+              </div>
               <ul className="space-y-3 text-zinc-600 dark:text-zinc-400">
                 <li className="flex justify-between items-center pb-3 border-b border-black/5 dark:border-white/10">
                   <span>Lunes a Viernes</span>
-                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">9:00 AM - 6:00 PM</span>
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">9:00 - 18:00</span>
                 </li>
                 <li className="flex justify-between items-center pb-3 border-b border-black/5 dark:border-white/10">
                   <span>Sábado</span>
-                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">10:00 AM - 2:00 PM</span>
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">10:00 - 14:00</span>
                 </li>
                 <li className="flex justify-between items-center pt-1">
                   <span>Domingo</span>
-                  <span className="font-semibold text-red-600 dark:text-red-500">Cerrado</span>
+                  <span className="font-semibold text-brand-600 dark:text-brand-500">Cerrado</span>
                 </li>
               </ul>
             </div>
 
-            <div>
+            {/* Quick WhatsApp */}
+            <a
+              href="https://wa.me/56992791148"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-4 bg-green-600 text-white p-6 rounded-3xl hover:bg-green-700 transition-all duration-300 group shadow-lg shadow-green-600/20"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                <MessageCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="font-bold text-lg">Chat Directo</p>
+                <p className="text-green-100 text-sm font-light">Escríbenos por WhatsApp ahora</p>
+              </div>
+            </a>
+
+            {/* Social */}
+            <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-8 rounded-3xl shadow-sm">
               <h3 className="text-lg font-bold mb-6 text-zinc-900 dark:text-white">Síguenos</h3>
-              <div className="flex space-x-4">
-                <a href="https://www.facebook.com/publicidad.avgraffix/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:border-transparent transition-all duration-300 transform hover:-translate-y-1">
-                  <Facebook className="w-5 h-5" />
+              <div className="flex gap-3">
+                <a
+                  href="https://www.facebook.com/publicidad.avgraffix/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 font-medium text-sm"
+                >
+                  <Facebook className="w-5 h-5" /> Facebook
                 </a>
-                <a href="https://www.instagram.com/publicidad.avgraffix/?hl=es-la" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:border-transparent transition-all duration-300 transform hover:-translate-y-1">
-                  <Instagram className="w-5 h-5" />
+                <a
+                  href="https://www.instagram.com/publicidad.avgraffix/?hl=es-la"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white hover:border-transparent transition-all duration-300 font-medium text-sm"
+                >
+                  <Instagram className="w-5 h-5" /> Instagram
                 </a>
               </div>
             </div>
 
+            {/* Map Placeholder */}
+            <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 rounded-3xl overflow-hidden shadow-sm">
+              <div className="aspect-[4/3] bg-zinc-100 dark:bg-zinc-800/50 flex items-center justify-center relative">
+                <div className="text-center">
+                  <MapPin className="w-10 h-10 text-brand-600 dark:text-brand-500 mx-auto mb-3" />
+                  <p className="text-zinc-600 dark:text-zinc-400 font-medium">Temuco, Araucanía</p>
+                  <p className="text-zinc-500 dark:text-zinc-500 text-sm font-light">Región de la Araucanía, Chile</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>

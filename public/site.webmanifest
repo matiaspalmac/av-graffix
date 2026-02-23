@@ -1,0 +1,21 @@
+{
+  "name": "AV GRAFFIX",
+  "short_name": "AV GRAFFIX",
+  "description": "Agencia líder en diseño gráfico, producción pre-prensa y publicidad en la Araucanía.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
