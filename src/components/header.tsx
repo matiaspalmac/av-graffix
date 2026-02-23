@@ -113,6 +113,13 @@ export default function Header() {
 
           <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800"></div>
 
+          <Link
+            href="/erp/login"
+            className="px-4 py-2.5 rounded-xl bg-brand-600 text-white text-xs font-semibold tracking-wide uppercase hover:bg-brand-700 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950"
+          >
+            ERP Login
+          </Link>
+
           <button
             onClick={toggleTheme}
             className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-brand-600 dark:hover:text-brand-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 focus-visible:outline-none"
@@ -123,6 +130,13 @@ export default function Header() {
         </div>
 
         <div className="md:hidden flex items-center space-x-3">
+          <Link
+            href="/erp/login"
+            className="px-3 py-2 rounded-xl bg-brand-600 text-white text-[11px] font-semibold tracking-wide uppercase"
+            aria-label="Ir al login del ERP"
+          >
+            ERP
+          </Link>
           <button
             onClick={toggleTheme}
             className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
