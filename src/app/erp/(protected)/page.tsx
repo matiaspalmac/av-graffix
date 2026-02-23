@@ -9,20 +9,27 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
+import Link from "next/link";
 import { sql } from "drizzle-orm";
+import { auth } from "@/auth";
 import { db } from "@/db/client";
 import {
+  clients,
   invoices,
   inventoryTransactions,
   materialConsumptions,
   materials,
   payments,
+  purchaseOrders,
   projects,
   quotes,
+  suppliers,
+  tasks,
   timesheets,
 } from "@/db/schema";
 import { formatCLP, formatPercent } from "@/lib/format";
 import { KpiCard } from "@/components/erp/kpi-card";
+import { updateTaskStatusQuickAction } from "@/app/erp/(protected)/dashboard-actions";
 
 function monthStartISO() {
   const now = new Date();
@@ -30,6 +37,8 @@ function monthStartISO() {
 }
 
 export default async function ErpDashboardPage() {
+  const session = await auth();
+  const currentUserId = Number(session?.user?.id ?? 0);
   const monthStart = monthStartISO();
 
   const [
@@ -78,6 +87,74 @@ export default async function ErpDashboardPage() {
     db.select({ value: sql<number>`count(*)` }).from(projects).where(sql`${projects.status} = 'in_progress'`),
   ]);
 
+  const [criticalMaterials, delayedPurchaseOrders, overdueInvoices] = await Promise.all([
+    db
+      .select({
+        id: materials.id,
+        name: materials.name,
+        baseUnit: materials.baseUnit,
+        reorderPoint: materials.reorderPoint,
+        stock: sql<number>`coalesce((select sum(${inventoryTransactions.qtyIn} - ${inventoryTransactions.qtyOut}) from ${inventoryTransactions} where ${inventoryTransactions.materialId} = ${materials.id}),0)`,
+      })
+      .from(materials)
+      .where(
+        sql`coalesce((select sum(${inventoryTransactions.qtyIn} - ${inventoryTransactions.qtyOut}) from ${inventoryTransactions} where ${inventoryTransactions.materialId} = ${materials.id}),0) <= ${materials.reorderPoint}`
+      )
+      .orderBy(sql`${materials.reorderPoint} desc, ${materials.name} asc`)
+      .limit(6),
+
+    db
+      .select({
+        id: purchaseOrders.id,
+        poNumber: purchaseOrders.poNumber,
+        expectedDate: purchaseOrders.expectedDate,
+        status: purchaseOrders.status,
+        supplierName: suppliers.tradeName,
+      })
+      .from(purchaseOrders)
+      .leftJoin(suppliers, sql`${purchaseOrders.supplierId} = ${suppliers.id}`)
+      .where(sql`${purchaseOrders.status} in ('sent','partial') and ${purchaseOrders.expectedDate} is not null and ${purchaseOrders.expectedDate} < datetime('now')`)
+      .orderBy(sql`${purchaseOrders.expectedDate} asc`)
+      .limit(6),
+
+    db
+      .select({
+        id: invoices.id,
+        invoiceNumber: invoices.invoiceNumber,
+        dueDate: invoices.dueDate,
+        clientName: clients.tradeName,
+        pendingClp: sql<number>`coalesce(${invoices.totalClp},0) - coalesce((select sum(${payments.amountClp}) from ${payments} where ${payments.invoiceId} = ${invoices.id}),0)`,
+      })
+      .from(invoices)
+      .leftJoin(clients, sql`${invoices.clientId} = ${clients.id}`)
+      .where(sql`${invoices.status} in ('issued','partial','overdue') and ${invoices.dueDate} is not null and ${invoices.dueDate} < datetime('now') and (coalesce(${invoices.totalClp},0) - coalesce((select sum(${payments.amountClp}) from ${payments} where ${payments.invoiceId} = ${invoices.id}),0)) > 0`)
+      .orderBy(sql`${invoices.dueDate} asc`)
+      .limit(6),
+  ]);
+
+  const userTasks = currentUserId
+    ? await db
+        .select({
+          id: tasks.id,
+          title: tasks.title,
+          status: tasks.status,
+          dueAt: tasks.dueAt,
+          priority: tasks.priority,
+        })
+        .from(tasks)
+        .where(sql`${tasks.assigneeUserId} = ${currentUserId} and ${tasks.status} in ('todo','in_progress')`)
+        .orderBy(sql`
+          case ${tasks.priority}
+            when 'high' then 1
+            when 'normal' then 2
+            else 3
+          end,
+          coalesce(${tasks.dueAt}, '9999-12-31') asc,
+          ${tasks.id} desc
+        `)
+        .limit(8)
+    : [];
+
   const activeProjects = Number(activeProjectsResult[0]?.value ?? 0);
   const quotesPending = Number(quotesPendingResult[0]?.value ?? 0);
   const monthlyRevenue = Number(monthlyRevenueResult[0]?.value ?? 0);
@@ -89,6 +166,17 @@ export default async function ErpDashboardPage() {
 
   const monthlyCost = monthlyHoursCost + monthlyMaterialCost;
   const monthlyMargin = monthlyRevenue > 0 ? ((monthlyRevenue - monthlyCost) * 100) / monthlyRevenue : 0;
+
+  const currentDate = Date.now();
+
+  function lateDaysLabel(dateIso: string | null) {
+    if (!dateIso) {
+      return "-";
+    }
+    const diffMs = currentDate - new Date(dateIso).getTime();
+    const days = Math.max(Math.floor(diffMs / (1000 * 60 * 60 * 24)), 0);
+    return `${days} día(s)`;
+  }
 
   return (
     <div className="space-y-6">
@@ -154,6 +242,131 @@ export default async function ErpDashboardPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Alertas operativas unificadas</h3>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">Prioridades diarias para stock, abastecimiento y caja.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          <div className="rounded-xl border border-orange-200 dark:border-orange-900/40 p-4 bg-orange-50/60 dark:bg-orange-950/20">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Stock crítico</p>
+              <span className="text-xs rounded-full bg-white/80 dark:bg-zinc-900 px-2 py-1 border border-orange-200 dark:border-orange-900/40">
+                {criticalMaterials.length}
+              </span>
+            </div>
+            <div className="mt-3 space-y-2">
+              {criticalMaterials.length === 0 ? (
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Sin alertas de reposición hoy.</p>
+              ) : (
+                criticalMaterials.map((material) => (
+                  <div key={material.id} className="rounded-lg bg-white/80 dark:bg-zinc-900/70 px-3 py-2 text-sm">
+                    <p className="font-medium text-zinc-900 dark:text-zinc-100">{material.name}</p>
+                    <p className="text-zinc-600 dark:text-zinc-400">
+                      Stock {Number(material.stock).toFixed(2)} {material.baseUnit} · Min {Number(material.reorderPoint).toFixed(2)}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+            <Link href="/erp/inventario" className="mt-3 inline-block text-sm font-semibold text-brand-700 dark:text-brand-300">
+              Ir a Inventario →
+            </Link>
+          </div>
+
+          <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 p-4 bg-amber-50/60 dark:bg-amber-950/20">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">OC atrasadas</p>
+              <span className="text-xs rounded-full bg-white/80 dark:bg-zinc-900 px-2 py-1 border border-amber-200 dark:border-amber-900/40">
+                {delayedPurchaseOrders.length}
+              </span>
+            </div>
+            <div className="mt-3 space-y-2">
+              {delayedPurchaseOrders.length === 0 ? (
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">No hay órdenes retrasadas.</p>
+              ) : (
+                delayedPurchaseOrders.map((order) => (
+                  <div key={order.id} className="rounded-lg bg-white/80 dark:bg-zinc-900/70 px-3 py-2 text-sm">
+                    <p className="font-medium text-zinc-900 dark:text-zinc-100">{order.poNumber} · {order.supplierName ?? "-"}</p>
+                    <p className="text-zinc-600 dark:text-zinc-400">
+                      Vencida hace {lateDaysLabel(order.expectedDate)} · Estado {order.status}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+            <Link href="/erp/compras" className="mt-3 inline-block text-sm font-semibold text-brand-700 dark:text-brand-300">
+              Ir a Compras →
+            </Link>
+          </div>
+
+          <div className="rounded-xl border border-violet-200 dark:border-violet-900/40 p-4 bg-violet-50/60 dark:bg-violet-950/20">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Cobranza vencida</p>
+              <span className="text-xs rounded-full bg-white/80 dark:bg-zinc-900 px-2 py-1 border border-violet-200 dark:border-violet-900/40">
+                {overdueInvoices.length}
+              </span>
+            </div>
+            <div className="mt-3 space-y-2">
+              {overdueInvoices.length === 0 ? (
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">No hay facturas vencidas pendientes.</p>
+              ) : (
+                overdueInvoices.map((invoice) => (
+                  <div key={invoice.id} className="rounded-lg bg-white/80 dark:bg-zinc-900/70 px-3 py-2 text-sm">
+                    <p className="font-medium text-zinc-900 dark:text-zinc-100">{invoice.invoiceNumber} · {invoice.clientName ?? "-"}</p>
+                    <p className="text-zinc-600 dark:text-zinc-400">
+                      Pendiente {formatCLP(invoice.pendingClp)} · Vencida hace {lateDaysLabel(invoice.dueDate)}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+            <Link href="/erp/finanzas" className="mt-3 inline-block text-sm font-semibold text-brand-700 dark:text-brand-300">
+              Ir a Finanzas →
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
+        <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Mi trabajo hoy</h3>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Tareas asignadas para avanzar en operación diaria.</p>
+
+        {userTasks.length === 0 ? (
+          <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">No tienes tareas pendientes asignadas.</p>
+        ) : (
+          <div className="mt-4 space-y-2">
+            {userTasks.map((task) => (
+              <form key={task.id} action={updateTaskStatusQuickAction} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center rounded-xl border border-zinc-200 dark:border-zinc-800 p-3">
+                <input type="hidden" name="taskId" value={task.id} />
+                <div className="md:col-span-6">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-100">{task.title}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Prioridad: {task.priority ?? "normal"}
+                    {task.dueAt ? ` · Vence: ${new Date(task.dueAt).toLocaleDateString("es-CL")}` : ""}
+                  </p>
+                </div>
+                <div className="md:col-span-4">
+                  <select name="status" defaultValue={task.status} className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-2 text-sm">
+                    <option value="todo">Por hacer</option>
+                    <option value="in_progress">En progreso</option>
+                    <option value="done">Hecha</option>
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <button className="w-full rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-2 py-2 text-sm font-semibold">
+                    Guardar
+                  </button>
+                </div>
+              </form>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">

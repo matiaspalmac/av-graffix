@@ -24,8 +24,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main id="main-content">{children}</main>
 
       {!isErp ? <Footer /> : null}
-      <WhatsAppCTA />
-      <ScrollToTop />
+      {!isErp ? <WhatsAppCTA /> : null}
+      {!isErp ? <ScrollToTop /> : null}
     </>
   );
 }
