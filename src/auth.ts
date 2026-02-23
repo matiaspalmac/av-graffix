@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { roles, users } from "@/db/schema";
 
+const ALLOWED_ERP_ROLES = new Set(["admin", "finanzas"]);
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/erp/login",
@@ -47,6 +49,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
+        if (!account.roleCode || !ALLOWED_ERP_ROLES.has(account.roleCode)) {
+          return null;
+        }
+
         const isValidPassword = await compare(password, account.passwordHash);
         if (!isValidPassword) {
           return null;
@@ -61,7 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: String(account.id),
           email: account.email,
           name: account.fullName,
-          role: account.roleCode ?? "ventas",
+          role: account.roleCode ?? "finanzas",
         };
       },
     }),
@@ -77,7 +83,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = String(token.userId ?? "");
-        session.user.role = String(token.role ?? "ventas");
+        session.user.role = String(token.role ?? "finanzas");
       }
       return session;
     },

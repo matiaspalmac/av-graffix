@@ -13,6 +13,9 @@ if (!tursoUrl || !tursoToken) {
 const adminEmail = (process.env.ADMIN_EMAIL ?? "admin@avgraffix.cl").toLowerCase();
 const adminPassword = process.env.ADMIN_PASSWORD ?? "Admin1234!";
 const adminName = process.env.ADMIN_NAME ?? "Administrador AV GRAFFIX";
+const financeEmail = (process.env.FINANCE_EMAIL ?? "finanzas@avgraffix.cl").toLowerCase();
+const financePassword = process.env.FINANCE_PASSWORD ?? "Finanzas1234!";
+const financeName = process.env.FINANCE_NAME ?? "Finanzas AV GRAFFIX";
 
 const client = createClient({
   url: tursoUrl,
@@ -20,7 +23,8 @@ const client = createClient({
 });
 
 const now = new Date().toISOString();
-const passwordHash = await hash(adminPassword, 10);
+const adminPasswordHash = await hash(adminPassword, 10);
+const financePasswordHash = await hash(financePassword, 10);
 
 const roles = [
   ["admin", "Administrador", "Control total del ERP", 100, 1],
@@ -56,6 +60,17 @@ if (roleResult.rows.length === 0) {
 
 const roleId = Number(roleResult.rows[0].id);
 
+const financeRoleResult = await client.execute({
+  sql: `SELECT id FROM roles WHERE code = 'finanzas' LIMIT 1`,
+  args: [],
+});
+
+if (financeRoleResult.rows.length === 0) {
+  throw new Error("No se encontró rol finanzas tras el seed.");
+}
+
+const financeRoleId = Number(financeRoleResult.rows[0].id);
+
 await client.execute({
   sql: `
     INSERT INTO users (role_id, full_name, email, phone, password_hash, is_active, timezone, locale, created_at, updated_at)
@@ -67,9 +82,25 @@ await client.execute({
       is_active = 1,
       updated_at = excluded.updated_at
   `,
-  args: [roleId, adminName, adminEmail, passwordHash, now, now],
+  args: [roleId, adminName, adminEmail, adminPasswordHash, now, now],
+});
+
+await client.execute({
+  sql: `
+    INSERT INTO users (role_id, full_name, email, phone, password_hash, is_active, timezone, locale, created_at, updated_at)
+    VALUES (?, ?, ?, '', ?, 1, 'America/Santiago', 'es-CL', ?, ?)
+    ON CONFLICT(email) DO UPDATE SET
+      role_id = excluded.role_id,
+      full_name = excluded.full_name,
+      password_hash = excluded.password_hash,
+      is_active = 1,
+      updated_at = excluded.updated_at
+  `,
+  args: [financeRoleId, financeName, financeEmail, financePasswordHash, now, now],
 });
 
 console.log("✅ Seed completado");
 console.log(`Admin: ${adminEmail}`);
 console.log(`Password: ${adminPassword}`);
+console.log(`Finanzas: ${financeEmail}`);
+console.log(`Password Finanzas: ${financePassword}`);

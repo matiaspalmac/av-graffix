@@ -1,7 +1,5 @@
 export const roleLabels: Record<string, string> = {
   admin: "Administrador",
-  ventas: "Ventas",
-  produccion: "Producción",
   finanzas: "Finanzas",
 };
 
@@ -14,5 +12,9 @@ export function canAccessFinance(role?: string | null): boolean {
 }
 
 export function canAccessProduction(role?: string | null): boolean {
-  return role === "admin" || role === "produccion";
+  return role === "admin" || role === "finanzas";
+}
+
+export function canAccessErp(role?: string | null): boolean {
+  return role === "admin" || role === "finanzas";
 }

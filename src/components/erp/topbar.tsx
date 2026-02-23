@@ -29,7 +29,7 @@ export function ErpTopbar({ userName, role }: ErpTopbarProps) {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 bg-white dark:bg-zinc-900">
             <Shield size={14} className="text-brand-600" />
-            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{roleLabels[role ?? "ventas"] ?? "Equipo"}</span>
+            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{roleLabels[role ?? "finanzas"] ?? "Equipo"}</span>
           </div>
 
           <div className="hidden md:block text-right">

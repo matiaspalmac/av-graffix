@@ -117,7 +117,7 @@ export default function Header() {
             href="/erp/login"
             className="px-4 py-2.5 rounded-xl bg-brand-600 text-white text-xs font-semibold tracking-wide uppercase hover:bg-brand-700 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950"
           >
-            ERP Login
+            Iniciar Sesion
           </Link>
 
           <button

@@ -19,7 +19,7 @@ export default async function ErpLoginPage(props: {
       <div className="w-full max-w-md rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 sm:p-8 shadow-xl">
         <div className="mb-6">
           <p className="text-xs uppercase tracking-widest text-brand-600 font-semibold">AV GRAFFIX</p>
-          <h1 className="text-3xl font-black text-zinc-900 dark:text-zinc-100">ERP Login</h1>
+          <h1 className="text-3xl font-black text-zinc-900 dark:text-zinc-100">Login</h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Acceso interno para ventas, producción y finanzas.</p>
         </div>
 

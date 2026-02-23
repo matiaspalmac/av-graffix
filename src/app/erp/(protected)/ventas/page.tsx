@@ -1,7 +1,18 @@
 import { sql } from "drizzle-orm";
-import { ModuleShell } from "@/components/erp/module-shell";
 import { db } from "@/db/client";
 import { clients, leads, quotes } from "@/db/schema";
+import { formatCLP } from "@/lib/format";
+import {
+  addQuoteItemAction,
+  availableClients,
+  convertQuoteToProjectAction,
+  createClientAction,
+  createQuoteAction,
+  deleteQuoteAction,
+  deleteQuoteItemAction,
+  latestQuotesWithItems,
+  updateQuoteStatusAction,
+} from "@/app/erp/(protected)/ventas/actions";
 
 export default async function VentasPage() {
   const [leadsOpen, clientsTotal, quotesOpen] = await Promise.all([
@@ -10,15 +21,153 @@ export default async function VentasPage() {
     db.select({ v: sql<number>`count(*)` }).from(quotes).where(sql`${quotes.status} in ('draft','sent','approved')`),
   ]);
 
+  const [clientOptions, recentQuotes] = await Promise.all([availableClients(), latestQuotesWithItems()]);
+
   return (
-    <ModuleShell
-      title="CRM & Ventas"
-      description="Leads, clientes y cotizaciones para branding, etiquetas, folletería y soportes gráficos."
-      kpis={[
-        { label: "Leads activos", value: String(leadsOpen[0]?.v ?? 0) },
-        { label: "Clientes", value: String(clientsTotal[0]?.v ?? 0) },
-        { label: "Cotizaciones abiertas", value: String(quotesOpen[0]?.v ?? 0) },
-      ]}
-    />
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">CRM & Ventas</h2>
+        <p className="mt-1 text-zinc-600 dark:text-zinc-400">Cotizaciones reales para etiquetas, folletería, papelería y soportes gráficos.</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
+          <p className="text-xs uppercase tracking-widest text-zinc-500">Leads activos</p>
+          <p className="mt-2 text-2xl font-black">{String(leadsOpen[0]?.v ?? 0)}</p>
+        </div>
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
+          <p className="text-xs uppercase tracking-widest text-zinc-500">Clientes</p>
+          <p className="mt-2 text-2xl font-black">{String(clientsTotal[0]?.v ?? 0)}</p>
+        </div>
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
+          <p className="text-xs uppercase tracking-widest text-zinc-500">Cotizaciones abiertas</p>
+          <p className="mt-2 text-2xl font-black">{String(quotesOpen[0]?.v ?? 0)}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <form action={createClientAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
+          <h3 className="text-lg font-bold">Nuevo cliente</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input name="legalName" required placeholder="Razón social" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="tradeName" required placeholder="Nombre comercial" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="rut" required placeholder="RUT" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="giro" placeholder="Giro" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="contactName" placeholder="Contacto" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="contactEmail" placeholder="Email contacto" type="email" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+          </div>
+          <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Guardar cliente</button>
+        </form>
+
+        <form action={createQuoteAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
+          <h3 className="text-lg font-bold">Nueva cotización</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <select name="clientId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+              <option value="">Selecciona cliente</option>
+              {clientOptions.map((client) => (
+                <option key={client.id} value={client.id}>{client.tradeName} · {client.rut}</option>
+              ))}
+            </select>
+            <input name="serviceCategory" placeholder="Categoría (ej. etiquetas)" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="description" placeholder="Descripción servicio" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 sm:col-span-2" />
+            <input name="qty" type="number" step="0.01" defaultValue="1" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="unit" placeholder="Unidad (m², ml, un)" defaultValue="unit" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="unitPriceClp" type="number" step="1" defaultValue="0" required placeholder="Valor unitario CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="hoursEstimated" type="number" step="0.25" defaultValue="0" placeholder="Horas estimadas" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <input name="materialEstimatedCostClp" type="number" step="1" defaultValue="0" placeholder="Costo material estimado CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 sm:col-span-2" />
+          </div>
+          <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Guardar cotización</button>
+        </form>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold">Cotizaciones recientes (detalle multiproducto)</h3>
+        {recentQuotes.map((quote) => (
+          <div key={quote.id} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
+              <div>
+                <p className="font-bold text-zinc-900 dark:text-zinc-100">{quote.quoteNumber} · {quote.clientName ?? "-"}</p>
+                <p className="text-sm text-zinc-500">{new Date(quote.issueDate).toLocaleDateString("es-CL")} · Subtotal {formatCLP(quote.subtotalClp)} · IVA {formatCLP(quote.taxClp)} · Total {formatCLP(quote.totalClp)}</p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <form action={updateQuoteStatusAction} className="inline-flex gap-2">
+                  <input type="hidden" name="quoteId" value={quote.id} />
+                  <select name="status" defaultValue={quote.status} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1 text-sm">
+                    <option value="draft">Borrador</option>
+                    <option value="sent">Enviada</option>
+                    <option value="approved">Aprobada</option>
+                    <option value="rejected">Rechazada</option>
+                  </select>
+                  <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm">Guardar</button>
+                </form>
+
+                <form action={deleteQuoteAction}>
+                  <input type="hidden" name="quoteId" value={quote.id} />
+                  <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-sm">Eliminar</button>
+                </form>
+
+                {quote.status === "approved" && !quote.projectId ? (
+                  <form action={convertQuoteToProjectAction}>
+                    <input type="hidden" name="quoteId" value={quote.id} />
+                    <button className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold">Crear proyecto</button>
+                  </form>
+                ) : null}
+
+                {quote.projectId ? (
+                  <span className="rounded-lg border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 text-sm text-emerald-700 dark:text-emerald-300">
+                    Proyecto #{quote.projectId} creado
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="overflow-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+                    <th className="py-2">#</th>
+                    <th className="py-2">Descripción</th>
+                    <th className="py-2">Categoría</th>
+                    <th className="py-2">Cantidad</th>
+                    <th className="py-2">Unitario</th>
+                    <th className="py-2">Total</th>
+                    <th className="py-2">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {quote.items.map((item) => (
+                    <tr key={item.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
+                      <td className="py-2">{item.lineNo}</td>
+                      <td className="py-2">{item.description}</td>
+                      <td className="py-2">{item.serviceCategory}</td>
+                      <td className="py-2">{item.qty} {item.unit}</td>
+                      <td className="py-2">{formatCLP(item.unitPriceClp)}</td>
+                      <td className="py-2">{formatCLP(item.lineTotalClp)}</td>
+                      <td className="py-2">
+                        <form action={deleteQuoteItemAction}>
+                          <input type="hidden" name="quoteItemId" value={item.id} />
+                          <input type="hidden" name="quoteId" value={quote.id} />
+                          <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">Eliminar ítem</button>
+                        </form>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <form action={addQuoteItemAction} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-2">
+              <input type="hidden" name="quoteId" value={quote.id} />
+              <input name="description" required placeholder="Nuevo ítem" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5 xl:col-span-2" />
+              <input name="serviceCategory" required placeholder="Categoría" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+              <input name="qty" type="number" step="0.01" required defaultValue="1" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+              <input name="unitPriceClp" type="number" step="1" required defaultValue="0" placeholder="Unitario CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+              <button className="rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm font-semibold">Agregar ítem</button>
+            </form>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header";
-import ProductNav from "@/components/productnav";
-import StickyNav from "@/components/sticky-nav";
-import Footer from "@/components/footer";
-import WhatsAppCTA from "@/components/whatsapp-cta";
-import ScrollToTop from "@/components/scroll-to-top";
+import { AppShell } from "@/components/app-shell";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -127,14 +122,7 @@ export default function RootLayout({
         >
           Saltar al contenido
         </a>
-        <StickyNav>
-          <Header />
-          <ProductNav />
-        </StickyNav>
-        <main id="main-content">{children}</main>
-        <Footer />
-        <WhatsAppCTA />
-        <ScrollToTop />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
