@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { desc, eq, sql } from "drizzle-orm";
-import { auth } from "@/auth";
 import { db } from "@/db/client";
 import { clients, invoices, payments, projects, quotes } from "@/db/schema";
+import { requireRole, toErrorMessage } from "@/lib/server-action";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
   const parsed = Number(value ?? fallback);
@@ -56,111 +56,134 @@ async function recalcInvoiceStatus(invoiceId: number) {
 }
 
 export async function createInvoiceAction(formData: FormData) {
-  const session = await auth();
+  try {
+    const session = await requireRole(["admin", "finanzas"]);
 
-  const clientId = asNumber(formData.get("clientId"));
-  const subtotalClp = asNumber(formData.get("subtotalClp"));
+    const clientId = asNumber(formData.get("clientId"));
+    const subtotalClp = asNumber(formData.get("subtotalClp"));
 
-  if (!clientId || subtotalClp <= 0) {
-    return;
+    if (!clientId || subtotalClp <= 0) {
+      return;
+    }
+
+    const taxClp = Math.round(subtotalClp * 0.19);
+    const totalClp = subtotalClp + taxClp;
+    const issueDate = new Date().toISOString();
+
+    await db.insert(invoices).values({
+      invoiceNumber: invoiceNumber(),
+      siiFolio: String(formData.get("siiFolio") ?? "").trim() || null,
+      clientId,
+      projectId: asNumber(formData.get("projectId"), 0) || null,
+      quoteId: asNumber(formData.get("quoteId"), 0) || null,
+      issueDate,
+      dueDate: String(formData.get("dueDate") ?? "").trim() || dueDateByDays(asNumber(formData.get("paymentTermsDays"), 30)),
+      currencyCode: "CLP",
+      subtotalClp,
+      taxClp,
+      totalClp,
+      status: "issued",
+      pdfUrl: null,
+      createdByUserId: Number(session.user.id || 0) || null,
+      updatedAt: issueDate,
+    });
+
+    revalidatePath("/erp/finanzas");
+    revalidatePath("/erp/reportes");
+  } catch (error) {
+    console.error("createInvoiceAction", toErrorMessage(error));
   }
-
-  const taxClp = Math.round(subtotalClp * 0.19);
-  const totalClp = subtotalClp + taxClp;
-  const issueDate = new Date().toISOString();
-
-  await db.insert(invoices).values({
-    invoiceNumber: invoiceNumber(),
-    siiFolio: String(formData.get("siiFolio") ?? "").trim() || null,
-    clientId,
-    projectId: asNumber(formData.get("projectId"), 0) || null,
-    quoteId: asNumber(formData.get("quoteId"), 0) || null,
-    issueDate,
-    dueDate: String(formData.get("dueDate") ?? "").trim() || dueDateByDays(asNumber(formData.get("paymentTermsDays"), 30)),
-    currencyCode: "CLP",
-    subtotalClp,
-    taxClp,
-    totalClp,
-    status: "issued",
-    pdfUrl: null,
-    createdByUserId: Number(session?.user?.id || 0) || null,
-    updatedAt: issueDate,
-  });
-
-  revalidatePath("/erp/finanzas");
-  revalidatePath("/erp/reportes");
 }
 
 export async function registerPaymentAction(formData: FormData) {
-  const session = await auth();
-  const invoiceId = asNumber(formData.get("invoiceId"));
-  const amountClp = asNumber(formData.get("amountClp"));
+  try {
+    const session = await requireRole(["admin", "finanzas"]);
+    const invoiceId = asNumber(formData.get("invoiceId"));
+    const amountClp = asNumber(formData.get("amountClp"));
 
-  if (!invoiceId || amountClp <= 0) {
-    return;
+    if (!invoiceId || amountClp <= 0) {
+      return;
+    }
+
+    await db.insert(payments).values({
+      invoiceId,
+      paymentDate: String(formData.get("paymentDate") ?? "").trim() || new Date().toISOString(),
+      amountClp,
+      method: String(formData.get("method") ?? "transfer").trim() || "transfer",
+      bankReference: String(formData.get("bankReference") ?? "").trim() || null,
+      status: "confirmed",
+      exchangeRate: 1,
+      feesClp: asNumber(formData.get("feesClp"), 0),
+      collectedByUserId: Number(session.user.id || 0) || null,
+      notes: String(formData.get("notes") ?? "").trim() || null,
+      receiptUrl: null,
+      updatedAt: new Date().toISOString(),
+    });
+
+    await recalcInvoiceStatus(invoiceId);
+
+    revalidatePath("/erp/finanzas");
+    revalidatePath("/erp/reportes");
+  } catch (error) {
+    console.error("registerPaymentAction", toErrorMessage(error));
   }
-
-  await db.insert(payments).values({
-    invoiceId,
-    paymentDate: String(formData.get("paymentDate") ?? "").trim() || new Date().toISOString(),
-    amountClp,
-    method: String(formData.get("method") ?? "transfer").trim() || "transfer",
-    bankReference: String(formData.get("bankReference") ?? "").trim() || null,
-    status: "confirmed",
-    exchangeRate: 1,
-    feesClp: asNumber(formData.get("feesClp"), 0),
-    collectedByUserId: Number(session?.user?.id || 0) || null,
-    notes: String(formData.get("notes") ?? "").trim() || null,
-    receiptUrl: null,
-    updatedAt: new Date().toISOString(),
-  });
-
-  await recalcInvoiceStatus(invoiceId);
-
-  revalidatePath("/erp/finanzas");
-  revalidatePath("/erp/reportes");
 }
 
 export async function updateInvoiceStatusAction(formData: FormData) {
-  const invoiceId = asNumber(formData.get("invoiceId"));
-  const status = String(formData.get("status") ?? "issued").trim();
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const invoiceId = asNumber(formData.get("invoiceId"));
+    const status = String(formData.get("status") ?? "issued").trim();
 
-  if (!invoiceId || !status) {
-    return;
+    if (!invoiceId || !status) {
+      return;
+    }
+
+    await db
+      .update(invoices)
+      .set({ status, updatedAt: new Date().toISOString() })
+      .where(eq(invoices.id, invoiceId));
+
+    revalidatePath("/erp/finanzas");
+  } catch (error) {
+    console.error("updateInvoiceStatusAction", toErrorMessage(error));
   }
-
-  await db
-    .update(invoices)
-    .set({ status, updatedAt: new Date().toISOString() })
-    .where(eq(invoices.id, invoiceId));
-
-  revalidatePath("/erp/finanzas");
 }
 
 export async function deletePaymentAction(formData: FormData) {
-  const paymentId = asNumber(formData.get("paymentId"));
-  const invoiceId = asNumber(formData.get("invoiceId"));
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const paymentId = asNumber(formData.get("paymentId"));
+    const invoiceId = asNumber(formData.get("invoiceId"));
 
-  if (!paymentId || !invoiceId) {
-    return;
+    if (!paymentId || !invoiceId) {
+      return;
+    }
+
+    await db.delete(payments).where(eq(payments.id, paymentId));
+    await recalcInvoiceStatus(invoiceId);
+    revalidatePath("/erp/finanzas");
+  } catch (error) {
+    console.error("deletePaymentAction", toErrorMessage(error));
   }
-
-  await db.delete(payments).where(eq(payments.id, paymentId));
-  await recalcInvoiceStatus(invoiceId);
-  revalidatePath("/erp/finanzas");
 }
 
 export async function deleteInvoiceAction(formData: FormData) {
-  const invoiceId = asNumber(formData.get("invoiceId"));
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const invoiceId = asNumber(formData.get("invoiceId"));
 
-  if (!invoiceId) {
-    return;
+    if (!invoiceId) {
+      return;
+    }
+
+    await db.delete(payments).where(eq(payments.invoiceId, invoiceId));
+    await db.delete(invoices).where(eq(invoices.id, invoiceId));
+
+    revalidatePath("/erp/finanzas");
+  } catch (error) {
+    console.error("deleteInvoiceAction", toErrorMessage(error));
   }
-
-  await db.delete(payments).where(eq(payments.invoiceId, invoiceId));
-  await db.delete(invoices).where(eq(invoices.id, invoiceId));
-
-  revalidatePath("/erp/finanzas");
 }
 
 export async function financeFormOptions() {

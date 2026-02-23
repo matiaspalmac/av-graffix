@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
-import { auth } from "@/auth";
 import { db } from "@/db/client";
 import {
   clients,
@@ -14,6 +13,7 @@ import {
   tasks,
   users,
 } from "@/db/schema";
+import { requireRole, toErrorMessage } from "@/lib/server-action";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
   const parsed = Number(value ?? fallback);
@@ -71,44 +71,50 @@ async function recalcQuoteTotals(quoteId: number) {
 }
 
 export async function createClientAction(formData: FormData) {
-  const legalName = String(formData.get("legalName") ?? "").trim();
-  const tradeName = String(formData.get("tradeName") ?? "").trim();
-  const rut = String(formData.get("rut") ?? "").trim();
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const legalName = String(formData.get("legalName") ?? "").trim();
+    const tradeName = String(formData.get("tradeName") ?? "").trim();
+    const rut = String(formData.get("rut") ?? "").trim();
 
-  if (!legalName || !tradeName || !rut) {
-    return;
+    if (!legalName || !tradeName || !rut) {
+      return;
+    }
+
+    const now = new Date().toISOString();
+
+    await db.insert(clients).values({
+      legalName,
+      tradeName,
+      rut,
+      giro: String(formData.get("giro") ?? "").trim() || null,
+      contactName: String(formData.get("contactName") ?? "").trim() || null,
+      contactEmail: String(formData.get("contactEmail") ?? "").trim().toLowerCase() || null,
+      contactPhone: String(formData.get("contactPhone") ?? "").trim() || null,
+      paymentTermsDays: asNumber(formData.get("paymentTermsDays"), 30),
+      updatedAt: now,
+    });
+
+    revalidatePath("/erp/ventas");
+  } catch (error) {
+    console.error("createClientAction", toErrorMessage(error));
   }
-
-  const now = new Date().toISOString();
-
-  await db.insert(clients).values({
-    legalName,
-    tradeName,
-    rut,
-    giro: String(formData.get("giro") ?? "").trim() || null,
-    contactName: String(formData.get("contactName") ?? "").trim() || null,
-    contactEmail: String(formData.get("contactEmail") ?? "").trim().toLowerCase() || null,
-    contactPhone: String(formData.get("contactPhone") ?? "").trim() || null,
-    paymentTermsDays: asNumber(formData.get("paymentTermsDays"), 30),
-    updatedAt: now,
-  });
-
-  revalidatePath("/erp/ventas");
 }
 
 export async function createQuoteAction(formData: FormData) {
-  const session = await auth();
-  const clientId = asNumber(formData.get("clientId"));
-  const description = String(formData.get("description") ?? "").trim();
-  const serviceCategory = String(formData.get("serviceCategory") ?? "general").trim();
-  const qty = asNumber(formData.get("qty"), 1);
-  const unitPriceClp = asNumber(formData.get("unitPriceClp"), 0);
-  const hoursEstimated = asNumber(formData.get("hoursEstimated"), 0);
-  const materialEstimatedCostClp = asNumber(formData.get("materialEstimatedCostClp"), 0);
+  try {
+    const session = await requireRole(["admin", "finanzas"]);
+    const clientId = asNumber(formData.get("clientId"));
+    const description = String(formData.get("description") ?? "").trim();
+    const serviceCategory = String(formData.get("serviceCategory") ?? "general").trim();
+    const qty = asNumber(formData.get("qty"), 1);
+    const unitPriceClp = asNumber(formData.get("unitPriceClp"), 0);
+    const hoursEstimated = asNumber(formData.get("hoursEstimated"), 0);
+    const materialEstimatedCostClp = asNumber(formData.get("materialEstimatedCostClp"), 0);
 
-  if (!clientId || !description || qty <= 0) {
-    return;
-  }
+    if (!clientId || !description || qty <= 0) {
+      return;
+    }
 
   const now = new Date();
   const issueDate = now.toISOString();
@@ -118,7 +124,7 @@ export async function createQuoteAction(formData: FormData) {
   const tax = Math.round(subtotal * 0.19);
   const total = subtotal + tax;
 
-  const inserted = await db
+    const inserted = await db
     .insert(quotes)
     .values({
       quoteNumber: quoteNumber(),
@@ -130,16 +136,16 @@ export async function createQuoteAction(formData: FormData) {
       taxClp: tax,
       totalClp: total,
       status: "draft",
-      salesUserId: Number(session?.user?.id || 0) || null,
+      salesUserId: Number(session.user.id || 0) || null,
       termsText: "Validez 15 días. Valores en CLP + IVA.",
       updatedAt: issueDate,
     })
     .returning({ id: quotes.id });
 
-  const quoteId = inserted[0]?.id;
-  if (!quoteId) {
-    return;
-  }
+    const quoteId = inserted[0]?.id;
+    if (!quoteId) {
+      return;
+    }
 
   await db.insert(quoteItems).values({
     quoteId,
@@ -156,21 +162,26 @@ export async function createQuoteAction(formData: FormData) {
     dueDate: String(formData.get("dueDate") ?? "").trim() || null,
   });
 
-  await recalcQuoteTotals(quoteId);
+    await recalcQuoteTotals(quoteId);
 
-  revalidatePath("/erp/ventas");
+    revalidatePath("/erp/ventas");
+  } catch (error) {
+    console.error("createQuoteAction", toErrorMessage(error));
+  }
 }
 
 export async function addQuoteItemAction(formData: FormData) {
-  const quoteId = asNumber(formData.get("quoteId"));
-  const description = String(formData.get("description") ?? "").trim();
-  const serviceCategory = String(formData.get("serviceCategory") ?? "general").trim();
-  const qty = asNumber(formData.get("qty"), 1);
-  const unitPriceClp = asNumber(formData.get("unitPriceClp"), 0);
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const quoteId = asNumber(formData.get("quoteId"));
+    const description = String(formData.get("description") ?? "").trim();
+    const serviceCategory = String(formData.get("serviceCategory") ?? "general").trim();
+    const qty = asNumber(formData.get("qty"), 1);
+    const unitPriceClp = asNumber(formData.get("unitPriceClp"), 0);
 
-  if (!quoteId || !description || qty <= 0) {
-    return;
-  }
+    if (!quoteId || !description || qty <= 0) {
+      return;
+    }
 
   const countResult = await db
     .select({ count: sql<number>`count(*)` })
@@ -196,57 +207,76 @@ export async function addQuoteItemAction(formData: FormData) {
     dueDate: String(formData.get("dueDate") ?? "").trim() || null,
   });
 
-  await recalcQuoteTotals(quoteId);
-  revalidatePath("/erp/ventas");
+    await recalcQuoteTotals(quoteId);
+    revalidatePath("/erp/ventas");
+  } catch (error) {
+    console.error("addQuoteItemAction", toErrorMessage(error));
+  }
 }
 
 export async function deleteQuoteItemAction(formData: FormData) {
-  const quoteItemId = asNumber(formData.get("quoteItemId"));
-  const quoteId = asNumber(formData.get("quoteId"));
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const quoteItemId = asNumber(formData.get("quoteItemId"));
+    const quoteId = asNumber(formData.get("quoteId"));
 
-  if (!quoteItemId || !quoteId) {
-    return;
+    if (!quoteItemId || !quoteId) {
+      return;
+    }
+
+    await db.delete(quoteItems).where(eq(quoteItems.id, quoteItemId));
+    await recalcQuoteTotals(quoteId);
+    revalidatePath("/erp/ventas");
+  } catch (error) {
+    console.error("deleteQuoteItemAction", toErrorMessage(error));
   }
-
-  await db.delete(quoteItems).where(eq(quoteItems.id, quoteItemId));
-  await recalcQuoteTotals(quoteId);
-  revalidatePath("/erp/ventas");
 }
 
 export async function updateQuoteStatusAction(formData: FormData) {
-  const quoteId = asNumber(formData.get("quoteId"));
-  const status = String(formData.get("status") ?? "draft").trim();
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const quoteId = asNumber(formData.get("quoteId"));
+    const status = String(formData.get("status") ?? "draft").trim();
 
-  if (!quoteId || !status) {
-    return;
+    if (!quoteId || !status) {
+      return;
+    }
+
+    await db
+      .update(quotes)
+      .set({ status, updatedAt: new Date().toISOString() })
+      .where(eq(quotes.id, quoteId));
+
+    revalidatePath("/erp/ventas");
+  } catch (error) {
+    console.error("updateQuoteStatusAction", toErrorMessage(error));
   }
-
-  await db
-    .update(quotes)
-    .set({ status, updatedAt: new Date().toISOString() })
-    .where(eq(quotes.id, quoteId));
-
-  revalidatePath("/erp/ventas");
 }
 
 export async function deleteQuoteAction(formData: FormData) {
-  const quoteId = asNumber(formData.get("quoteId"));
-  if (!quoteId) {
-    return;
-  }
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const quoteId = asNumber(formData.get("quoteId"));
+    if (!quoteId) {
+      return;
+    }
 
-  await db.delete(quoteItems).where(eq(quoteItems.quoteId, quoteId));
-  await db.delete(quotes).where(eq(quotes.id, quoteId));
-  revalidatePath("/erp/ventas");
+    await db.delete(quoteItems).where(eq(quoteItems.quoteId, quoteId));
+    await db.delete(quotes).where(eq(quotes.id, quoteId));
+    revalidatePath("/erp/ventas");
+  } catch (error) {
+    console.error("deleteQuoteAction", toErrorMessage(error));
+  }
 }
 
 export async function convertQuoteToProjectAction(formData: FormData) {
-  const session = await auth();
-  const quoteId = asNumber(formData.get("quoteId"));
+  try {
+    const session = await requireRole(["admin", "finanzas"]);
+    const quoteId = asNumber(formData.get("quoteId"));
 
-  if (!quoteId) {
-    return;
-  }
+    if (!quoteId) {
+      return;
+    }
 
   const quoteInfo = await db
     .select({
@@ -262,10 +292,10 @@ export async function convertQuoteToProjectAction(formData: FormData) {
     .where(eq(quotes.id, quoteId))
     .limit(1);
 
-  const quote = quoteInfo[0];
-  if (!quote || quote.status !== "approved") {
-    return;
-  }
+    const quote = quoteInfo[0];
+    if (!quote || quote.status !== "approved") {
+      return;
+    }
 
   const existingProject = await db
     .select({ id: projects.id })
@@ -273,9 +303,9 @@ export async function convertQuoteToProjectAction(formData: FormData) {
     .where(eq(projects.quoteId, quoteId))
     .limit(1);
 
-  if (existingProject.length > 0) {
-    return;
-  }
+    if (existingProject.length > 0) {
+      return;
+    }
 
   const itemAgg = await db
     .select({
@@ -307,7 +337,7 @@ export async function convertQuoteToProjectAction(formData: FormData) {
     .leftJoin(roles, eq(users.roleId, roles.id))
     .where(eq(users.isActive, true));
 
-  const fallbackUserId = Number(session?.user?.id || 0) || null;
+    const fallbackUserId = Number(session.user.id || 0) || null;
   const salesUserId = roleUsers.find((row) => row.roleCode === "ventas")?.userId ?? fallbackUserId;
   const productionUserId = roleUsers.find((row) => row.roleCode === "produccion")?.userId ?? fallbackUserId;
   const financeUserId = roleUsers.find((row) => row.roleCode === "finanzas")?.userId ?? fallbackUserId;
@@ -330,7 +360,7 @@ export async function convertQuoteToProjectAction(formData: FormData) {
       startDate: now,
       status: "planning",
       priority: "normal",
-      projectManagerId: Number(session?.user?.id || 0) || null,
+      projectManagerId: Number(session.user.id || 0) || null,
       budgetRevenueClp: budgetRevenue,
       budgetCostClp: budgetCost,
       expectedMarginPct: margin,
@@ -339,10 +369,10 @@ export async function convertQuoteToProjectAction(formData: FormData) {
     })
     .returning({ id: projects.id });
 
-  const projectId = insertedProject[0]?.id;
-  if (!projectId) {
-    return;
-  }
+    const projectId = insertedProject[0]?.id;
+    if (!projectId) {
+      return;
+    }
 
   const phases = [
     { name: "Brief", order: 1, hours: 2 },
@@ -441,10 +471,13 @@ export async function convertQuoteToProjectAction(formData: FormData) {
     updatedAt: now,
   });
 
-  revalidatePath("/erp/ventas");
-  revalidatePath("/erp/proyectos");
-  revalidatePath("/erp/reportes");
-  revalidatePath("/erp");
+    revalidatePath("/erp/ventas");
+    revalidatePath("/erp/proyectos");
+    revalidatePath("/erp/reportes");
+    revalidatePath("/erp");
+  } catch (error) {
+    console.error("convertQuoteToProjectAction", toErrorMessage(error));
+  }
 }
 
 export async function latestQuotesWithItems(limit = 8) {

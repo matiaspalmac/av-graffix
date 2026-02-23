@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { desc, eq, sql } from "drizzle-orm";
-import { auth } from "@/auth";
 import { db } from "@/db/client";
 import { inventoryTransactions, materials, supplierMaterialPrices, suppliers } from "@/db/schema";
+import { requireRole, toErrorMessage } from "@/lib/server-action";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
   const parsed = Number(value ?? fallback);
@@ -23,120 +23,142 @@ async function getCurrentStock(materialId: number) {
 }
 
 export async function createMaterialAction(formData: FormData) {
-  const sku = String(formData.get("sku") ?? "").trim().toUpperCase();
-  const name = String(formData.get("name") ?? "").trim();
-  const category = String(formData.get("category") ?? "").trim();
+  try {
+    await requireRole(["admin", "finanzas"]);
 
-  if (!sku || !name || !category) {
-    return;
+    const sku = String(formData.get("sku") ?? "").trim().toUpperCase();
+    const name = String(formData.get("name") ?? "").trim();
+    const category = String(formData.get("category") ?? "").trim();
+
+    if (!sku || !name || !category) {
+      return;
+    }
+
+    await db.insert(materials).values({
+      sku,
+      name,
+      category,
+      baseUnit: String(formData.get("baseUnit") ?? "unit").trim() || "unit",
+      brand: String(formData.get("brand") ?? "").trim() || null,
+      model: String(formData.get("model") ?? "").trim() || null,
+      color: String(formData.get("color") ?? "").trim() || null,
+      defaultWastePct: asNumber(formData.get("defaultWastePct"), 5),
+      reorderPoint: asNumber(formData.get("reorderPoint"), 0),
+      updatedAt: new Date().toISOString(),
+    });
+
+    revalidatePath("/erp/inventario");
+  } catch (error) {
+    console.error("createMaterialAction", toErrorMessage(error));
   }
-
-  await db.insert(materials).values({
-    sku,
-    name,
-    category,
-    baseUnit: String(formData.get("baseUnit") ?? "unit").trim() || "unit",
-    brand: String(formData.get("brand") ?? "").trim() || null,
-    model: String(formData.get("model") ?? "").trim() || null,
-    color: String(formData.get("color") ?? "").trim() || null,
-    defaultWastePct: asNumber(formData.get("defaultWastePct"), 5),
-    reorderPoint: asNumber(formData.get("reorderPoint"), 0),
-    updatedAt: new Date().toISOString(),
-  });
-
-  revalidatePath("/erp/inventario");
 }
 
 export async function toggleMaterialActiveAction(formData: FormData) {
-  const materialId = asNumber(formData.get("materialId"));
-  const isActive = String(formData.get("isActive") ?? "1") === "1";
+  try {
+    await requireRole(["admin", "finanzas"]);
 
-  if (!materialId) {
-    return;
+    const materialId = asNumber(formData.get("materialId"));
+    const isActive = String(formData.get("isActive") ?? "1") === "1";
+
+    if (!materialId) {
+      return;
+    }
+
+    await db
+      .update(materials)
+      .set({ isActive: !isActive, updatedAt: new Date().toISOString() })
+      .where(eq(materials.id, materialId));
+
+    revalidatePath("/erp/inventario");
+  } catch (error) {
+    console.error("toggleMaterialActiveAction", toErrorMessage(error));
   }
-
-  await db
-    .update(materials)
-    .set({ isActive: !isActive, updatedAt: new Date().toISOString() })
-    .where(eq(materials.id, materialId));
-
-  revalidatePath("/erp/inventario");
 }
 
 export async function registerInventoryMoveAction(formData: FormData) {
-  const session = await auth();
+  try {
+    const session = await requireRole(["admin", "finanzas"]);
 
-  const materialId = asNumber(formData.get("materialId"));
-  const moveType = String(formData.get("moveType") ?? "in").trim();
-  const qty = asNumber(formData.get("qty"), 0);
-  const unitCostClp = asNumber(formData.get("unitCostClp"), 0);
+    const materialId = asNumber(formData.get("materialId"));
+    const moveType = String(formData.get("moveType") ?? "in").trim();
+    const qty = asNumber(formData.get("qty"), 0);
+    const unitCostClp = asNumber(formData.get("unitCostClp"), 0);
 
-  if (!materialId || qty <= 0) {
-    return;
+    if (!materialId || qty <= 0) {
+      return;
+    }
+
+    const stockBefore = await getCurrentStock(materialId);
+
+    if (moveType === "out" && qty > stockBefore) {
+      return;
+    }
+
+    const qtyIn = moveType === "in" ? qty : 0;
+    const qtyOut = moveType === "out" ? qty : 0;
+    const stockAfter = stockBefore + qtyIn - qtyOut;
+    const totalCostClp = qty * unitCostClp;
+
+    await db.insert(inventoryTransactions).values({
+      materialId,
+      warehouse: String(formData.get("warehouse") ?? "principal").trim() || "principal",
+      txnType: moveType === "in" ? "adjust_in" : "adjust_out",
+      referenceType: "manual",
+      referenceId: null,
+      qtyIn,
+      qtyOut,
+      unitCostClp,
+      totalCostClp,
+      stockAfter,
+      txnDate: new Date().toISOString(),
+      batchLot: String(formData.get("batchLot") ?? "").trim() || null,
+      createdByUserId: Number(session.user.id || 0) || null,
+    });
+
+    revalidatePath("/erp/inventario");
+  } catch (error) {
+    console.error("registerInventoryMoveAction", toErrorMessage(error));
   }
-
-  const stockBefore = await getCurrentStock(materialId);
-
-  if (moveType === "out" && qty > stockBefore) {
-    return;
-  }
-
-  const qtyIn = moveType === "in" ? qty : 0;
-  const qtyOut = moveType === "out" ? qty : 0;
-  const stockAfter = stockBefore + qtyIn - qtyOut;
-  const totalCostClp = qty * unitCostClp;
-
-  await db.insert(inventoryTransactions).values({
-    materialId,
-    warehouse: String(formData.get("warehouse") ?? "principal").trim() || "principal",
-    txnType: moveType === "in" ? "adjust_in" : "adjust_out",
-    referenceType: "manual",
-    referenceId: null,
-    qtyIn,
-    qtyOut,
-    unitCostClp,
-    totalCostClp,
-    stockAfter,
-    txnDate: new Date().toISOString(),
-    batchLot: String(formData.get("batchLot") ?? "").trim() || null,
-    createdByUserId: Number(session?.user?.id || 0) || null,
-  });
-
-  revalidatePath("/erp/inventario");
 }
 
 export async function createMaterialPriceAction(formData: FormData) {
-  const supplierId = asNumber(formData.get("supplierId"));
-  const materialId = asNumber(formData.get("materialId"));
-  const priceClp = asNumber(formData.get("priceClp"));
+  try {
+    await requireRole(["admin", "finanzas"]);
 
-  if (!supplierId || !materialId || priceClp <= 0) {
-    return;
+    const supplierId = asNumber(formData.get("supplierId"));
+    const materialId = asNumber(formData.get("materialId"));
+    const priceClp = asNumber(formData.get("priceClp"));
+
+    if (!supplierId || !materialId || priceClp <= 0) {
+      return;
+    }
+
+    await db
+      .update(supplierMaterialPrices)
+      .set({ isCurrent: false, updatedAt: new Date().toISOString() })
+      .where(eq(supplierMaterialPrices.materialId, materialId));
+
+    await db.insert(supplierMaterialPrices).values({
+      supplierId,
+      materialId,
+      variantId: null,
+      priceClp,
+      priceUnit: String(formData.get("priceUnit") ?? "unit").trim() || "unit",
+      minOrderQty: asNumber(formData.get("minOrderQty"), 1),
+      leadTimeDays: asNumber(formData.get("leadTimeDays"), 5),
+      validFrom: new Date().toISOString(),
+      validTo: String(formData.get("validTo") ?? "").trim() || null,
+      incoterm: String(formData.get("incoterm") ?? "").trim() || null,
+      freightClp: asNumber(formData.get("freightClp"), 0),
+      isCurrent: true,
+      sourceDocRef: String(formData.get("sourceDocRef") ?? "").trim() || null,
+      updatedAt: new Date().toISOString(),
+    });
+
+    revalidatePath("/erp/inventario");
+  } catch (error) {
+    console.error("createMaterialPriceAction", toErrorMessage(error));
   }
-
-  await db
-    .update(supplierMaterialPrices)
-    .set({ isCurrent: false, updatedAt: new Date().toISOString() })
-    .where(eq(supplierMaterialPrices.materialId, materialId));
-
-  await db.insert(supplierMaterialPrices).values({
-    supplierId,
-    materialId,
-    variantId: null,
-    priceClp,
-    priceUnit: String(formData.get("priceUnit") ?? "unit").trim() || "unit",
-    minOrderQty: asNumber(formData.get("minOrderQty"), 1),
-    leadTimeDays: asNumber(formData.get("leadTimeDays"), 5),
-    validFrom: new Date().toISOString(),
-    validTo: String(formData.get("validTo") ?? "").trim() || null,
-    incoterm: String(formData.get("incoterm") ?? "").trim() || null,
-    freightClp: asNumber(formData.get("freightClp"), 0),
-    isCurrent: true,
-    sourceDocRef: String(formData.get("sourceDocRef") ?? "").trim() || null,
-    updatedAt: new Date().toISOString(),
-  });
-
-  revalidatePath("/erp/inventario");
 }
 
 export async function inventoryFormOptions() {

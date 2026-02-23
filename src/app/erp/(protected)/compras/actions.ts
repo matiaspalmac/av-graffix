@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { desc, eq, sql } from "drizzle-orm";
-import { auth } from "@/auth";
 import { db } from "@/db/client";
 import {
   inventoryTransactions,
@@ -11,6 +10,7 @@ import {
   purchaseOrders,
   suppliers,
 } from "@/db/schema";
+import { requireRole, toErrorMessage } from "@/lib/server-action";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
   const parsed = Number(value ?? fallback);
@@ -60,70 +60,82 @@ async function recalcPurchaseOrderTotals(purchaseOrderId: number) {
 }
 
 export async function createSupplierAction(formData: FormData) {
-  const legalName = String(formData.get("legalName") ?? "").trim();
-  const tradeName = String(formData.get("tradeName") ?? "").trim();
-  const rut = String(formData.get("rut") ?? "").trim();
+  try {
+    await requireRole(["admin", "finanzas"]);
 
-  if (!legalName || !tradeName || !rut) {
-    return;
+    const legalName = String(formData.get("legalName") ?? "").trim();
+    const tradeName = String(formData.get("tradeName") ?? "").trim();
+    const rut = String(formData.get("rut") ?? "").trim();
+
+    if (!legalName || !tradeName || !rut) {
+      return;
+    }
+
+    await db.insert(suppliers).values({
+      legalName,
+      tradeName,
+      rut,
+      contactName: String(formData.get("contactName") ?? "").trim() || null,
+      contactEmail: String(formData.get("contactEmail") ?? "").trim().toLowerCase() || null,
+      contactPhone: String(formData.get("contactPhone") ?? "").trim() || null,
+      leadTimeDays: asNumber(formData.get("leadTimeDays"), 5),
+      paymentTermsDays: asNumber(formData.get("paymentTermsDays"), 30),
+      currencyPreference: "CLP",
+      updatedAt: new Date().toISOString(),
+    });
+
+    revalidatePath("/erp/compras");
+    revalidatePath("/erp/inventario");
+  } catch (error) {
+    console.error("createSupplierAction", toErrorMessage(error));
   }
-
-  await db.insert(suppliers).values({
-    legalName,
-    tradeName,
-    rut,
-    contactName: String(formData.get("contactName") ?? "").trim() || null,
-    contactEmail: String(formData.get("contactEmail") ?? "").trim().toLowerCase() || null,
-    contactPhone: String(formData.get("contactPhone") ?? "").trim() || null,
-    leadTimeDays: asNumber(formData.get("leadTimeDays"), 5),
-    paymentTermsDays: asNumber(formData.get("paymentTermsDays"), 30),
-    currencyPreference: "CLP",
-    updatedAt: new Date().toISOString(),
-  });
-
-  revalidatePath("/erp/compras");
-  revalidatePath("/erp/inventario");
 }
 
 export async function createPurchaseOrderAction(formData: FormData) {
-  const session = await auth();
-  const supplierId = asNumber(formData.get("supplierId"));
+  try {
+    const session = await requireRole(["admin", "finanzas"]);
+    const supplierId = asNumber(formData.get("supplierId"));
 
-  if (!supplierId) {
-    return;
+    if (!supplierId) {
+      return;
+    }
+
+    const issueDate = new Date().toISOString();
+
+    await db.insert(purchaseOrders).values({
+      poNumber: purchaseOrderNumber(),
+      supplierId,
+      requesterUserId: Number(session.user.id || 0) || null,
+      issueDate,
+      expectedDate: String(formData.get("expectedDate") ?? "").trim() || null,
+      status: String(formData.get("status") ?? "draft").trim() || "draft",
+      subtotalClp: 0,
+      discountClp: asNumber(formData.get("discountClp"), 0),
+      taxClp: 0,
+      shippingClp: asNumber(formData.get("shippingClp"), 0),
+      totalClp: 0,
+      paymentTermsDays: asNumber(formData.get("paymentTermsDays"), 30),
+      notes: String(formData.get("notes") ?? "").trim() || null,
+      updatedAt: issueDate,
+    });
+
+    revalidatePath("/erp/compras");
+  } catch (error) {
+    console.error("createPurchaseOrderAction", toErrorMessage(error));
   }
-
-  const issueDate = new Date().toISOString();
-
-  await db.insert(purchaseOrders).values({
-    poNumber: purchaseOrderNumber(),
-    supplierId,
-    requesterUserId: Number(session?.user?.id || 0) || null,
-    issueDate,
-    expectedDate: String(formData.get("expectedDate") ?? "").trim() || null,
-    status: String(formData.get("status") ?? "draft").trim() || "draft",
-    subtotalClp: 0,
-    discountClp: asNumber(formData.get("discountClp"), 0),
-    taxClp: 0,
-    shippingClp: asNumber(formData.get("shippingClp"), 0),
-    totalClp: 0,
-    paymentTermsDays: asNumber(formData.get("paymentTermsDays"), 30),
-    notes: String(formData.get("notes") ?? "").trim() || null,
-    updatedAt: issueDate,
-  });
-
-  revalidatePath("/erp/compras");
 }
 
 export async function addPurchaseOrderItemAction(formData: FormData) {
-  const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
-  const materialId = asNumber(formData.get("materialId"));
-  const qty = asNumber(formData.get("qty"));
-  const unitPriceClp = asNumber(formData.get("unitPriceClp"));
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
+    const materialId = asNumber(formData.get("materialId"));
+    const qty = asNumber(formData.get("qty"));
+    const unitPriceClp = asNumber(formData.get("unitPriceClp"));
 
-  if (!purchaseOrderId || !materialId || qty <= 0 || unitPriceClp < 0) {
-    return;
-  }
+    if (!purchaseOrderId || !materialId || qty <= 0 || unitPriceClp < 0) {
+      return;
+    }
 
   const countResult = await db
     .select({ count: sql<number>`count(*)` })
@@ -143,7 +155,7 @@ export async function addPurchaseOrderItemAction(formData: FormData) {
     .where(eq(materials.id, materialId))
     .limit(1);
 
-  await db.insert(purchaseOrderItems).values({
+    await db.insert(purchaseOrderItems).values({
     purchaseOrderId,
     lineNo,
     materialId,
@@ -160,34 +172,43 @@ export async function addPurchaseOrderItemAction(formData: FormData) {
     updatedAt: new Date().toISOString(),
   });
 
-  await recalcPurchaseOrderTotals(purchaseOrderId);
-  revalidatePath("/erp/compras");
+    await recalcPurchaseOrderTotals(purchaseOrderId);
+    revalidatePath("/erp/compras");
+  } catch (error) {
+    console.error("addPurchaseOrderItemAction", toErrorMessage(error));
+  }
 }
 
 export async function updatePurchaseOrderStatusAction(formData: FormData) {
-  const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
-  const status = String(formData.get("status") ?? "draft").trim();
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
+    const status = String(formData.get("status") ?? "draft").trim();
 
-  if (!purchaseOrderId || !status) {
-    return;
+    if (!purchaseOrderId || !status) {
+      return;
+    }
+
+    await db
+      .update(purchaseOrders)
+      .set({ status, updatedAt: new Date().toISOString() })
+      .where(eq(purchaseOrders.id, purchaseOrderId));
+
+    revalidatePath("/erp/compras");
+  } catch (error) {
+    console.error("updatePurchaseOrderStatusAction", toErrorMessage(error));
   }
-
-  await db
-    .update(purchaseOrders)
-    .set({ status, updatedAt: new Date().toISOString() })
-    .where(eq(purchaseOrders.id, purchaseOrderId));
-
-  revalidatePath("/erp/compras");
 }
 
 export async function receivePurchaseOrderItemAction(formData: FormData) {
-  const session = await auth();
-  const poItemId = asNumber(formData.get("poItemId"));
-  const receivedNow = asNumber(formData.get("receivedNow"));
+  try {
+    const session = await requireRole(["admin", "finanzas"]);
+    const poItemId = asNumber(formData.get("poItemId"));
+    const receivedNow = asNumber(formData.get("receivedNow"));
 
-  if (!poItemId || receivedNow <= 0) {
-    return;
-  }
+    if (!poItemId || receivedNow <= 0) {
+      return;
+    }
 
   const itemRows = await db
     .select({
@@ -202,17 +223,17 @@ export async function receivePurchaseOrderItemAction(formData: FormData) {
     .where(eq(purchaseOrderItems.id, poItemId))
     .limit(1);
 
-  const item = itemRows[0];
-  if (!item) {
-    return;
-  }
+    const item = itemRows[0];
+    if (!item) {
+      return;
+    }
 
   const pending = Math.max(Number(item.qty) - Number(item.receivedQty), 0);
   const qtyAccepted = Math.min(receivedNow, pending);
 
-  if (qtyAccepted <= 0) {
-    return;
-  }
+    if (qtyAccepted <= 0) {
+      return;
+    }
 
   const nextReceivedQty = Number(item.receivedQty) + qtyAccepted;
 
@@ -225,7 +246,7 @@ export async function receivePurchaseOrderItemAction(formData: FormData) {
   const stockAfter = stockBefore + qtyAccepted;
   const unitCostClp = asNumber(formData.get("unitCostClp"), Number(item.unitPriceClp));
 
-  await db.insert(inventoryTransactions).values({
+    await db.insert(inventoryTransactions).values({
     materialId: item.materialId,
     variantId: null,
     warehouse: String(formData.get("warehouse") ?? "principal").trim() || "principal",
@@ -239,7 +260,7 @@ export async function receivePurchaseOrderItemAction(formData: FormData) {
     stockAfter,
     txnDate: new Date().toISOString(),
     batchLot: String(formData.get("batchLot") ?? "").trim() || null,
-    createdByUserId: Number(session?.user?.id || 0) || null,
+    createdByUserId: Number(session.user.id || 0) || null,
   });
 
   const agg = await db
@@ -255,39 +276,72 @@ export async function receivePurchaseOrderItemAction(formData: FormData) {
 
   const status = received >= ordered ? "received" : "partial";
 
-  await db
-    .update(purchaseOrders)
-    .set({ status, updatedAt: new Date().toISOString() })
-    .where(eq(purchaseOrders.id, item.purchaseOrderId));
+    await db
+      .update(purchaseOrders)
+      .set({ status, updatedAt: new Date().toISOString() })
+      .where(eq(purchaseOrders.id, item.purchaseOrderId));
 
-  revalidatePath("/erp/compras");
-  revalidatePath("/erp/inventario");
+    revalidatePath("/erp/compras");
+    revalidatePath("/erp/inventario");
+  } catch (error) {
+    console.error("receivePurchaseOrderItemAction", toErrorMessage(error));
+  }
 }
 
 export async function deletePurchaseOrderAction(formData: FormData) {
-  const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
 
-  if (!purchaseOrderId) {
-    return;
+    if (!purchaseOrderId) {
+      return;
+    }
+
+    await db.delete(purchaseOrderItems).where(eq(purchaseOrderItems.purchaseOrderId, purchaseOrderId));
+    await db.delete(purchaseOrders).where(eq(purchaseOrders.id, purchaseOrderId));
+
+    revalidatePath("/erp/compras");
+  } catch (error) {
+    console.error("deletePurchaseOrderAction", toErrorMessage(error));
   }
-
-  await db.delete(purchaseOrderItems).where(eq(purchaseOrderItems.purchaseOrderId, purchaseOrderId));
-  await db.delete(purchaseOrders).where(eq(purchaseOrders.id, purchaseOrderId));
-
-  revalidatePath("/erp/compras");
 }
 
 export async function deletePurchaseOrderItemAction(formData: FormData) {
-  const poItemId = asNumber(formData.get("poItemId"));
-  const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
+  try {
+    await requireRole(["admin", "finanzas"]);
+    const poItemId = asNumber(formData.get("poItemId"));
+    const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
 
-  if (!poItemId || !purchaseOrderId) {
-    return;
+    if (!poItemId || !purchaseOrderId) {
+      return;
+    }
+
+    await db.delete(purchaseOrderItems).where(eq(purchaseOrderItems.id, poItemId));
+    await recalcPurchaseOrderTotals(purchaseOrderId);
+    revalidatePath("/erp/compras");
+  } catch (error) {
+    console.error("deletePurchaseOrderItemAction", toErrorMessage(error));
   }
+}
 
-  await db.delete(purchaseOrderItems).where(eq(purchaseOrderItems.id, poItemId));
-  await recalcPurchaseOrderTotals(purchaseOrderId);
-  revalidatePath("/erp/compras");
+export async function cancelPurchaseOrderAction(formData: FormData) {
+  try {
+    await requireRole(["admin", "finanzas"]);
+
+    const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
+    if (!purchaseOrderId) {
+      return;
+    }
+
+    await db
+      .update(purchaseOrders)
+      .set({ status: "cancelled", updatedAt: new Date().toISOString() })
+      .where(eq(purchaseOrders.id, purchaseOrderId));
+
+    revalidatePath("/erp/compras");
+  } catch (error) {
+    console.error("cancelPurchaseOrderAction", toErrorMessage(error));
+  }
 }
 
 export async function purchaseFormOptions() {

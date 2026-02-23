@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { tasks } from "@/db/schema";
+import { requireRole, toErrorMessage } from "@/lib/server-action";
 
 function normalizeTaskStatus(status: string) {
   if (status === "todo" || status === "in_progress" || status === "done") {
@@ -13,21 +14,27 @@ function normalizeTaskStatus(status: string) {
 }
 
 export async function updateTaskStatusQuickAction(formData: FormData) {
-  const taskId = Number(formData.get("taskId") ?? 0);
-  const status = normalizeTaskStatus(String(formData.get("status") ?? "todo"));
+  try {
+    await requireRole(["admin", "finanzas"]);
 
-  if (!taskId) {
-    return;
+    const taskId = Number(formData.get("taskId") ?? 0);
+    const status = normalizeTaskStatus(String(formData.get("status") ?? "todo"));
+
+    if (!taskId) {
+      return;
+    }
+
+    await db
+      .update(tasks)
+      .set({
+        status,
+        completedAt: status === "done" ? new Date().toISOString() : null,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(tasks.id, taskId));
+
+    revalidatePath("/erp");
+  } catch (error) {
+    console.error("updateTaskStatusQuickAction", toErrorMessage(error));
   }
-
-  await db
-    .update(tasks)
-    .set({
-      status,
-      completedAt: status === "done" ? new Date().toISOString() : null,
-      updatedAt: new Date().toISOString(),
-    })
-    .where(eq(tasks.id, taskId));
-
-  revalidatePath("/erp");
 }

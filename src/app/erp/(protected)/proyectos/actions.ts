@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { desc, eq } from "drizzle-orm";
-import { auth } from "@/auth";
 import { db } from "@/db/client";
 import { clients, projects, quotes } from "@/db/schema";
+import { requireRole, toErrorMessage } from "@/lib/server-action";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
   const parsed = Number(value ?? fallback);
@@ -17,83 +17,99 @@ function projectCode() {
 }
 
 export async function createProjectAction(formData: FormData) {
-  const session = await auth();
+  try {
+    const session = await requireRole(["admin", "finanzas"]);
 
-  const clientId = asNumber(formData.get("clientId"));
-  const quoteId = asNumber(formData.get("quoteId"), 0) || null;
-  const name = String(formData.get("name") ?? "").trim();
-  const serviceType = String(formData.get("serviceType") ?? "").trim();
+    const clientId = asNumber(formData.get("clientId"));
+    const quoteId = asNumber(formData.get("quoteId"), 0) || null;
+    const name = String(formData.get("name") ?? "").trim();
+    const serviceType = String(formData.get("serviceType") ?? "").trim();
 
-  if (!clientId || !name || !serviceType) {
-    return;
-  }
+    if (!clientId || !name || !serviceType) {
+      return;
+    }
 
-  const budgetRevenueClp = asNumber(formData.get("budgetRevenueClp"));
-  const budgetCostClp = asNumber(formData.get("budgetCostClp"));
-  const expectedMarginPct = budgetRevenueClp > 0 ? ((budgetRevenueClp - budgetCostClp) * 100) / budgetRevenueClp : 0;
-  const now = new Date().toISOString();
+    const budgetRevenueClp = asNumber(formData.get("budgetRevenueClp"));
+    const budgetCostClp = asNumber(formData.get("budgetCostClp"));
+    const expectedMarginPct = budgetRevenueClp > 0 ? ((budgetRevenueClp - budgetCostClp) * 100) / budgetRevenueClp : 0;
+    const now = new Date().toISOString();
 
-  await db.insert(projects).values({
-    projectCode: projectCode(),
-    clientId,
-    quoteId,
-    name,
-    serviceType,
-    startDate: String(formData.get("startDate") ?? "").trim() || now,
-    dueDate: String(formData.get("dueDate") ?? "").trim() || null,
-    status: String(formData.get("status") ?? "planning").trim() || "planning",
-    priority: String(formData.get("priority") ?? "normal").trim() || "normal",
-    projectManagerId: Number(session?.user?.id || 0) || null,
-    budgetRevenueClp,
-    budgetCostClp,
-    expectedMarginPct,
-    notes: String(formData.get("notes") ?? "").trim() || null,
-    updatedAt: now,
-  });
-
-  revalidatePath("/erp/proyectos");
-  revalidatePath("/erp/reportes");
-}
-
-export async function updateProjectAction(formData: FormData) {
-  const id = asNumber(formData.get("projectId"));
-  if (!id) {
-    return;
-  }
-
-  const budgetRevenueClp = asNumber(formData.get("budgetRevenueClp"));
-  const budgetCostClp = asNumber(formData.get("budgetCostClp"));
-  const expectedMarginPct = budgetRevenueClp > 0 ? ((budgetRevenueClp - budgetCostClp) * 100) / budgetRevenueClp : 0;
-
-  await db
-    .update(projects)
-    .set({
+    await db.insert(projects).values({
+      projectCode: projectCode(),
+      clientId,
+      quoteId,
+      name,
+      serviceType,
+      startDate: String(formData.get("startDate") ?? "").trim() || now,
+      dueDate: String(formData.get("dueDate") ?? "").trim() || null,
       status: String(formData.get("status") ?? "planning").trim() || "planning",
       priority: String(formData.get("priority") ?? "normal").trim() || "normal",
-      dueDate: String(formData.get("dueDate") ?? "").trim() || null,
+      projectManagerId: Number(session.user.id || 0) || null,
       budgetRevenueClp,
       budgetCostClp,
       expectedMarginPct,
-      updatedAt: new Date().toISOString(),
-    })
-    .where(eq(projects.id, id));
+      notes: String(formData.get("notes") ?? "").trim() || null,
+      updatedAt: now,
+    });
 
-  revalidatePath("/erp/proyectos");
-  revalidatePath("/erp/reportes");
+    revalidatePath("/erp/proyectos");
+    revalidatePath("/erp/reportes");
+  } catch (error) {
+    console.error("createProjectAction", toErrorMessage(error));
+  }
+}
+
+export async function updateProjectAction(formData: FormData) {
+  try {
+    await requireRole(["admin", "finanzas"]);
+
+    const id = asNumber(formData.get("projectId"));
+    if (!id) {
+      return;
+    }
+
+    const budgetRevenueClp = asNumber(formData.get("budgetRevenueClp"));
+    const budgetCostClp = asNumber(formData.get("budgetCostClp"));
+    const expectedMarginPct = budgetRevenueClp > 0 ? ((budgetRevenueClp - budgetCostClp) * 100) / budgetRevenueClp : 0;
+
+    await db
+      .update(projects)
+      .set({
+        status: String(formData.get("status") ?? "planning").trim() || "planning",
+        priority: String(formData.get("priority") ?? "normal").trim() || "normal",
+        dueDate: String(formData.get("dueDate") ?? "").trim() || null,
+        budgetRevenueClp,
+        budgetCostClp,
+        expectedMarginPct,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(projects.id, id));
+
+    revalidatePath("/erp/proyectos");
+    revalidatePath("/erp/reportes");
+  } catch (error) {
+    console.error("updateProjectAction", toErrorMessage(error));
+  }
 }
 
 export async function archiveProjectAction(formData: FormData) {
-  const id = asNumber(formData.get("projectId"));
-  if (!id) {
-    return;
+  try {
+    await requireRole(["admin", "finanzas"]);
+
+    const id = asNumber(formData.get("projectId"));
+    if (!id) {
+      return;
+    }
+
+    await db
+      .update(projects)
+      .set({ status: "archived", updatedAt: new Date().toISOString() })
+      .where(eq(projects.id, id));
+
+    revalidatePath("/erp/proyectos");
+  } catch (error) {
+    console.error("archiveProjectAction", toErrorMessage(error));
   }
-
-  await db
-    .update(projects)
-    .set({ status: "archived", updatedAt: new Date().toISOString() })
-    .where(eq(projects.id, id));
-
-  revalidatePath("/erp/proyectos");
 }
 
 export async function latestProjects(limit = 12) {

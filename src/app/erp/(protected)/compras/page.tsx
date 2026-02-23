@@ -4,6 +4,7 @@ import { purchaseOrders, suppliers } from "@/db/schema";
 import { formatCLP } from "@/lib/format";
 import {
   addPurchaseOrderItemAction,
+  cancelPurchaseOrderAction,
   createPurchaseOrderAction,
   createSupplierAction,
   deletePurchaseOrderAction,
@@ -116,6 +117,13 @@ export default async function ComprasPage() {
                   <input type="hidden" name="purchaseOrderId" value={order.id} />
                   <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-sm">Eliminar</button>
                 </form>
+
+                {order.status !== "cancelled" ? (
+                  <form action={cancelPurchaseOrderAction}>
+                    <input type="hidden" name="purchaseOrderId" value={order.id} />
+                    <button className="rounded-lg border border-amber-200 text-amber-700 dark:border-amber-900/40 dark:text-amber-300 px-2 py-1 text-sm">Cancelar</button>
+                  </form>
+                ) : null}
               </div>
             </div>
 
