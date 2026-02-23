@@ -35,8 +35,6 @@ export function ErpSidebar() {
       <div className="flex w-full flex-col p-4">
         <div className="mb-5 rounded-2xl border border-brand-200/70 dark:border-brand-900/50 bg-brand-50/70 dark:bg-brand-950/20 p-4">
           <p className="text-xs uppercase tracking-widest text-brand-700 dark:text-brand-400 font-semibold">AV GRAFFIX</p>
-          <h2 className="text-lg font-black text-zinc-900 dark:text-zinc-100">ERP Interno</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">Temuco · CLP · Turso</p>
         </div>
 
         <nav className="space-y-1">

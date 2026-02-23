@@ -532,3 +532,42 @@ export const attachments = sqliteTable(
     index("attachments_doc_uploaded_idx").on(table.docType, table.uploadedAt),
   ]
 );
+
+export const activityLog = sqliteTable(
+  "activity_log",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").notNull().references(() => users.id),
+    action: text("action").notNull(), // 'create', 'update', 'delete', 'view', 'export'
+    entityType: text("entity_type").notNull(), // 'quote', 'project', 'invoice', 'purchase_order', etc
+    entityId: integer("entity_id"),
+    entityName: text("entity_name"), // quoteNumber, projectCode, invoiceNumber, etc
+    oldValue: text("old_value"), // JSON stringified old value
+    newValue: text("new_value"), // JSON stringified new value
+    changes: text("changes"), // JSON array of changed fields
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    metadata: text("metadata"), // JSON additional context
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("activity_log_user_created_idx").on(table.userId, table.createdAt),
+    index("activity_log_entity_idx").on(table.entityType, table.entityId),
+    index("activity_log_action_idx").on(table.action),
+  ]
+);
+
+export const companySettings = sqliteTable(
+  "company_settings",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    key: text("key").notNull().unique(),
+    value: text("value").notNull(),
+    description: text("description"),
+    isEditable: integer("is_editable", { mode: "boolean" }).notNull().default(false),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    uniqueIndex("company_settings_key_uq").on(table.key),
+  ]
+);

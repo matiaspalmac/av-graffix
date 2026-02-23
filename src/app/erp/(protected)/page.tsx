@@ -369,13 +369,6 @@ export default async function ErpDashboardPage() {
         )}
       </div>
 
-      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
-        <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Próximo paso recomendado</h3>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Cargar catálogo inicial de materiales (vinilos, tintas, papeles, telas) y precios vigentes por proveedor para habilitar cálculo de rentabilidad por proyecto con datos completos.
-        </p>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Proveedores sugeridos: Antalis Chile, 3M Chile, Roland, Mimaki.</p>
-      </div>
     </div>
   );
 }
