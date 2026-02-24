@@ -13,6 +13,7 @@ import {
   latestQuotesWithItems,
   updateQuoteStatusAction,
 } from "@/app/erp/(protected)/ventas/actions";
+import { SubmitButton } from "@/components/erp/submit-button";
 
 export default async function VentasPage() {
   const [leadsOpen, clientsTotal, quotesOpen] = await Promise.all([
@@ -49,40 +50,87 @@ export default async function VentasPage() {
         <form action={createClientAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <h3 className="text-lg font-bold">Nuevo cliente</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input name="legalName" required placeholder="Razón social" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="tradeName" required placeholder="Nombre comercial" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="rut" required placeholder="RUT" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="giro" placeholder="Giro" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="contactName" placeholder="Contacto" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="contactEmail" placeholder="Email contacto" type="email" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Razón social</span>
+              <input name="legalName" required placeholder="Ej: Empresa Ltda." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Nombre comercial</span>
+              <input name="tradeName" required placeholder="Ej: Empresa" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">RUT</span>
+              <input name="rut" required placeholder="Ej: 12.345.678-9" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Giro</span>
+              <input name="giro" placeholder="Ej: Importación" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Contacto</span>
+              <input name="contactName" placeholder="Ej: Juan Pérez" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Email de contacto</span>
+              <input name="contactEmail" placeholder="contacto@empresa.cl" type="email" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
           </div>
-          <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Guardar cliente</button>
+          <SubmitButton>Guardar cliente</SubmitButton>
         </form>
 
         <form action={createQuoteAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <h3 className="text-lg font-bold">Nueva cotización</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <select name="clientId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-              <option value="">Selecciona cliente</option>
-              {clientOptions.map((client) => (
-                <option key={client.id} value={client.id}>{client.tradeName} · {client.rut}</option>
-              ))}
-            </select>
-            <input name="serviceCategory" placeholder="Categoría (ej. etiquetas)" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="description" placeholder="Descripción servicio" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 sm:col-span-2" />
-            <input name="qty" type="number" step="0.01" defaultValue="1" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="unit" placeholder="Unidad (m², ml, un)" defaultValue="unit" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="unitPriceClp" type="number" step="1" defaultValue="0" required placeholder="Valor unitario CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="hoursEstimated" type="number" step="0.25" defaultValue="0" placeholder="Horas estimadas" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="materialEstimatedCostClp" type="number" step="1" defaultValue="0" placeholder="Costo material estimado CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 sm:col-span-2" />
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Cliente</span>
+              <select name="clientId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="">Selecciona cliente</option>
+                {clientOptions.map((client) => (
+                  <option key={client.id} value={client.id}>{client.tradeName} · {client.rut}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Categoría</span>
+              <input name="serviceCategory" placeholder="Categoría (ej. etiquetas)" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm sm:col-span-2">
+              <span className="text-zinc-600 dark:text-zinc-300">Descripción del servicio</span>
+              <input name="description" placeholder="Ej: Diseño de etiqueta" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Cantidad</span>
+              <input name="qty" type="number" step="0.01" defaultValue="1" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Unidad</span>
+              <input name="unit" placeholder="Ej: m², ml, un" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Valor unitario CLP</span>
+              <input name="unitPriceClp" type="number" step="1" defaultValue="0" required placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Horas estimadas</span>
+              <input name="hoursEstimated" type="number" step="0.25" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm sm:col-span-2">
+              <span className="text-zinc-600 dark:text-zinc-300">Costo material estimado CLP</span>
+              <input name="materialEstimatedCostClp" type="number" step="1" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
           </div>
-          <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Guardar cotización</button>
+          <SubmitButton>Guardar cotización</SubmitButton>
         </form>
       </div>
 
       <div className="space-y-4">
         <h3 className="text-lg font-bold">Cotizaciones recientes (detalle multiproducto)</h3>
-        {recentQuotes.map((quote) => (
+        {recentQuotes.length === 0 ? (
+          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 text-sm text-zinc-500 dark:text-zinc-400">
+            Aún no hay cotizaciones registradas.
+          </div>
+        ) : (
+          recentQuotes.map((quote) => (
           <div key={quote.id} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
             <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
               <div>
@@ -99,18 +147,18 @@ export default async function VentasPage() {
                     <option value="approved">Aprobada</option>
                     <option value="rejected">Rechazada</option>
                   </select>
-                  <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm">Guardar</button>
+                  <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Guardar</SubmitButton>
                 </form>
 
                 <form action={deleteQuoteAction}>
                   <input type="hidden" name="quoteId" value={quote.id} />
-                  <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-sm">Eliminar</button>
+                  <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-sm hover:bg-red-50 dark:hover:bg-red-900/20">Eliminar</button>
                 </form>
 
                 {quote.status === "approved" && !quote.projectId ? (
                   <form action={convertQuoteToProjectAction}>
                     <input type="hidden" name="quoteId" value={quote.id} />
-                    <button className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold">Crear proyecto</button>
+                    <SubmitButton className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Crear proyecto</SubmitButton>
                   </form>
                 ) : null}
 
@@ -148,7 +196,7 @@ export default async function VentasPage() {
                         <form action={deleteQuoteItemAction}>
                           <input type="hidden" name="quoteItemId" value={item.id} />
                           <input type="hidden" name="quoteId" value={quote.id} />
-                          <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">Eliminar ítem</button>
+                          <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-xs hover:bg-red-50 dark:hover:bg-red-900/20">Eliminar ítem</button>
                         </form>
                       </td>
                     </tr>
@@ -163,10 +211,11 @@ export default async function VentasPage() {
               <input name="serviceCategory" required placeholder="Categoría" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
               <input name="qty" type="number" step="0.01" required defaultValue="1" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
               <input name="unitPriceClp" type="number" step="1" required defaultValue="0" placeholder="Unitario CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
-              <button className="rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm font-semibold">Agregar ítem</button>
+              <SubmitButton className="rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Agregar ítem</SubmitButton>
             </form>
           </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

@@ -101,6 +101,24 @@ export async function adminFormOptions() {
   };
 }
 
+export async function deleteUserAction(formData: FormData) {
+  try {
+    await requireRole(["admin"]);
+
+    const userId = asNumber(formData.get("userId"));
+
+    if (!userId) {
+      return;
+    }
+
+    await db.delete(users).where(eq(users.id, userId));
+
+    revalidatePath("/erp/admin");
+  } catch (error) {
+    console.error("deleteUserAction", toErrorMessage(error));
+  }
+}
+
 export async function latestUsersWithRole(limit = 20) {
   return db
     .select({

@@ -557,6 +557,45 @@ export const activityLog = sqliteTable(
   ]
 );
 
+export const userPreferences = sqliteTable(
+  "user_preferences",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").notNull().unique().references(() => users.id),
+    themeDarkMode: integer("theme_dark_mode", { mode: "boolean" }).notNull().default(false),
+    themeHighContrast: integer("theme_high_contrast", { mode: "boolean" }).notNull().default(false),
+    notifyInventoryAlerts: integer("notify_inventory_alerts", { mode: "boolean" }).notNull().default(true),
+    notifySalesAlerts: integer("notify_sales_alerts", { mode: "boolean" }).notNull().default(true),
+    notifyDailySummary: integer("notify_daily_summary", { mode: "boolean" }).notNull().default(true),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("user_preferences_user_id_uq").on(table.userId),
+  ]
+);
+
+export const loginSessions = sqliteTable(
+  "login_sessions",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id").notNull().references(() => users.id),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    device: text("device"), // 'mobile', 'desktop', 'tablet'
+    browser: text("browser"),
+    os: text("os"),
+    city: text("city"),
+    country: text("country"),
+    loginAt: text("login_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    lastActivityAt: text("last_activity_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  },
+  (table) => [
+    index("login_sessions_user_idx").on(table.userId),
+    index("login_sessions_active_idx").on(table.isActive, table.lastActivityAt),
+  ]
+);
+
 export const companySettings = sqliteTable(
   "company_settings",
   {

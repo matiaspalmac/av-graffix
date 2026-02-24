@@ -80,7 +80,7 @@ export default function Header() {
         <Link href="/" className="relative z-10 group">
           <div className="absolute inset-0 bg-brand-500/10 dark:bg-brand-500/20 blur-xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-500"></div>
           <Image
-            src="/logo.png"
+            src="/avgraffix.png"
             alt="AV GRAFFIX Logo"
             width={180}
             height={64}
@@ -115,14 +115,14 @@ export default function Header() {
 
           <Link
             href="/erp/login"
-            className="px-4 py-2.5 rounded-xl bg-brand-600 text-white text-xs font-semibold tracking-wide uppercase hover:bg-brand-700 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950"
+            className="px-4 py-2.5 rounded-xl bg-brand-600 text-white text-xs font-semibold tracking-wide uppercase hover:bg-brand-700 transition-all duration-300"
           >
             Iniciar Sesion
           </Link>
 
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-brand-600 dark:hover:text-brand-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 focus-visible:outline-none"
+            className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-brand-600 dark:hover:text-brand-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all duration-300"
             aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
@@ -139,13 +139,13 @@ export default function Header() {
           </Link>
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+            className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400"
             aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
           >
             {isDark ? <Sun size={20} /> : <Moon size={20} />}
           </button>
           <button
-            className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+            className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             aria-expanded={isMenuOpen}

@@ -42,7 +42,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1 space-y-6">
             <Image
-              src="/logo.png"
+              src="/avgraffix.png"
               alt="AV GRAFFIX Logo"
               width={160}
               height={56}
@@ -99,7 +99,7 @@ export default function Footer() {
               <li className="flex items-start gap-3 group">
                 <Mail className="w-4 h-4 text-brand-600 mt-0.5 flex-shrink-0" />
                 <div className="flex flex-col">
-                  <a href="mailto:avgraffix@gmail.com" className="text-zinc-400 hover:text-white transition-colors">avgraffix@gmail.com</a>
+                  <a href="mailto:patricia.valdebenito@avgraffix.cl" className="text-zinc-400 hover:text-white transition-colors">patricia.valdebenito@avgraffix.cl</a>
                 </div>
               </li>
               <li className="flex items-center gap-3">

@@ -9,6 +9,7 @@ import {
   productionOptions,
   updateProjectStatusAction,
 } from "@/app/erp/(protected)/produccion/actions";
+import { SubmitButton } from "@/components/erp/submit-button";
 
 export default async function ProduccionPage() {
   const [productionProjects, hoursEntries, consumptions] = await Promise.all([
@@ -48,24 +49,42 @@ export default async function ProduccionPage() {
         <form action={createConsumptionAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <h3 className="text-lg font-bold">Registrar consumo</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <select name="projectId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-              <option value="">Proyecto</option>
-              {projectOptions.map((project) => (
-                <option key={project.id} value={project.id}>{project.name}</option>
-              ))}
-            </select>
-            <select name="materialId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-              <option value="">Material</option>
-              {materialOptions.map((material) => (
-                <option key={material.id} value={material.id}>{material.name} ({material.unit})</option>
-              ))}
-            </select>
-            <input name="qtyPlanned" type="number" step="0.01" defaultValue="0" placeholder="Cantidad planificada" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="qtyUsed" type="number" step="0.01" defaultValue="0" required placeholder="Cantidad usada" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="wastePct" type="number" step="0.01" defaultValue="0" placeholder="Merma %" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="notes" placeholder="Notas" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Proyecto</span>
+              <select name="projectId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="">Selecciona proyecto</option>
+                {projectOptions.map((project) => (
+                  <option key={project.id} value={project.id}>{project.name}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Material</span>
+              <select name="materialId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="">Selecciona material</option>
+                {materialOptions.map((material) => (
+                  <option key={material.id} value={material.id}>{material.name} ({material.unit})</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Cantidad planificada</span>
+              <input name="qtyPlanned" type="number" step="0.01" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Cantidad usada</span>
+              <input name="qtyUsed" type="number" step="0.01" defaultValue="0" required placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Merma (%)</span>
+              <input name="wastePct" type="number" step="0.01" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Notas</span>
+              <input name="notes" placeholder="Ej: Fallo en máquina X" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
           </div>
-          <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Guardar consumo</button>
+          <SubmitButton>Guardar consumo</SubmitButton>
         </form>
 
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
@@ -83,7 +102,7 @@ export default async function ProduccionPage() {
                   <option value="on_hold">Pausado</option>
                   <option value="delivered">Entregado</option>
                 </select>
-                <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm">Guardar</button>
+                <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Guardar</SubmitButton>
               </form>
             ))
           )}
@@ -91,10 +110,17 @@ export default async function ProduccionPage() {
       </div>
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 overflow-auto">
-        <h3 className="text-lg font-bold">Consumos recientes</h3>
-        <table className="mt-4 w-full text-sm">
-          <thead>
-            <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+        <h3 className="text-lg font-bold mb-4">Consumos recientes</h3>
+        {recentConsumptions.length === 0 ? (
+          <div className="p-8 text-center">
+            <p className="text-zinc-500 dark:text-zinc-400">No hay consumos de materiales registrados aún.</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Registra el primer consumo usando el formulario de arriba.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto -mx-5 px-5">
+            <table className="w-full text-sm min-w-[800px]">
+              <thead className="sticky top-0 bg-white dark:bg-zinc-900 z-10">
+                <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
               <th className="py-2">Fecha</th>
               <th className="py-2">Proyecto</th>
               <th className="py-2">Material</th>
@@ -116,13 +142,13 @@ export default async function ProduccionPage() {
                 <td className="py-2">
                   <form action={deleteConsumptionAction}>
                     <input type="hidden" name="consumptionId" value={entry.id} />
-                    <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1">Eliminar</button>
+                    <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 hover:bg-red-50 dark:hover:bg-red-900/20">Eliminar</button>
                   </form>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </table>        </div>        )}
       </div>
     </div>
   );

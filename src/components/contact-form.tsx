@@ -98,9 +98,9 @@ export default function ContactForm() {
 		const hasError = touched[field as keyof FormTouched] && errors[field as keyof FormErrors]
 		const valid = isFieldValid(field)
 
-		if (hasError) return `${base} border-2 border-brand-400 dark:border-brand-500 focus:ring-2 focus:ring-brand-500/30`
-		if (valid) return `${base} border-2 border-emerald-400 dark:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30`
-		return `${base} border border-black/5 dark:border-white/10 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500`
+		if (hasError) return `${base} border-2 border-brand-400 dark:border-brand-500`
+		if (valid) return `${base} border-2 border-emerald-400 dark:border-emerald-500`
+		return `${base} border border-black/5 dark:border-white/10`
 	}
 
 	if (isSuccess) {

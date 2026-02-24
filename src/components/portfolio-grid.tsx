@@ -5,7 +5,7 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
-const portfolioLogo = "/logo.png"
+const portfolioLogo = "/avgraffix.png"
 
 const portfolioItems = [
   { image: portfolioLogo, company: "Empresa 1", description: "Identidad Visual Completa", category: "Branding" },

@@ -54,7 +54,7 @@ export default function ProductNav() {
               return (
                 <div key={category.name} className="relative" role="none">
                   <button
-                    className={`flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] font-bold px-4 py-2.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                    className={`flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] font-bold px-4 py-2.5 rounded-full transition-all duration-300 ${
                       isOpen
                         ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20'
                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
@@ -89,7 +89,7 @@ export default function ProductNav() {
                             <Link
                               href="/catalogo"
                               role="menuitem"
-                              className="flex items-center gap-3 px-5 py-2.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-brand-600 dark:hover:text-brand-500 hover:bg-brand-50/50 dark:hover:bg-brand-950/20 transition-all duration-200 group/item focus-visible:outline-none focus-visible:bg-brand-50/50"
+                              className="flex items-center gap-3 px-5 py-2.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-brand-600 dark:hover:text-brand-500 hover:bg-brand-50/50 dark:hover:bg-brand-950/20 transition-all duration-200 group/item"
                               onClick={() => setOpenCategory(null)}
                             >
                               <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700 group-hover/item:bg-brand-500 group-hover/item:scale-125 transition-all duration-200 shrink-0" />
@@ -103,7 +103,7 @@ export default function ProductNav() {
                       <div className="border-t border-black/5 dark:border-white/5">
                         <Link
                           href="/catalogo"
-                          className="flex items-center justify-center gap-2 py-3 text-xs font-bold tracking-widest uppercase text-brand-600 dark:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20 transition-colors group/link focus-visible:outline-none focus-visible:bg-brand-50"
+                          className="flex items-center justify-center gap-2 py-3 text-xs font-bold tracking-widest uppercase text-brand-600 dark:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20 transition-colors group/link"
                           onClick={() => setOpenCategory(null)}
                         >
                           Ver catálogo completo
@@ -120,7 +120,7 @@ export default function ProductNav() {
             <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-700 mx-2" />
             <Link
               href="/catalogo"
-              className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] font-bold px-4 py-2.5 rounded-full text-brand-600 dark:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] font-bold px-4 py-2.5 rounded-full text-brand-600 dark:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20 transition-all duration-300"
             >
               Catálogo <ArrowRight size={12} />
             </Link>
@@ -133,7 +133,7 @@ export default function ProductNav() {
         <div className="container mx-auto px-4">
           <button
             onClick={() => setMobileOpen(true)}
-            className="flex items-center justify-between w-full py-3 text-xs uppercase tracking-[0.15em] font-bold text-zinc-600 dark:text-zinc-300 focus-visible:outline-none"
+            className="flex items-center justify-between w-full py-3 text-xs uppercase tracking-[0.15em] font-bold text-zinc-600 dark:text-zinc-300"
             aria-label="Abrir categorías de productos"
           >
             <span className="flex items-center gap-2">

@@ -5,8 +5,12 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/"],
+      disallow: [
+        "/api/",
+        "/erp/", // Sistema privado para empleados
+        "/erp", // Proteger raíz del ERP también
+      ],
     },
-    sitemap: "https://avgraffix.vercel.app/sitemap.xml",
+    sitemap: "https://avgraffix.cl/sitemap.xml",
   }
 }

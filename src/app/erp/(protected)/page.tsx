@@ -166,6 +166,15 @@ export default async function ErpDashboardPage() {
 
   const monthlyCost = monthlyHoursCost + monthlyMaterialCost;
   const monthlyMargin = monthlyRevenue > 0 ? ((monthlyRevenue - monthlyCost) * 100) / monthlyRevenue : 0;
+  const overdueAmount = overdueInvoices.reduce((sum, invoice) => sum + Number(invoice.pendingClp ?? 0), 0);
+  const maxLateDays = overdueInvoices.reduce((maxDays, invoice) => {
+    if (!invoice.dueDate) {
+      return maxDays;
+    }
+    const dueTime = new Date(invoice.dueDate).getTime();
+    const days = Math.max(Math.floor((Date.now() - dueTime) / (1000 * 60 * 60 * 24)), 0);
+    return Math.max(maxDays, days);
+  }, 0);
 
   const currentDate = Date.now();
 
@@ -207,9 +216,23 @@ export default async function ErpDashboardPage() {
           <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Cobranza</h3>
           <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Facturas emitidas pendientes de cobro</p>
           <p className="mt-4 text-3xl font-black text-violet-600">{formatCLP(pendingCollections)}</p>
-          <div className="mt-4 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-900/40 p-3 text-sm text-violet-700 dark:text-violet-300">
-            Sugerencia: priorizar cobranza de facturas &gt;30 días para proteger caja operativa.
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 p-3">
+              <p className="text-zinc-500">Facturas vencidas</p>
+              <p className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-100">{overdueInvoices.length}</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 p-3">
+              <p className="text-zinc-500">Monto vencido</p>
+              <p className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-100">{formatCLP(overdueAmount)}</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 p-3">
+              <p className="text-zinc-500">Mayor atraso</p>
+              <p className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-100">{maxLateDays} día(s)</p>
+            </div>
           </div>
+          <Link href="/erp/finanzas" className="mt-4 inline-block text-sm font-semibold text-brand-700 dark:text-brand-300">
+            Gestionar cobranza →
+          </Link>
         </div>
 
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">

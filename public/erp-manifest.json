@@ -1,0 +1,79 @@
+{
+  "name": "AV GRAFFIX ERP",
+  "short_name": "AV GRAFFIX",
+  "description": "Sistema de gestión inteligente de inventario, ventas y producción",
+  "start_url": "/erp",
+  "scope": "/erp/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "/avgraffix.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/avgraffix.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/avgraffix.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/avgraffix.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Acceder al dashboard principal",
+      "url": "/erp?shortcut=dashboard",
+      "icons": [
+        {
+          "src": "/avgraffix.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Ventas",
+      "short_name": "Ventas",
+      "description": "Gestionar ventas y CRM",
+      "url": "/erp/ventas?shortcut=ventas",
+      "icons": [
+        {
+          "src": "/avgraffix.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Inventario",
+      "short_name": "Inventario",
+      "description": "Gestionar inventario",
+      "url": "/erp/inventario?shortcut=inventario",
+      "icons": [
+        {
+          "src": "/avgraffix.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

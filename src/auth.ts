@@ -4,6 +4,7 @@ import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { roles, users } from "@/db/schema";
+import { trackLoginSession } from "@/app/erp/login/actions";
 
 const ALLOWED_ERP_ROLES = new Set(["admin", "finanzas"]);
 
@@ -62,6 +63,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           .update(users)
           .set({ lastLoginAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
           .where(eq(users.id, account.id));
+
+        // Registrar sesión de login con tracking
+        await trackLoginSession(account.id);
 
         return {
           id: String(account.id),

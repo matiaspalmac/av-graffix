@@ -14,6 +14,10 @@ import {
   receivePurchaseOrderItemAction,
   updatePurchaseOrderStatusAction,
 } from "@/app/erp/(protected)/compras/actions";
+import { SubmitButton } from "@/components/erp/submit-button";
+import { DeletePurchaseOrderForm } from "@/components/erp/delete-purchase-order-form";
+import { CancelPurchaseOrderForm } from "@/components/erp/cancel-purchase-order-form";
+import { DeletePurchaseOrderItemForm } from "@/components/erp/delete-purchase-order-item-form";
 
 export default async function ComprasPage() {
   const [suppliersTotal, openOrders, delayedOrders] = await Promise.all([
@@ -56,41 +60,80 @@ export default async function ComprasPage() {
         <form action={createSupplierAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <h3 className="text-lg font-bold">Nuevo proveedor</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input name="legalName" required placeholder="Razón social" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="tradeName" required placeholder="Nombre comercial" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="rut" required placeholder="RUT" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="contactName" placeholder="Contacto" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="contactEmail" type="email" placeholder="Email" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="contactPhone" placeholder="Teléfono" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Razón social</span>
+              <input name="legalName" required placeholder="Ej: Empresa Ltda." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Nombre comercial</span>
+              <input name="tradeName" required placeholder="Ej: Empresa" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">RUT</span>
+              <input name="rut" required placeholder="Ej: 12.345.678-9" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Nombre contacto</span>
+              <input name="contactName" placeholder="Ej: Juan Pérez" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Email contacto</span>
+              <input name="contactEmail" type="email" placeholder="contacto@empresa.cl" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Teléfono</span>
+              <input name="contactPhone" placeholder="+56 9 1234 5678" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
           </div>
-          <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Guardar proveedor</button>
+          <SubmitButton>Guardar proveedor</SubmitButton>
         </form>
 
         <form action={createPurchaseOrderAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <h3 className="text-lg font-bold">Nueva orden de compra</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <select name="supplierId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 sm:col-span-2">
-              <option value="">Proveedor</option>
-              {supplierOptions.map((supplier) => (
-                <option key={supplier.id} value={supplier.id}>{supplier.tradeName}</option>
-              ))}
-            </select>
-            <input name="expectedDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <select name="status" defaultValue="draft" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-              <option value="draft">Borrador</option>
-              <option value="sent">Enviada</option>
-              <option value="partial">Parcial</option>
-            </select>
-            <input name="shippingClp" type="number" step="1" defaultValue="0" placeholder="Despacho CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="discountClp" type="number" step="1" defaultValue="0" placeholder="Descuento CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <label className="grid gap-1 text-sm sm:col-span-2">
+              <span className="text-zinc-600 dark:text-zinc-300">Proveedor</span>
+              <select name="supplierId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="">Selecciona proveedor</option>
+                {supplierOptions.map((supplier) => (
+                  <option key={supplier.id} value={supplier.id}>{supplier.tradeName}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Fecha esperada</span>
+              <input name="expectedDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Estado</span>
+              <select name="status" defaultValue="draft" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="draft">Borrador</option>
+                <option value="sent">Enviada</option>
+                <option value="partial">Parcial</option>
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Despacho CLP</span>
+              <input name="shippingClp" type="number" step="1" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Descuento CLP</span>
+              <input name="discountClp" type="number" step="1" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
           </div>
-          <button className="rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-4 py-2 font-semibold">Crear OC</button>
+          <SubmitButton variant="secondary">Crear OC</SubmitButton>
         </form>
       </div>
 
       <div className="space-y-4">
         <h3 className="text-lg font-bold">Órdenes de compra recientes</h3>
-        {recentOrders.map((order) => (
+        {recentOrders.length === 0 ? (
+          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 text-center">
+            <p className="text-zinc-500 dark:text-zinc-400">No hay órdenes de compra registradas aún.</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Crea tu primera orden usando el formulario de arriba.</p>
+          </div>
+        ) : (
+          recentOrders.map((order) => (
           <div key={order.id} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
             <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
               <div>
@@ -110,26 +153,20 @@ export default async function ComprasPage() {
                     <option value="received">Recibida</option>
                     <option value="cancelled">Cancelada</option>
                   </select>
-                  <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm">Guardar</button>
+                  <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Guardar</SubmitButton>
                 </form>
 
-                <form action={deletePurchaseOrderAction}>
-                  <input type="hidden" name="purchaseOrderId" value={order.id} />
-                  <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-sm">Eliminar</button>
-                </form>
+                <DeletePurchaseOrderForm purchaseOrderId={order.id} action={deletePurchaseOrderAction} />
 
                 {order.status !== "cancelled" ? (
-                  <form action={cancelPurchaseOrderAction}>
-                    <input type="hidden" name="purchaseOrderId" value={order.id} />
-                    <button className="rounded-lg border border-amber-200 text-amber-700 dark:border-amber-900/40 dark:text-amber-300 px-2 py-1 text-sm">Cancelar</button>
-                  </form>
+                  <CancelPurchaseOrderForm purchaseOrderId={order.id} action={cancelPurchaseOrderAction} />
                 ) : null}
               </div>
             </div>
 
-            <div className="overflow-auto">
-              <table className="w-full text-sm">
-                <thead>
+            <div className="overflow-x-auto -mx-5 px-5">
+              <table className="w-full text-sm min-w-[900px]">
+                <thead className="sticky top-0 bg-white dark:bg-zinc-900">
                   <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
                     <th className="py-2">#</th>
                     <th className="py-2">Material</th>
@@ -158,11 +195,11 @@ export default async function ComprasPage() {
                         </form>
                       </td>
                       <td className="py-2">
-                        <form action={deletePurchaseOrderItemAction}>
-                          <input type="hidden" name="poItemId" value={item.id} />
-                          <input type="hidden" name="purchaseOrderId" value={order.id} />
-                          <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">Eliminar ítem</button>
-                        </form>
+                        <DeletePurchaseOrderItemForm
+                          poItemId={item.id}
+                          purchaseOrderId={order.id}
+                          action={deletePurchaseOrderItemAction}
+                        />
                       </td>
                     </tr>
                   ))}
@@ -181,10 +218,11 @@ export default async function ComprasPage() {
               <input name="qty" type="number" step="0.01" required defaultValue="1" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
               <input name="unitPriceClp" type="number" step="1" required defaultValue="0" placeholder="Unitario CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
               <input name="lineDiscountClp" type="number" step="1" defaultValue="0" placeholder="Desc. CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
-              <button className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold">Agregar ítem</button>
+              <SubmitButton className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Agregar ítem</SubmitButton>
             </form>
           </div>
-        ))}
+        ))  
+        )}
       </div>
     </div>
   );

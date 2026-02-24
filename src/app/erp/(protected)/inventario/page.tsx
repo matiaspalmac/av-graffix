@@ -11,6 +11,7 @@ import {
   registerInventoryMoveAction,
   toggleMaterialActiveAction,
 } from "@/app/erp/(protected)/inventario/actions";
+import { SubmitButton } from "@/components/erp/submit-button";
 
 export default async function InventarioPage() {
   const [materialsTotal, stockMovements, currentPrices, lowStock] = await Promise.all([
@@ -61,63 +62,115 @@ export default async function InventarioPage() {
         <form action={createMaterialAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <h3 className="text-lg font-bold">Nuevo material</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input name="sku" required placeholder="SKU" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="name" required placeholder="Nombre" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="category" required placeholder="Categoría" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="baseUnit" defaultValue="unit" placeholder="Unidad base" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="reorderPoint" type="number" step="0.01" defaultValue="0" placeholder="Stock mínimo" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="defaultWastePct" type="number" step="0.01" defaultValue="5" placeholder="Merma %" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">SKU</span>
+              <input name="sku" required placeholder="Ej: MAT-001" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Nombre</span>
+              <input name="name" required placeholder="Ej: Vinilo adhesivo" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Categoría</span>
+              <input name="category" required placeholder="Ej: Vinilos" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Unidad base</span>
+              <input name="baseUnit" placeholder="Ej: m², ml, kg, un" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Stock mínimo</span>
+              <input name="reorderPoint" type="number" step="0.01" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Merma predeterminada (%)</span>
+              <input name="defaultWastePct" type="number" step="0.01" defaultValue="5" placeholder="5" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
           </div>
-          <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Guardar material</button>
+          <SubmitButton>Guardar material</SubmitButton>
         </form>
 
         <form action={registerInventoryMoveAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <h3 className="text-lg font-bold">Movimiento manual de stock</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <select name="materialId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 sm:col-span-2">
-              <option value="">Material</option>
-              {materialOptions.map((material) => (
-                <option key={material.id} value={material.id}>{material.name} · {material.sku}</option>
-              ))}
-            </select>
-            <select name="moveType" defaultValue="in" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-              <option value="in">Entrada</option>
-              <option value="out">Salida</option>
-            </select>
-            <input name="warehouse" defaultValue="principal" placeholder="Bodega" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="qty" type="number" step="0.01" defaultValue="0" required placeholder="Cantidad" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="unitCostClp" type="number" step="1" defaultValue="0" placeholder="Costo unitario CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <label className="grid gap-1 text-sm sm:col-span-2">
+              <span className="text-zinc-600 dark:text-zinc-300">Material</span>
+              <select name="materialId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="">Selecciona material</option>
+                {materialOptions.map((material) => (
+                  <option key={material.id} value={material.id}>{material.name} · {material.sku}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Tipo de movimiento</span>
+              <select name="moveType" defaultValue="in" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="in">Entrada</option>
+                <option value="out">Salida</option>
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Bodega</span>
+              <input name="warehouse" defaultValue="principal" placeholder="Ej: principal, secundaria" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Cantidad</span>
+              <input name="qty" type="number" step="0.01" defaultValue="0" required placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Costo unitario CLP</span>
+              <input name="unitCostClp" type="number" step="1" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
           </div>
-          <button className="rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-4 py-2 font-semibold">Registrar movimiento</button>
+          <SubmitButton variant="secondary">Registrar movimiento</SubmitButton>
         </form>
 
         <form action={createMaterialPriceAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <h3 className="text-lg font-bold">Precio vigente proveedor</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <select name="supplierId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 sm:col-span-2">
-              <option value="">Proveedor</option>
-              {supplierOptions.map((supplier) => (
-                <option key={supplier.id} value={supplier.id}>{supplier.tradeName}</option>
-              ))}
-            </select>
-            <select name="materialId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 sm:col-span-2">
-              <option value="">Material</option>
-              {materialOptions.map((material) => (
-                <option key={material.id} value={material.id}>{material.name}</option>
-              ))}
-            </select>
-            <input name="priceClp" type="number" step="1" defaultValue="0" required placeholder="Precio CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            <input name="leadTimeDays" type="number" step="1" defaultValue="5" placeholder="Lead time días" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            <label className="grid gap-1 text-sm sm:col-span-2">
+              <span className="text-zinc-600 dark:text-zinc-300">Proveedor</span>
+              <select name="supplierId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="">Selecciona proveedor</option>
+                {supplierOptions.map((supplier) => (
+                  <option key={supplier.id} value={supplier.id}>{supplier.tradeName}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm sm:col-span-2">
+              <span className="text-zinc-600 dark:text-zinc-300">Material</span>
+              <select name="materialId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+                <option value="">Selecciona material</option>
+                {materialOptions.map((material) => (
+                  <option key={material.id} value={material.id}>{material.name}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Precio CLP</span>
+              <input name="priceClp" type="number" step="1" defaultValue="0" required placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Lead time (días)</span>
+              <input name="leadTimeDays" type="number" step="1" defaultValue="5" placeholder="5" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
           </div>
-          <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Guardar precio</button>
+          <SubmitButton>Guardar precio</SubmitButton>
         </form>
       </div>
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 overflow-auto">
-        <h3 className="text-lg font-bold">Materiales</h3>
-        <table className="mt-4 w-full text-sm">
-          <thead>
-            <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+        <h3 className="text-lg font-bold mb-4">Materiales</h3>
+        {materialRows.length === 0 ? (
+          <div className="p-8 text-center">
+            <p className="text-zinc-500 dark:text-zinc-400">No hay materiales registrados en el catálogo aún.</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Crea tu primer material usando el formulario de arriba.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto -mx-5 px-5">
+            <table className="w-full text-sm min-w-[800px]">
+              <thead className="sticky top-0 bg-white dark:bg-zinc-900 z-10">
+                <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
               <th className="py-2">SKU</th>
               <th className="py-2">Material</th>
               <th className="py-2">Categoría</th>
@@ -148,14 +201,21 @@ export default async function InventarioPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table>        </div>        )}
       </div>
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 overflow-auto">
-        <h3 className="text-lg font-bold">Últimos movimientos</h3>
-        <table className="mt-4 w-full text-sm">
-          <thead>
-            <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+        <h3 className="text-lg font-bold mb-4">Últimos movimientos</h3>
+        {movementRows.length === 0 ? (
+          <div className="p-8 text-center">
+            <p className="text-zinc-500 dark:text-zinc-400">No hay movimientos de inventario registrados aún.</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Los movimientos se generan automáticamente al recibir OC o registrar consumos.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto -mx-5 px-5">
+            <table className="w-full text-sm min-w-[800px]">
+              <thead className="sticky top-0 bg-white dark:bg-zinc-900 z-10">
+                <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
               <th className="py-2">Fecha</th>
               <th className="py-2">Material</th>
               <th className="py-2">Tipo</th>
@@ -179,6 +239,8 @@ export default async function InventarioPage() {
             ))}
           </tbody>
         </table>
+        </div>
+        )}
       </div>
     </div>
   );

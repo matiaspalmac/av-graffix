@@ -11,7 +11,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://avgraffix.vercel.app"),
+  metadataBase: new URL("https://avgraffix.cl"),
   title: {
     default: "AV GRAFFIX | Agencia de Diseño y Producción",
     template: "%s | AV GRAFFIX",
@@ -22,11 +22,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AV GRAFFIX | Diseño Gráfico Integral",
     description: "Soluciones creativas excepcionales que permiten a nuestros clientes destacar y dominar en un mercado competitivo.",
-    url: "https://avgraffix.vercel.app",
+    url: "https://avgraffix.cl",
     siteName: "AV GRAFFIX",
     images: [
       {
-        url: "/logo.png",
+        url: "/avgraffix.png",
         width: 1200,
         height: 630,
         alt: "AV GRAFFIX Logo",
@@ -39,12 +39,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AV GRAFFIX | Diseño Gráfico Integral",
     description: "Agencia líder en diseño gráfico, producción pre-prensa y publicidad en la región de la Araucanía.",
-    images: ["/logo.png"],
+    images: ["/avgraffix.png"],
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/avgraffix.png",
+    shortcut: "/avgraffix.png",
+    apple: "/avgraffix.png",
   },
   manifest: "/site.webmanifest",
 };
@@ -53,10 +53,10 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   name: "AV GRAFFIX",
-  image: "https://avgraffix.vercel.app/logo.png",
-  url: "https://avgraffix.vercel.app",
+  image: "https://avgraffix.cl/avgraffix.png",
+  url: "https://avgraffix.cl",
   telephone: "+56992791148",
-  email: "avgraffix@gmail.com",
+  email: "patricia.valdebenito@avgraffix.cl",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Temuco",

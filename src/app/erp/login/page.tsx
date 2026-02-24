@@ -40,7 +40,7 @@ export default async function ErpLoginPage(props: {
               type="email"
               name="email"
               required
-              className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2.5 text-sm outline-none ring-brand-500 focus:ring-2"
+              className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2.5 text-sm outline-none"
               placeholder="admin@avgraffix.cl"
             />
           </div>
@@ -51,7 +51,7 @@ export default async function ErpLoginPage(props: {
               type="password"
               name="password"
               required
-              className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2.5 text-sm outline-none ring-brand-500 focus:ring-2"
+              className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2.5 text-sm outline-none"
               placeholder="••••••••"
             />
           </div>

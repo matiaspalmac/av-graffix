@@ -1,14 +1,38 @@
 "use client"
 
 import Image from "next/image"
+import { useEffect, useState } from "react"
 
 interface LogoCarouselProps {
-  companies: { name: string; image: string }[]
+  companies: {
+    name: string
+    image: string
+    imageLight?: string
+    imageDark?: string
+  }[]
 }
 
 export default function LogoCarousel({ companies }: LogoCarouselProps) {
+  const [isDarkTheme, setIsDarkTheme] = useState(false)
+
+  useEffect(() => {
+    const html = document.documentElement
+    const syncTheme = () => {
+      setIsDarkTheme(html.classList.contains("dark"))
+    }
+
+    syncTheme()
+
+    const observer = new MutationObserver(syncTheme)
+    observer.observe(html, { attributes: true, attributeFilter: ["class"] })
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
   // Duplicate the list 4x to ensure seamless infinite loop
-  const items = [...companies, ...companies, ...companies, ...companies]
+  const items = [...companies, ...companies, ...companies]
 
   return (
     <div className="relative w-full overflow-hidden py-8">
@@ -19,13 +43,19 @@ export default function LogoCarousel({ companies }: LogoCarouselProps) {
       {/* Scrolling track */}
       <div className="flex animate-marquee w-max">
         {items.map((company, i) => (
+          (() => {
+            const logoSrc = isDarkTheme
+              ? company.imageDark ?? company.image
+              : company.imageLight ?? company.image
+
+            return (
           <div
             key={`${company.name}-${i}`}
             className="flex flex-col items-center justify-center mx-6 md:mx-10 flex-shrink-0"
           >
             <div className="relative w-24 h-24 md:w-32 md:h-32 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-black/5 dark:border-white/5 flex items-center justify-center">
               <Image
-                src={company.image}
+                src={logoSrc}
                 alt={company.name}
                 fill
                 sizes="128px"
@@ -36,6 +66,8 @@ export default function LogoCarousel({ companies }: LogoCarouselProps) {
               {company.name}
             </span>
           </div>
+            )
+          })()
         ))}
       </div>
     </div>

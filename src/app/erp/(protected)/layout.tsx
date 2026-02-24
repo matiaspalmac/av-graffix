@@ -1,33 +1,124 @@
 import { redirect } from "next/navigation";
+import { Metadata, Viewport } from "next";
 import { auth } from "@/auth";
-import { ErpSidebar } from "@/components/erp/sidebar";
-import { ErpTopbar } from "@/components/erp/topbar";
+import { sql, eq } from "drizzle-orm";
+import { db } from "@/db/client";
+import { invoices, projects, materials, inventoryTransactions, users, userPreferences } from "@/db/schema";
 import { ToastProvider } from "@/components/toast-provider";
-import { getCompanySettings } from "@/lib/company-config";
+import { ErpLayoutWrapper } from "@/components/erp/erp-layout-wrapper";
+import { PwaSetup } from "@/components/erp/pwa-setup";
+import { ErpPreferencesLoader } from "@/components/erp/preferences-loader";
+
+export const metadata: Metadata = {
+  title: "AV GRAFFIX ERP",
+  description: "Sistema de gestión inteligente de inventario, ventas y producción",
+  manifest: "/erp-manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "AV GRAFFIX",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#dc2626",
+};
+
+function monthStartISO() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+}
 
 export default async function ProtectedErpLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  const company = await getCompanySettings();
 
-  if (!session?.user) {
+  if (!session?.user?.email) {
     redirect("/erp/login");
   }
+
+  const monthStart = monthStartISO();
+
+  // Obtener preferencias del usuario
+  const userRecord = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, session.user.email))
+    .limit(1);
+
+  let userPrefs = {
+    themeDarkMode: false,
+    themeHighContrast: false,
+  };
+
+  if (userRecord.length) {
+    const prefs = await db
+      .select({
+        themeDarkMode: userPreferences.themeDarkMode,
+        themeHighContrast: userPreferences.themeHighContrast,
+      })
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, userRecord[0].id))
+      .limit(1);
+
+    if (prefs.length) {
+      userPrefs = prefs[0];
+    }
+  }
+
+  const [
+    monthlyRevenueResult,
+    activeProjectsResult,
+    criticalStockResult,
+    overdueInvoicesResult,
+  ] = await Promise.all([
+    db
+      .select({ value: sql<number>`coalesce(sum(${invoices.totalClp}),0)` })
+      .from(invoices)
+      .where(sql`${invoices.issueDate} >= ${monthStart}`),
+    db
+      .select({ value: sql<number>`count(*)` })
+      .from(projects)
+      .where(sql`${projects.status} = 'in_progress'`),
+    db
+      .select({ value: sql<number>`count(*)` })
+      .from(materials)
+      .where(
+        sql`coalesce((select sum(${inventoryTransactions.qtyIn} - ${inventoryTransactions.qtyOut}) from ${inventoryTransactions} where ${inventoryTransactions.materialId} = ${materials.id}),0) <= ${materials.reorderPoint}`
+      ),
+    db
+      .select({ value: sql<number>`count(*)` })
+      .from(invoices)
+      .where(sql`${invoices.status} = 'overdue'`),
+  ]);
+
+  const monthlyRevenue = monthlyRevenueResult[0]?.value || 0;
+  const activeProjects = activeProjectsResult[0]?.value || 0;
+  const criticalStock = criticalStockResult[0]?.value || 0;
+  const overdueInvoices = overdueInvoicesResult[0]?.value || 0;
 
   return (
     <>
       <ToastProvider />
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col">
-        <div className="flex flex-col lg:flex-row flex-1">
-          <ErpSidebar />
-          <div className="min-w-0 flex-1 flex flex-col">
-            <ErpTopbar userName={session.user.name} role={session.user.role} />
-            <main className="p-4 sm:p-6 lg:p-8 flex-1">{children}</main>
-            <footer className="px-4 sm:px-6 lg:px-8 py-4 border-t border-zinc-200 dark:border-zinc-800 text-center text-sm text-zinc-600 dark:text-zinc-400">
-              {company.nameCommercial} – {company.city} – {company.phone} | © 2026 ERP
-            </footer>
-          </div>
-        </div>
-      </div>
+      <PwaSetup />
+      <ErpPreferencesLoader {...userPrefs} />
+      <ErpLayoutWrapper
+        userName={session.user?.name}
+        role={session.user?.role}
+        monthlyRevenue={monthlyRevenue}
+        activeProjects={activeProjects}
+        criticalStock={criticalStock}
+        overdueInvoices={overdueInvoices}
+      >
+        {children}
+      </ErpLayoutWrapper>
     </>
   );
 }

@@ -15,8 +15,8 @@ const contactInfo = [
   {
     icon: <Mail className="w-5 h-5" />,
     label: 'Email',
-    value: 'avgraffix@gmail.com',
-    href: 'mailto:avgraffix@gmail.com',
+    value: 'patricia.valdebenito@avgraffix.cl',
+    href: 'mailto:patricia.valdebenito@avgraffix.cl',
   },
   {
     icon: <Phone className="w-5 h-5" />,

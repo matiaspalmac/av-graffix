@@ -84,7 +84,7 @@ export default function AboutPage() {
               <div className="relative p-2 bg-white dark:bg-zinc-900 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
                 <div className="relative rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800/50 flex items-center justify-center p-12 h-full min-h-[400px]">
                   <Image
-                    src="/logo.png"
+                    src="/avgraffix.png"
                     alt="Agencia AV GRAFFIX"
                     width={400}
                     height={400}

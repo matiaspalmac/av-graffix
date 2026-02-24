@@ -2,7 +2,6 @@ import { sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import { invoices, materialConsumptions, projects, timesheets } from "@/db/schema";
 import { formatCLP, formatPercent } from "@/lib/format";
-
 export default async function ReportesPage() {
   const [projectCount, laborCost, materialCost, profitabilityRows] = await Promise.all([
     db.select({ v: sql<number>`count(*)` }).from(projects),
@@ -67,10 +66,17 @@ export default async function ReportesPage() {
       </div>
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 overflow-auto">
-        <h3 className="text-lg font-bold">Rentabilidad por proyecto</h3>
-        <table className="mt-4 w-full text-sm">
-          <thead>
-            <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+        <h3 className="text-lg font-bold mb-4">Rentabilidad por proyecto</h3>
+        {rows.length === 0 ? (
+          <div className="p-8 text-center">
+            <p className="text-zinc-500 dark:text-zinc-400">No hay proyectos para analizar aún.</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Los reportes se generan automáticamente a medida que registres proyectos con costos e ingresos.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto -mx-5 px-5">
+            <table className="w-full text-sm min-w-[900px]">
+              <thead className="sticky top-0 bg-white dark:bg-zinc-900 z-10">
+                <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
               <th className="py-2">Proyecto</th>
               <th className="py-2">Estado</th>
               <th className="py-2">Ingreso</th>
@@ -96,7 +102,7 @@ export default async function ReportesPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table>        </div>        )}
       </div>
     </div>
   );

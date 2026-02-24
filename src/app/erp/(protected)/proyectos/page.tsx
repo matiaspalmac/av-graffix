@@ -9,6 +9,7 @@ import {
   projectFormOptions,
   updateProjectAction,
 } from "@/app/erp/(protected)/proyectos/actions";
+import { SubmitButton } from "@/components/erp/submit-button";
 
 export default async function ProyectosPage() {
   const [activeProjects, activePhases, openTasks] = await Promise.all([
@@ -44,43 +45,80 @@ export default async function ProyectosPage() {
       <form action={createProjectAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
         <h3 className="text-lg font-bold">Nuevo proyecto</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-          <select name="clientId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-            <option value="">Cliente</option>
-            {clientOptions.map((client) => (
-              <option key={client.id} value={client.id}>{client.tradeName}</option>
-            ))}
-          </select>
-          <select name="quoteId" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-            <option value="">Cotización aprobada (opcional)</option>
-            {quoteOptions.map((quote) => (
-              <option key={quote.id} value={quote.id}>{quote.quoteNumber}</option>
-            ))}
-          </select>
-          <input name="name" required placeholder="Nombre proyecto" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 xl:col-span-2" />
-          <input name="serviceType" required placeholder="Tipo servicio" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-          <input name="startDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-          <input name="dueDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-          <select name="status" defaultValue="planning" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-            <option value="planning">Planning</option>
-            <option value="in_progress">En progreso</option>
-            <option value="delivered">Entregado</option>
-          </select>
-          <select name="priority" defaultValue="normal" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-            <option value="low">Baja</option>
-            <option value="normal">Normal</option>
-            <option value="high">Alta</option>
-          </select>
-          <input name="budgetRevenueClp" type="number" step="1" defaultValue="0" placeholder="Ingreso estimado CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-          <input name="budgetCostClp" type="number" step="1" defaultValue="0" placeholder="Costo estimado CLP" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Cliente</span>
+            <select name="clientId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+              <option value="">Selecciona cliente</option>
+              {clientOptions.map((client) => (
+                <option key={client.id} value={client.id}>{client.tradeName}</option>
+              ))}
+            </select>
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Cotización (opcional)</span>
+            <select name="quoteId" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+              <option value="">Selecciona cotización</option>
+              {quoteOptions.map((quote) => (
+                <option key={quote.id} value={quote.id}>{quote.quoteNumber}</option>
+              ))}
+            </select>
+          </label>
+          <label className="grid gap-1 text-sm xl:col-span-2">
+            <span className="text-zinc-600 dark:text-zinc-300">Nombre proyecto</span>
+            <input name="name" required placeholder="Ej: Diseño packaging" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Tipo de servicio</span>
+            <input name="serviceType" required placeholder="Ej: Diseño gráfico" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Fecha inicio</span>
+            <input name="startDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Fecha vencimiento</span>
+            <input name="dueDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Estado</span>
+            <select name="status" defaultValue="planning" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+              <option value="planning">Planning</option>
+              <option value="in_progress">En progreso</option>
+              <option value="delivered">Entregado</option>
+            </select>
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Prioridad</span>
+            <select name="priority" defaultValue="normal" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
+              <option value="low">Baja</option>
+              <option value="normal">Normal</option>
+              <option value="high">Alta</option>
+            </select>
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Ingreso estimado CLP</span>
+            <input name="budgetRevenueClp" type="number" step="1" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span className="text-zinc-600 dark:text-zinc-300">Costo estimado CLP</span>
+            <input name="budgetCostClp" type="number" step="1" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+          </label>
         </div>
-        <button className="rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold">Crear proyecto</button>
+        <SubmitButton>Crear proyecto</SubmitButton>
       </form>
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 overflow-auto">
-        <h3 className="text-lg font-bold">Proyectos recientes</h3>
-        <table className="mt-4 w-full text-sm">
-          <thead>
-            <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+        <h3 className="text-lg font-bold mb-4">Proyectos recientes</h3>
+        {projectList.length === 0 ? (
+          <div className="p-8 text-center">
+            <p className="text-zinc-500 dark:text-zinc-400">No hay proyectos registrados aún.</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Crea tu primer proyecto usando el formulario de arriba.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto -mx-5 px-5">
+            <table className="w-full text-sm min-w-[1000px]">
+              <thead className="sticky top-0 bg-white dark:bg-zinc-900 z-10">
+                <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
               <th className="py-2">Código</th>
               <th className="py-2">Proyecto</th>
               <th className="py-2">Cliente</th>
@@ -119,17 +157,17 @@ export default async function ProyectosPage() {
                     <input type="number" name="budgetRevenueClp" defaultValue={project.budgetRevenueClp} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1" />
                     <input type="number" name="budgetCostClp" defaultValue={project.budgetCostClp} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1" />
                     <input type="date" name="dueDate" defaultValue={project.dueDate ? String(project.dueDate).slice(0, 10) : ""} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1" />
-                    <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1">Guardar</button>
+                    <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Guardar</SubmitButton>
                   </form>
                   <form action={archiveProjectAction}>
                     <input type="hidden" name="projectId" value={project.id} />
-                    <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1">Archivar</button>
+                    <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Archivar</SubmitButton>
                   </form>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </table>        </div>        )}
       </div>
     </div>
   );
