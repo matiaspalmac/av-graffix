@@ -68,7 +68,7 @@ export const companies = [
   { name: "Comercializadora Cifuentes", image: "/logos/cifuentes.png" },
   { name: "Farellones Automotriz", image: "/logos/farellones_automotriz.svg" },
   { name: "Bidfood", image: "/logos/bidfood.png" },
-  { name: "Aguas Decimas", 
+  { name: "Aguas Decima", 
     image: "/logos/aguasdecima.svg",
     imageLight: "/logos/aguasdecima_oscuro.svg",
     imageDark: "/logos/aguasdecima_claro.svg",
