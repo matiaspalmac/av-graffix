@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db/client";
-import { clients, invoices, payments, projects, quotes } from "@/db/schema";
+import { clients, invoices, payments, projects, quotes, users } from "@/db/schema";
 import { requireRole, toErrorMessage } from "@/lib/server-action";
+import { exportInvoicesToExcel } from "@/lib/export-utils";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
   const parsed = Number(value ?? fallback);
@@ -248,4 +249,51 @@ export async function latestInvoicesWithPayments(limit = 20) {
       payments: invoicePayments,
     };
   });
+}
+
+export async function exportInvoicesExcelAction() {
+  try {
+    await requireRole(["admin", "finanzas"]);
+
+    const invoicesData = await db
+      .select({
+        invoiceNumber: invoices.invoiceNumber,
+        client: {
+          tradeName: clients.tradeName,
+          rut: clients.rut,
+        },
+        project: {
+          projectCode: projects.projectCode,
+        },
+        issueDate: invoices.issueDate,
+        dueDate: invoices.dueDate,
+        subtotalClp: invoices.subtotalClp,
+        taxClp: invoices.taxClp,
+        totalClp: invoices.totalClp,
+        status: invoices.status,
+        createdByUser: {
+          fullName: users.fullName,
+        },
+      })
+      .from(invoices)
+      .leftJoin(clients, eq(invoices.clientId, clients.id))
+      .leftJoin(projects, eq(invoices.projectId, projects.id))
+      .leftJoin(users, eq(invoices.createdByUserId, users.id))
+      .orderBy(desc(invoices.id))
+      .limit(500);
+
+    const buffer = await exportInvoicesToExcel(invoicesData);
+
+    return {
+      success: true,
+      data: Buffer.from(buffer).toString("base64"),
+      filename: `facturas_${new Date().toISOString().split("T")[0]}.xlsx`,
+    };
+  } catch (error) {
+    console.error("exportInvoicesExcelAction", toErrorMessage(error));
+    return {
+      success: false,
+      error: toErrorMessage(error),
+    };
+  }
 }

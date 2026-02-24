@@ -9,8 +9,10 @@ import {
   purchaseOrderItems,
   purchaseOrders,
   suppliers,
+  users,
 } from "@/db/schema";
 import { requireRole, toErrorMessage } from "@/lib/server-action";
+import { exportPurchaseOrdersToExcel } from "@/lib/export-utils";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
   const parsed = Number(value ?? fallback);
@@ -406,4 +408,48 @@ export async function latestPurchaseOrdersWithItems(limit = 16) {
     ...order,
     items: items.filter((item) => item.purchaseOrderId === order.id),
   }));
+}
+
+export async function exportPurchaseOrdersExcelAction() {
+  try {
+    await requireRole(["admin", "compras", "finanzas"]);
+
+    const purchaseOrdersData = await db
+      .select({
+        poNumber: purchaseOrders.poNumber,
+        supplier: {
+          tradeName: suppliers.tradeName,
+        },
+        issueDate: purchaseOrders.issueDate,
+        expectedDate: purchaseOrders.expectedDate,
+        subtotalClp: purchaseOrders.subtotalClp,
+        discountClp: purchaseOrders.discountClp,
+        taxClp: purchaseOrders.taxClp,
+        shippingClp: purchaseOrders.shippingClp,
+        totalClp: purchaseOrders.totalClp,
+        status: purchaseOrders.status,
+        requesterUser: {
+          fullName: users.fullName,
+        },
+      })
+      .from(purchaseOrders)
+      .leftJoin(suppliers, eq(purchaseOrders.supplierId, suppliers.id))
+      .leftJoin(users, eq(purchaseOrders.requesterUserId, users.id))
+      .orderBy(desc(purchaseOrders.id))
+      .limit(500);
+
+    const buffer = await exportPurchaseOrdersToExcel(purchaseOrdersData);
+
+    return {
+      success: true,
+      data: Buffer.from(buffer).toString("base64"),
+      filename: `ordenes_compra_${new Date().toISOString().split("T")[0]}.xlsx`,
+    };
+  } catch (error) {
+    console.error("exportPurchaseOrdersExcelAction", toErrorMessage(error));
+    return {
+      success: false,
+      error: toErrorMessage(error),
+    };
+  }
 }

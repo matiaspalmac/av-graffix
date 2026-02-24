@@ -3,7 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db/client";
-import { inventoryTransactions, materials, supplierMaterialPrices, suppliers } from "@/db/schema";
+import {
+  inventoryTransactions,
+  materialConsumptions,
+  materialVariants,
+  materials,
+  purchaseOrderItems,
+  supplierMaterialPrices,
+  suppliers,
+} from "@/db/schema";
 import { requireRole, toErrorMessage } from "@/lib/server-action";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
@@ -72,6 +80,58 @@ export async function toggleMaterialActiveAction(formData: FormData) {
     revalidatePath("/erp/inventario");
   } catch (error) {
     console.error("toggleMaterialActiveAction", toErrorMessage(error));
+  }
+}
+
+export async function deleteMaterialAction(formData: FormData) {
+  try {
+    await requireRole(["admin", "finanzas"]);
+
+    const materialId = asNumber(formData.get("materialId"));
+    if (!materialId) {
+      return { success: false, error: "Material inválido" };
+    }
+
+    const [inventoryUsage, consumptionUsage, purchaseUsage] = await Promise.all([
+      db
+        .select({ v: sql<number>`count(*)` })
+        .from(inventoryTransactions)
+        .where(eq(inventoryTransactions.materialId, materialId)),
+      db
+        .select({ v: sql<number>`count(*)` })
+        .from(materialConsumptions)
+        .where(eq(materialConsumptions.materialId, materialId)),
+      db
+        .select({ v: sql<number>`count(*)` })
+        .from(purchaseOrderItems)
+        .where(eq(purchaseOrderItems.materialId, materialId)),
+    ]);
+
+    const hasUsage =
+      Number(inventoryUsage[0]?.v ?? 0) > 0 ||
+      Number(consumptionUsage[0]?.v ?? 0) > 0 ||
+      Number(purchaseUsage[0]?.v ?? 0) > 0;
+
+    if (hasUsage) {
+      return {
+        success: false,
+        error: "No se puede eliminar: el material tiene movimientos, consumos o compras asociadas.",
+      };
+    }
+
+    await db.delete(supplierMaterialPrices).where(eq(supplierMaterialPrices.materialId, materialId));
+    await db.delete(materialVariants).where(eq(materialVariants.materialId, materialId));
+    await db.delete(materials).where(eq(materials.id, materialId));
+
+    revalidatePath("/erp/inventario");
+    revalidatePath("/erp/compras");
+    revalidatePath("/erp/produccion");
+
+    return { success: true, message: "Material eliminado correctamente" };
+  } catch (error) {
+    const errorMessage = toErrorMessage(error);
+    console.error("deleteMaterialAction", errorMessage);
+    return { success: false, error: errorMessage };
   }
 }
 

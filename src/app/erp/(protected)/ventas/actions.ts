@@ -5,6 +5,7 @@ import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   clients,
+  projectBriefs,
   projectPhases,
   projects,
   quoteItems,
@@ -35,6 +36,15 @@ function normalize(text: string) {
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
     .toLowerCase();
+}
+
+function asText(value: FormDataEntryValue | null) {
+  return String(value ?? "").trim();
+}
+
+function asBoolean(value: FormDataEntryValue | null) {
+  const normalized = String(value ?? "").trim().toLowerCase();
+  return normalized === "on" || normalized === "true" || normalized === "1" || normalized === "si";
 }
 
 function resolvePhaseForCategory(category: string) {
@@ -111,6 +121,64 @@ export async function createQuoteAction(formData: FormData) {
     const unitPriceClp = asNumber(formData.get("unitPriceClp"), 0);
     const hoursEstimated = asNumber(formData.get("hoursEstimated"), 0);
     const materialEstimatedCostClp = asNumber(formData.get("materialEstimatedCostClp"), 0);
+    const workTypes = formData.getAll("workTypes").map((entry) => String(entry));
+    const workTypeOther = asText(formData.get("workTypeOther"));
+
+    const measurements = Array.from({ length: 10 }, (_, index) => {
+      const row = index + 1;
+      const support = asText(formData.get(`measureSupport_${row}`));
+      const width = asNumber(formData.get(`measureWidth_${row}`), 0);
+      const height = asNumber(formData.get(`measureHeight_${row}`), 0);
+      const depth = asNumber(formData.get(`measureDepth_${row}`), 0);
+
+      if (!support && width <= 0 && height <= 0 && depth <= 0) {
+        return null;
+      }
+
+      return { row, support, width, height, depth };
+    }).filter(
+      (entry): entry is { row: number; support: string; width: number; height: number; depth: number } =>
+        entry !== null
+    );
+
+    const technicalSheet = {
+      general: {
+        date: asText(formData.get("surveyDate")) || new Date().toISOString(),
+        siteContact: asText(formData.get("siteContact")),
+        sitePhone: asText(formData.get("sitePhone")),
+        technician: asText(formData.get("technician")),
+      },
+      jobSpecs: {
+        workTypes,
+        workTypeOther,
+        description: description,
+        locationType: asText(formData.get("locationType")),
+        installHeightMeters: asNumber(formData.get("installHeightMeters"), 0),
+        vehicleAccess: asBoolean(formData.get("vehicleAccess")),
+        trafficLevel: asText(formData.get("trafficLevel")),
+        environmentNotes: asText(formData.get("environmentNotes")),
+      },
+      measurements: {
+        items: measurements,
+        surfaceType: asText(formData.get("surfaceType")),
+        surfaceTypeOther: asText(formData.get("surfaceTypeOther")),
+        surfaceCondition: asText(formData.get("surfaceCondition")),
+        observations: asText(formData.get("measurementsObservations")),
+      },
+      technicalConditions: {
+        requirements: formData.getAll("technicalRequirements").map((entry) => String(entry)),
+        mountType: asText(formData.get("mountType")),
+        prePreparationRequired: asBoolean(formData.get("prePreparationRequired")),
+        estimatedPersonnel: asNumber(formData.get("estimatedPersonnel"), 0),
+        estimatedTimeHours: asNumber(formData.get("estimatedTimeHours"), hoursEstimated),
+      },
+      logistics: {
+        specialSchedule: asBoolean(formData.get("specialSchedule")),
+        permitsRequired: asBoolean(formData.get("permitsRequired")),
+        clientManagesPermits: asBoolean(formData.get("clientManagesPermits")),
+        observations: asText(formData.get("logisticsObservations")),
+      },
+    };
 
     if (!clientId || !description || qty <= 0) {
       return;
@@ -159,6 +227,7 @@ export async function createQuoteAction(formData: FormData) {
     hoursEstimated,
     materialEstimatedCostClp,
     lineTotalClp: subtotal,
+    specsJson: JSON.stringify(technicalSheet),
     dueDate: String(formData.get("dueDate") ?? "").trim() || null,
   });
 
@@ -326,6 +395,7 @@ export async function convertQuoteToProjectAction(formData: FormData) {
       unit: quoteItems.unit,
       hoursEstimated: quoteItems.hoursEstimated,
       materialEstimatedCostClp: quoteItems.materialEstimatedCostClp,
+      specsJson: quoteItems.specsJson,
     })
     .from(quoteItems)
     .where(eq(quoteItems.quoteId, quoteId))
@@ -373,6 +443,17 @@ export async function convertQuoteToProjectAction(formData: FormData) {
     if (!projectId) {
       return;
     }
+
+  // Crear project brief con ficha técnica del primer item
+  const firstItemSpecs = quoteItemsRows[0]?.specsJson;
+  if (firstItemSpecs) {
+    await db.insert(projectBriefs).values({
+      projectId,
+      technicalSheetJson: firstItemSpecs,
+      createdByUserId: Number(session.user.id || 0) || null,
+      updatedAt: now,
+    });
+  }
 
   const phases = [
     { name: "Brief", order: 1, hours: 2 },
@@ -517,6 +598,7 @@ export async function latestQuotesWithItems(limit = 8) {
         lineTotalClp: quoteItems.lineTotalClp,
         hoursEstimated: quoteItems.hoursEstimated,
         materialEstimatedCostClp: quoteItems.materialEstimatedCostClp,
+        specsJson: quoteItems.specsJson,
       })
       .from(quoteItems)
       .where(inArray(quoteItems.quoteId, quoteIds))

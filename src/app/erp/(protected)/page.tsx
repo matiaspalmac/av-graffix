@@ -50,6 +50,9 @@ export default async function ErpDashboardPage() {
     pendingCollectionsResult,
     criticalStockResult,
     productionProjectsResult,
+    materialWasteResult,
+    quotesConversionResult,
+    pendingPurchaseOrdersResult,
   ] = await Promise.all([
     db.select({ value: sql<number>`count(*)` }).from(projects).where(sql`${projects.status} in ('planning','in_progress')`),
     db.select({ value: sql<number>`count(*)` }).from(quotes).where(sql`${quotes.status} in ('sent','approved')`),
@@ -85,6 +88,23 @@ export default async function ErpDashboardPage() {
         ) <= ${materials.reorderPoint}
       `),
     db.select({ value: sql<number>`count(*)` }).from(projects).where(sql`${projects.status} = 'in_progress'`),
+    // % de merma/desperdicio real vs planificado
+    db.select({ 
+      wastePct: sql<number>`
+        case 
+          when coalesce(sum(${materialConsumptions.qtyPlanned}),0) > 0 
+          then (coalesce(sum(${materialConsumptions.wasteQty}),0) * 100.0) / coalesce(sum(${materialConsumptions.qtyPlanned}),1)
+          else 0
+        end
+      ` 
+    }).from(materialConsumptions).where(sql`${materialConsumptions.consumptionDate} >= ${monthStart}`),
+    // Tasa de conversión de cotizaciones (aprobadas / total del mes)
+    db.select({
+      total: sql<number>`coalesce(count(*),0)`,
+      approved: sql<number>`coalesce(sum(case when ${quotes.status} = 'approved' then 1 else 0 end),0)`,
+    }).from(quotes).where(sql`${quotes.issueDate} >= ${monthStart}`),
+    // Órdenes de compra pendientes
+    db.select({ value: sql<number>`count(*)` }).from(purchaseOrders).where(sql`${purchaseOrders.status} in ('draft','sent','partial')`),
   ]);
 
   const [criticalMaterials, delayedPurchaseOrders, overdueInvoices] = await Promise.all([
@@ -163,6 +183,13 @@ export default async function ErpDashboardPage() {
   const pendingCollections = Number(pendingCollectionsResult[0]?.value ?? 0);
   const criticalStock = Number(criticalStockResult[0]?.value ?? 0);
   const productionProjects = Number(productionProjectsResult[0]?.value ?? 0);
+  
+  // KPIs dinámicos
+  const materialWastePct = Number(materialWasteResult[0]?.wastePct ?? 0);
+  const quotesTotal = Number(quotesConversionResult[0]?.total ?? 0);
+  const quotesApproved = Number(quotesConversionResult[0]?.approved ?? 0);
+  const quotesConversionRate = quotesTotal > 0 ? (quotesApproved * 100) / quotesTotal : 0;
+  const pendingPurchaseOrders = Number(pendingPurchaseOrdersResult[0]?.value ?? 0);
 
   const monthlyCost = monthlyHoursCost + monthlyMaterialCost;
   const monthlyMargin = monthlyRevenue > 0 ? ((monthlyRevenue - monthlyCost) * 100) / monthlyRevenue : 0;
@@ -239,16 +266,22 @@ export default async function ErpDashboardPage() {
           <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Indicadores rápidos</h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li className="flex items-center justify-between rounded-lg bg-zinc-100 dark:bg-zinc-800/60 px-3 py-2">
-              <span className="text-zinc-600 dark:text-zinc-300">Pendones y soportes gráficos</span>
-              <span className="font-semibold text-zinc-900 dark:text-zinc-100">Monitorear merma de tela</span>
+              <span className="text-zinc-600 dark:text-zinc-300">Merma de materiales (mes)</span>
+              <span className={`font-semibold ${materialWastePct > 15 ? 'text-red-600' : materialWastePct > 8 ? 'text-orange-600' : 'text-green-600'}`}>
+                {materialWastePct.toFixed(1)}%
+              </span>
             </li>
             <li className="flex items-center justify-between rounded-lg bg-zinc-100 dark:bg-zinc-800/60 px-3 py-2">
-              <span className="text-zinc-600 dark:text-zinc-300">Etiquetas adhesivas</span>
-              <span className="font-semibold text-zinc-900 dark:text-zinc-100">Control fino de vinilo/adhesivo</span>
+              <span className="text-zinc-600 dark:text-zinc-300">Tasa conversión cotizaciones</span>
+              <span className={`font-semibold ${quotesConversionRate < 30 ? 'text-red-600' : quotesConversionRate < 50 ? 'text-orange-600' : 'text-green-600'}`}>
+                {quotesConversionRate.toFixed(0)}%
+              </span>
             </li>
             <li className="flex items-center justify-between rounded-lg bg-zinc-100 dark:bg-zinc-800/60 px-3 py-2">
-              <span className="text-zinc-600 dark:text-zinc-300">Facturación y SII</span>
-              <span className="font-semibold text-zinc-900 dark:text-zinc-100">Folio + PDF trazable</span>
+              <span className="text-zinc-600 dark:text-zinc-300">Órdenes de compra pendientes</span>
+              <span className={`font-semibold ${pendingPurchaseOrders > 10 ? 'text-orange-600' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                {pendingPurchaseOrders}
+              </span>
             </li>
           </ul>
 

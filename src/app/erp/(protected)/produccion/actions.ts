@@ -7,6 +7,7 @@ import {
   inventoryTransactions,
   materialConsumptions,
   materials,
+  projectBriefs,
   projectPhases,
   projects,
   supplierMaterialPrices,
@@ -171,8 +172,13 @@ export async function approveProjectPhaseAction(formData: FormData) {
 export async function productionOptions() {
   const [projectOptions, materialOptions] = await Promise.all([
     db
-      .select({ id: projects.id, name: projects.name, status: projects.status })
+      .select({ 
+        id: projects.id, 
+        name: projects.name, 
+        status: projects.status,
+      })
       .from(projects)
+      .leftJoin(projectBriefs, eq(projects.id, projectBriefs.projectId))
       .where(sql`${projects.status} in ('planning','in_progress')`)
       .orderBy(desc(projects.id)),
     db

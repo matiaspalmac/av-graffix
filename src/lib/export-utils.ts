@@ -23,11 +23,11 @@ interface CompanyInfo {
 /**
  * Exporta datos a Excel o CSV
  */
-export function exportData<T extends Record<string, unknown>>(
+export async function exportData<T extends Record<string, unknown>>(
   data: T[],
   options: ExportOptions,
   company?: CompanyInfo
-): Buffer {
+): Promise<Buffer> {
   if (!data || data.length === 0) {
     throw new Error("No hay datos para exportar");
   }
@@ -118,7 +118,7 @@ export async function exportQuotesToExcel(quotes: any[]): Promise<Buffer> {
     Vendedor: q.salesUser?.fullName || "N/A",
   }));
 
-  return exportData(formatted, {
+  return await exportData(formatted, {
     filename: `cotizaciones_${new Date().toISOString().split("T")[0]}.xlsx`,
     sheetName: "Cotizaciones",
     format: "xlsx",
@@ -153,7 +153,7 @@ export async function exportProjectsToExcel(projects: any[]): Promise<Buffer> {
     Responsable: p.projectManager?.fullName || "N/A",
   }));
 
-  return exportData(formatted, {
+  return await exportData(formatted, {
     filename: `proyectos_${new Date().toISOString().split("T")[0]}.xlsx`,
     sheetName: "Proyectos",
     format: "xlsx",
@@ -188,7 +188,7 @@ export async function exportInvoicesToExcel(invoices: any[]): Promise<Buffer> {
     Creado: i.createdByUser?.fullName || "N/A",
   }));
 
-  return exportData(formatted, {
+  return await exportData(formatted, {
     filename: `facturas_${new Date().toISOString().split("T")[0]}.xlsx`,
     sheetName: "Facturas",
     format: "xlsx",
@@ -223,7 +223,7 @@ export async function exportPurchaseOrdersToExcel(purchaseOrders: any[]): Promis
     Solicitante: po.requesterUser?.fullName || "N/A",
   }));
 
-  return exportData(formatted, {
+  return await exportData(formatted, {
     filename: `ordenes_compra_${new Date().toISOString().split("T")[0]}.xlsx`,
     sheetName: "OC",
     format: "xlsx",
@@ -257,7 +257,7 @@ export async function exportMaterialConsumptionToExcel(consumptions: any[]): Pro
     Operador: c.operatorUser?.fullName || "N/A",
   }));
 
-  return exportData(formatted, {
+  return await exportData(formatted, {
     filename: `consumo_materiales_${new Date().toISOString().split("T")[0]}.xlsx`,
     sheetName: "Consumo",
     format: "xlsx",
@@ -291,7 +291,7 @@ export async function exportProfitabilityToExcel(projects: any[]): Promise<Buffe
     Estado: p.status,
   }));
 
-  return exportData(formatted, {
+  return await exportData(formatted, {
     filename: `rentabilidad_${new Date().toISOString().split("T")[0]}.xlsx`,
     sheetName: "Rentabilidad",
     format: "xlsx",
@@ -309,7 +309,7 @@ export async function exportProfitabilityToExcel(projects: any[]): Promise<Buffe
 /**
  * Convierte Excel Buffer a CSV
  */
-export function convertExcelToCSV(excelBuffer: Buffer, sheetName = "Sheet1"): string {
+export async function convertExcelToCSV(excelBuffer: Buffer, sheetName = "Sheet1"): Promise<string> {
   const workbook = XLSX.read(excelBuffer, { type: "buffer" });
   const worksheet = workbook.Sheets[sheetName] || workbook.Sheets[workbook.SheetNames[0]];
   return XLSX.utils.sheet_to_csv(worksheet);

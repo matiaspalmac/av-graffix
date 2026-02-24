@@ -14,6 +14,7 @@ import {
   Wallet,
   BarChart3,
   ShieldCheck,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "./sidebar-provider";
@@ -27,6 +28,7 @@ interface BeforeInstallPromptEvent extends Event {
 const menu = [
   { href: "/erp", label: "Dashboard", icon: LayoutDashboard },
   { href: "/erp/ventas", label: "CRM & Ventas", icon: Handshake },
+  { href: "/erp/cotizaciones", label: "Cotizaciones", icon: FileText },
   { href: "/erp/proyectos", label: "Proyectos", icon: FolderKanban },
   { href: "/erp/produccion", label: "Producción", icon: Factory },
   { href: "/erp/inventario", label: "Inventario", icon: Boxes },

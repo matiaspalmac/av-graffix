@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/db/client";
-import { clients, projects, quotes } from "@/db/schema";
+import { clients, projectBriefs, projects, quotes, users } from "@/db/schema";
 import { requireRole, toErrorMessage } from "@/lib/server-action";
+import { exportProjectsToExcel } from "@/lib/export-utils";
 
 function asNumber(value: FormDataEntryValue | null, fallback = 0) {
   const parsed = Number(value ?? fallback);
@@ -126,9 +127,11 @@ export async function latestProjects(limit = 12) {
       budgetCostClp: projects.budgetCostClp,
       expectedMarginPct: projects.expectedMarginPct,
       clientName: clients.tradeName,
+      technicalSheetJson: projectBriefs.technicalSheetJson,
     })
     .from(projects)
     .leftJoin(clients, eq(projects.clientId, clients.id))
+    .leftJoin(projectBriefs, eq(projects.id, projectBriefs.projectId))
     .orderBy(desc(projects.id))
     .limit(limit);
 }
@@ -144,4 +147,48 @@ export async function projectFormOptions() {
   ]);
 
   return { clientOptions, quoteOptions };
+}
+
+export async function exportProjectsExcelAction() {
+  try {
+    await requireRole(["admin", "finanzas", "proyectos"]);
+
+    const projectsData = await db
+      .select({
+        projectCode: projects.projectCode,
+        name: projects.name,
+        client: {
+          tradeName: clients.tradeName,
+        },
+        serviceType: projects.serviceType,
+        status: projects.status,
+        startDate: projects.startDate,
+        dueDate: projects.dueDate,
+        budgetRevenueClp: projects.budgetRevenueClp,
+        budgetCostClp: projects.budgetCostClp,
+        expectedMarginPct: projects.expectedMarginPct,
+        projectManager: {
+          fullName: users.fullName,
+        },
+      })
+      .from(projects)
+      .leftJoin(clients, eq(projects.clientId, clients.id))
+      .leftJoin(users, eq(projects.projectManagerId, users.id))
+      .orderBy(desc(projects.id))
+      .limit(500);
+
+    const buffer = await exportProjectsToExcel(projectsData);
+
+    return {
+      success: true,
+      data: Buffer.from(buffer).toString("base64"),
+      filename: `proyectos_${new Date().toISOString().split("T")[0]}.xlsx`,
+    };
+  } catch (error) {
+    console.error("exportProjectsExcelAction", toErrorMessage(error));
+    return {
+      success: false,
+      error: toErrorMessage(error),
+    };
+  }
 }

@@ -5,12 +5,14 @@ import { formatCLP } from "@/lib/format";
 import {
   createMaterialAction,
   createMaterialPriceAction,
+  deleteMaterialAction,
   inventoryFormOptions,
   latestInventoryMovements,
   latestMaterialsWithStock,
   registerInventoryMoveAction,
   toggleMaterialActiveAction,
 } from "@/app/erp/(protected)/inventario/actions";
+import { DeleteMaterialForm } from "@/components/erp/delete-material-form";
 import { SubmitButton } from "@/components/erp/submit-button";
 
 export default async function InventarioPage() {
@@ -177,7 +179,7 @@ export default async function InventarioPage() {
               <th className="py-2">Stock</th>
               <th className="py-2">Mínimo</th>
               <th className="py-2">Precio actual</th>
-              <th className="py-2">Estado</th>
+              <th className="py-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -190,13 +192,16 @@ export default async function InventarioPage() {
                 <td className="py-2">{Number(material.reorderPoint).toFixed(2)}</td>
                 <td className="py-2">{formatCLP(material.currentPriceClp)}</td>
                 <td className="py-2">
-                  <form action={toggleMaterialActiveAction}>
-                    <input type="hidden" name="materialId" value={material.id} />
-                    <input type="hidden" name="isActive" value={material.isActive ? "1" : "0"} />
-                    <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">
-                      {material.isActive ? "Desactivar" : "Activar"}
-                    </button>
-                  </form>
+                  <div className="flex flex-wrap gap-2">
+                    <form action={toggleMaterialActiveAction}>
+                      <input type="hidden" name="materialId" value={material.id} />
+                      <input type="hidden" name="isActive" value={material.isActive ? "1" : "0"} />
+                      <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">
+                        {material.isActive ? "Desactivar" : "Activar"}
+                      </button>
+                    </form>
+                    <DeleteMaterialForm materialId={material.id} action={deleteMaterialAction} />
+                  </div>
                 </td>
               </tr>
             ))}

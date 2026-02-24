@@ -13,11 +13,13 @@ import {
   purchaseFormOptions,
   receivePurchaseOrderItemAction,
   updatePurchaseOrderStatusAction,
+  exportPurchaseOrdersExcelAction,
 } from "@/app/erp/(protected)/compras/actions";
 import { SubmitButton } from "@/components/erp/submit-button";
 import { DeletePurchaseOrderForm } from "@/components/erp/delete-purchase-order-form";
 import { CancelPurchaseOrderForm } from "@/components/erp/cancel-purchase-order-form";
 import { DeletePurchaseOrderItemForm } from "@/components/erp/delete-purchase-order-item-form";
+import { ExportButton } from "@/components/erp/export-button";
 
 export default async function ComprasPage() {
   const [suppliersTotal, openOrders, delayedOrders] = await Promise.all([
@@ -36,9 +38,19 @@ export default async function ComprasPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">Compras & Proveedores</h2>
-        <p className="mt-1 text-zinc-600 dark:text-zinc-400">Creación de proveedores, órdenes de compra, recepción parcial y cierre de OC.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">Compras & Proveedores</h2>
+          <p className="mt-1 text-zinc-600 dark:text-zinc-400">Creación de proveedores, órdenes de compra, recepción parcial y cierre de OC.</p>
+        </div>
+        {recentOrders.length > 0 && (
+          <ExportButton
+            action={exportPurchaseOrdersExcelAction}
+            label="Exportar Excel"
+            variant="primary"
+            size="md"
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

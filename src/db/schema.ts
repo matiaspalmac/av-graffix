@@ -187,6 +187,7 @@ export const projectBriefs = sqliteTable(
     approvalNotes: text("approval_notes"),
     approvedByClientAt: text("approved_by_client_at"),
     createdByUserId: integer("created_by_user_id").references(() => users.id),
+    technicalSheetJson: text("technical_sheet_json"),
     ...timestamps,
   },
   (table) => [uniqueIndex("project_briefs_project_uq").on(table.projectId)]

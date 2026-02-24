@@ -8,8 +8,55 @@ import {
   latestProjects,
   projectFormOptions,
   updateProjectAction,
+  exportProjectsExcelAction,
 } from "@/app/erp/(protected)/proyectos/actions";
 import { SubmitButton } from "@/components/erp/submit-button";
+import { ExportButton } from "@/components/erp/export-button";
+
+type TechnicalSheet = {
+  general?: { siteContact?: string; sitePhone?: string; technician?: string; date?: string };
+  jobSpecs?: { 
+    workTypes?: string[]; 
+    workTypeOther?: string; 
+    locationType?: string; 
+    installHeightMeters?: number; 
+    vehicleAccess?: boolean; 
+    trafficLevel?: string;
+    environmentNotes?: string;
+  };
+  measurements?: { 
+    items?: Array<{ row: number; support: string; width: number; height: number; depth: number }>;
+    surfaceType?: string;
+    surfaceTypeOther?: string;
+    surfaceCondition?: string;
+    observations?: string;
+  };
+  technicalConditions?: { 
+    requirements?: string[];
+    mountType?: string; 
+    estimatedPersonnel?: number; 
+    estimatedTimeHours?: number;
+    prePreparationRequired?: boolean;
+  };
+  logistics?: { 
+    specialSchedule?: boolean;
+    permitsRequired?: boolean;
+    clientManagesPermits?: boolean;
+    observations?: string;
+  };
+};
+
+function parseTechnicalSheet(rawSpecs: string | null | undefined): TechnicalSheet | null {
+  if (!rawSpecs) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(rawSpecs) as TechnicalSheet;
+  } catch {
+    return null;
+  }
+}
 
 export default async function ProyectosPage() {
   const [activeProjects, activePhases, openTasks] = await Promise.all([
@@ -22,9 +69,19 @@ export default async function ProyectosPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">Proyectos</h2>
-        <p className="mt-1 text-zinc-600 dark:text-zinc-400">Control de proyectos de diseño y producción con margen esperado en CLP.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">Proyectos</h2>
+          <p className="mt-1 text-zinc-600 dark:text-zinc-400">Control de proyectos de diseño y producción con margen esperado en CLP.</p>
+        </div>
+        {projectList.length > 0 && (
+          <ExportButton
+            action={exportProjectsExcelAction}
+            label="Exportar Excel"
+            variant="primary"
+            size="md"
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -129,12 +186,94 @@ export default async function ProyectosPage() {
             </tr>
           </thead>
           <tbody>
-            {projectList.map((project) => (
+            {projectList.map((project) => {
+              const technicalSheet = parseTechnicalSheet(project.technicalSheetJson);
+
+              return (
               <tr key={project.id} className="border-b border-zinc-100 dark:border-zinc-800/60 align-top">
                 <td className="py-2 font-semibold">{project.code}</td>
                 <td className="py-2">
                   <p className="font-medium">{project.name}</p>
                   <p className="text-xs text-zinc-500">{project.serviceType}</p>
+                  {technicalSheet && (
+                    <details className="mt-2 text-xs">
+                      <summary className="cursor-pointer text-blue-600 dark:text-blue-400 hover:underline">
+                        Ver ficha técnica
+                      </summary>
+                      <div className="mt-2 rounded-lg border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50 space-y-2">
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-zinc-600 dark:text-zinc-400">
+                          {technicalSheet.general?.siteContact && (
+                            <p><strong>Contacto:</strong> {technicalSheet.general.siteContact}</p>
+                          )}
+                          {technicalSheet.general?.sitePhone && (
+                            <p><strong>Teléfono:</strong> {technicalSheet.general.sitePhone}</p>
+                          )}
+                          {technicalSheet.general?.technician && (
+                            <p><strong>Técnico:</strong> {technicalSheet.general.technician}</p>
+                          )}
+                          {technicalSheet.jobSpecs?.workTypes && technicalSheet.jobSpecs.workTypes.length > 0 && (
+                            <p className="col-span-2"><strong>Tipos de trabajo:</strong> {technicalSheet.jobSpecs.workTypes.join(", ")}</p>
+                          )}
+                          {technicalSheet.jobSpecs?.workTypeOther && (
+                            <p className="col-span-2"><strong>Otro tipo:</strong> {technicalSheet.jobSpecs.workTypeOther}</p>
+                          )}
+                          {technicalSheet.jobSpecs?.locationType && (
+                            <p><strong>Tipo lugar:</strong> {technicalSheet.jobSpecs.locationType}</p>
+                          )}
+                          {technicalSheet.jobSpecs?.installHeightMeters != null && (
+                            <p><strong>Altura:</strong> {technicalSheet.jobSpecs.installHeightMeters} m</p>
+                          )}
+                          {technicalSheet.jobSpecs?.vehicleAccess != null && (
+                            <p><strong>Acceso vehicular:</strong> {technicalSheet.jobSpecs.vehicleAccess ? "Sí" : "No"}</p>
+                          )}
+                          {technicalSheet.jobSpecs?.trafficLevel && (
+                            <p><strong>Tránsito:</strong> {technicalSheet.jobSpecs.trafficLevel}</p>
+                          )}
+                          {technicalSheet.measurements?.surfaceType && (
+                            <p><strong>Superficie:</strong> {technicalSheet.measurements.surfaceType}</p>
+                          )}
+                          {technicalSheet.measurements?.surfaceTypeOther && (
+                            <p className="col-span-2"><strong>Otro tipo superficie:</strong> {technicalSheet.measurements.surfaceTypeOther}</p>
+                          )}
+                          {technicalSheet.measurements?.surfaceCondition && (
+                            <p><strong>Estado:</strong> {technicalSheet.measurements.surfaceCondition}</p>
+                          )}
+                          {technicalSheet.technicalConditions?.requirements && technicalSheet.technicalConditions.requirements.length > 0 && (
+                            <p className="col-span-2"><strong>Requerimientos:</strong> {technicalSheet.technicalConditions.requirements.join(", ")}</p>
+                          )}
+                          {technicalSheet.technicalConditions?.estimatedPersonnel != null && (
+                            <p><strong>Personal:</strong> {technicalSheet.technicalConditions.estimatedPersonnel}</p>
+                          )}
+                          {technicalSheet.technicalConditions?.estimatedTimeHours != null && (
+                            <p><strong>Tiempo:</strong> {technicalSheet.technicalConditions.estimatedTimeHours} h</p>
+                          )}
+                        </div>
+                        {technicalSheet.measurements?.items && technicalSheet.measurements.items.length > 0 && (
+                          <div>
+                            <p className="font-semibold mb-1">Medidas:</p>
+                            {technicalSheet.measurements.items.map((m) => (
+                              <p key={m.row} className="text-xs text-zinc-600 dark:text-zinc-400">
+                                #{m.row}: {m.support || "-"} - {m.width}×{m.height}×{m.depth}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                        {(technicalSheet.jobSpecs?.environmentNotes || technicalSheet.measurements?.observations || technicalSheet.logistics?.observations) && (
+                          <div className="space-y-1">
+                            {technicalSheet.jobSpecs?.environmentNotes && (
+                              <p className="text-xs"><strong>Obs. entorno:</strong> {technicalSheet.jobSpecs.environmentNotes}</p>
+                            )}
+                            {technicalSheet.measurements?.observations && (
+                              <p className="text-xs"><strong>Obs. medidas:</strong> {technicalSheet.measurements.observations}</p>
+                            )}
+                            {technicalSheet.logistics?.observations && (
+                              <p className="text-xs"><strong>Obs. logística:</strong> {technicalSheet.logistics.observations}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </details>
+                  )}
                 </td>
                 <td className="py-2">{project.clientName ?? "-"}</td>
                 <td className="py-2">{project.status}</td>
@@ -165,7 +304,8 @@ export default async function ProyectosPage() {
                   </form>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>        </div>        )}
       </div>

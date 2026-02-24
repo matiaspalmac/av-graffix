@@ -10,8 +10,10 @@ import {
   latestInvoicesWithPayments,
   registerPaymentAction,
   updateInvoiceStatusAction,
+  exportInvoicesExcelAction,
 } from "@/app/erp/(protected)/finanzas/actions";
 import { SubmitButton } from "@/components/erp/submit-button";
+import { ExportButton } from "@/components/erp/export-button";
 
 export default async function FinanzasPage() {
   const [invoiced, collected, pendingDocs, overdueDocs] = await Promise.all([
@@ -28,9 +30,19 @@ export default async function FinanzasPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">Finanzas & Facturación</h2>
-        <p className="mt-1 text-zinc-600 dark:text-zinc-400">Emisión de facturas, registro de pagos y control de cobranza en CLP.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">Finanzas & Facturación</h2>
+          <p className="mt-1 text-zinc-600 dark:text-zinc-400">Emisión de facturas, registro de pagos y control de cobranza en CLP.</p>
+        </div>
+        {recentInvoices.length > 0 && (
+          <ExportButton
+            action={exportInvoicesExcelAction}
+            label="Exportar Excel"
+            variant="primary"
+            size="md"
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
