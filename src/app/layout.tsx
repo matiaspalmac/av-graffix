@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@value": "LocalBusiness",
   name: "AV GRAFFIX",
   image: "https://avgraffix.cl/avgraffix.png",
   url: "https://avgraffix.cl",
@@ -123,6 +124,7 @@ export default function RootLayout({
           Saltar al contenido
         </a>
         <AppShell>{children}</AppShell>
+        <SpeedInsights />
       </body>
     </html>
   );
