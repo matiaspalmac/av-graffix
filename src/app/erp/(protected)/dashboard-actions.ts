@@ -15,7 +15,7 @@ function normalizeTaskStatus(status: string) {
 
 export async function updateTaskStatusQuickAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const taskId = Number(formData.get("taskId") ?? 0);
     const status = normalizeTaskStatus(String(formData.get("status") ?? "todo"));

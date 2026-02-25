@@ -97,7 +97,7 @@ export async function adminFormOptions() {
     .orderBy(desc(roles.id));
 
   return {
-    roleOptions: roleOptions.filter((role) => role.code === "admin" || role.code === "finanzas"),
+    roleOptions: roleOptions.filter((role) => role.code === "admin" || role.code === "produccion"),
   };
 }
 

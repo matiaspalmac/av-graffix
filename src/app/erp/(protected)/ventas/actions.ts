@@ -82,7 +82,7 @@ async function recalcQuoteTotals(quoteId: number) {
 
 export async function createClientAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const legalName = String(formData.get("legalName") ?? "").trim();
     const tradeName = String(formData.get("tradeName") ?? "").trim();
     const rut = String(formData.get("rut") ?? "").trim();
@@ -113,7 +113,7 @@ export async function createClientAction(formData: FormData) {
 
 export async function createQuoteAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
     const clientId = asNumber(formData.get("clientId"));
     const description = String(formData.get("description") ?? "").trim();
     const serviceCategory = String(formData.get("serviceCategory") ?? "general").trim();
@@ -241,7 +241,7 @@ export async function createQuoteAction(formData: FormData) {
 
 export async function addQuoteItemAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const quoteId = asNumber(formData.get("quoteId"));
     const description = String(formData.get("description") ?? "").trim();
     const serviceCategory = String(formData.get("serviceCategory") ?? "general").trim();
@@ -285,7 +285,7 @@ export async function addQuoteItemAction(formData: FormData) {
 
 export async function deleteQuoteItemAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const quoteItemId = asNumber(formData.get("quoteItemId"));
     const quoteId = asNumber(formData.get("quoteId"));
 
@@ -303,7 +303,7 @@ export async function deleteQuoteItemAction(formData: FormData) {
 
 export async function updateQuoteStatusAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const quoteId = asNumber(formData.get("quoteId"));
     const status = String(formData.get("status") ?? "draft").trim();
 
@@ -324,7 +324,7 @@ export async function updateQuoteStatusAction(formData: FormData) {
 
 export async function deleteQuoteAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const quoteId = asNumber(formData.get("quoteId"));
     if (!quoteId) {
       return;
@@ -340,7 +340,7 @@ export async function deleteQuoteAction(formData: FormData) {
 
 export async function convertQuoteToProjectAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
     const quoteId = asNumber(formData.get("quoteId"));
 
     if (!quoteId) {
@@ -407,10 +407,8 @@ export async function convertQuoteToProjectAction(formData: FormData) {
     .leftJoin(roles, eq(users.roleId, roles.id))
     .where(eq(users.isActive, true));
 
-    const fallbackUserId = Number(session.user.id || 0) || null;
-  const salesUserId = roleUsers.find((row) => row.roleCode === "ventas")?.userId ?? fallbackUserId;
+  const fallbackUserId = Number(session.user.id || 0) || null;
   const productionUserId = roleUsers.find((row) => row.roleCode === "produccion")?.userId ?? fallbackUserId;
-  const financeUserId = roleUsers.find((row) => row.roleCode === "finanzas")?.userId ?? fallbackUserId;
 
   const laborCost = Number(itemAgg[0]?.totalHours ?? 0) * 12000;
   const materialCost = Number(itemAgg[0]?.totalMaterialCost ?? 0);
@@ -478,8 +476,8 @@ export async function convertQuoteToProjectAction(formData: FormData) {
           phase.name === "Producción"
             ? productionUserId
             : phase.name === "Entrega"
-              ? financeUserId
-              : salesUserId,
+              ? productionUserId
+              : Number(session.user.id || 0) || null,
         plannedHours: phase.hours,
         actualHours: 0,
         notes: null,
@@ -501,8 +499,8 @@ export async function convertQuoteToProjectAction(formData: FormData) {
         phase.name === "Producción"
           ? productionUserId
           : phase.name === "Entrega"
-            ? financeUserId
-            : salesUserId,
+            ? productionUserId
+            : Number(session.user.id || 0) || null,
       taskType: phase.name.toLowerCase(),
       status: "todo",
       priority: "normal",
@@ -520,8 +518,8 @@ export async function convertQuoteToProjectAction(formData: FormData) {
       phaseName === "Producción"
         ? productionUserId
         : phaseName === "Entrega"
-          ? financeUserId
-          : salesUserId;
+          ? productionUserId
+          : Number(session.user.id || 0) || null;
 
     await db.insert(tasks).values({
       projectId,
@@ -543,8 +541,8 @@ export async function convertQuoteToProjectAction(formData: FormData) {
     phaseId: phaseIdByName.get("Entrega") ?? null,
     title: "Cierre financiero y documentación",
     description: "Validar facturación SII, respaldo PDF y estado de cobranza inicial.",
-    assigneeUserId: financeUserId,
-    taskType: "finanzas",
+    assigneeUserId: productionUserId,
+    taskType: "produccion",
     status: "todo",
     priority: "normal",
     estimatedHours: 2,

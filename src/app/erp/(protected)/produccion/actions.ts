@@ -21,7 +21,7 @@ function asNumber(value: FormDataEntryValue | null, fallback = 0) {
 
 export async function createConsumptionAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
 
     const projectId = asNumber(formData.get("projectId"));
     const materialId = asNumber(formData.get("materialId"));
@@ -99,7 +99,7 @@ export async function createConsumptionAction(formData: FormData) {
 
 export async function deleteConsumptionAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const id = asNumber(formData.get("consumptionId"));
     if (!id) {
@@ -123,7 +123,7 @@ export async function deleteConsumptionAction(formData: FormData) {
 
 export async function updateProjectStatusAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const projectId = asNumber(formData.get("projectId"));
     const status = String(formData.get("status") ?? "in_progress").trim();
@@ -145,7 +145,7 @@ export async function updateProjectStatusAction(formData: FormData) {
 
 export async function approveProjectPhaseAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const phaseId = asNumber(formData.get("phaseId"));
     if (!phaseId) {

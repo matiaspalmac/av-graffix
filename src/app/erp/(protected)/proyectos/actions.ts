@@ -19,7 +19,7 @@ function projectCode() {
 
 export async function createProjectAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
 
     const clientId = asNumber(formData.get("clientId"));
     const quoteId = asNumber(formData.get("quoteId"), 0) || null;
@@ -62,7 +62,7 @@ export async function createProjectAction(formData: FormData) {
 
 export async function updateProjectAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const id = asNumber(formData.get("projectId"));
     if (!id) {
@@ -95,7 +95,7 @@ export async function updateProjectAction(formData: FormData) {
 
 export async function archiveProjectAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const id = asNumber(formData.get("projectId"));
     if (!id) {
@@ -151,7 +151,7 @@ export async function projectFormOptions() {
 
 export async function exportProjectsExcelAction() {
   try {
-    await requireRole(["admin", "finanzas", "proyectos"]);
+    await requireRole(["admin", "produccion"]);
 
     const projectsData = await db
       .select({

@@ -6,7 +6,7 @@ import { db } from "@/db/client";
 import { roles, users } from "@/db/schema";
 import { trackLoginSession } from "@/app/erp/login/actions";
 
-const ALLOWED_ERP_ROLES = new Set(["admin", "finanzas"]);
+const ALLOWED_ERP_ROLES = new Set(["admin", "produccion"]);
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -71,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: String(account.id),
           email: account.email,
           name: account.fullName,
-          role: account.roleCode ?? "finanzas",
+          role: account.roleCode ?? "produccion",
         };
       },
     }),
@@ -87,7 +87,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = String(token.userId ?? "");
-        session.user.role = String(token.role ?? "finanzas");
+        session.user.role = String(token.role ?? "produccion");
       }
       return session;
     },

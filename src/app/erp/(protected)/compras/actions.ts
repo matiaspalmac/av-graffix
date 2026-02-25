@@ -63,7 +63,7 @@ async function recalcPurchaseOrderTotals(purchaseOrderId: number) {
 
 export async function createSupplierAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const legalName = String(formData.get("legalName") ?? "").trim();
     const tradeName = String(formData.get("tradeName") ?? "").trim();
@@ -95,7 +95,7 @@ export async function createSupplierAction(formData: FormData) {
 
 export async function createPurchaseOrderAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
     const supplierId = asNumber(formData.get("supplierId"));
 
     if (!supplierId) {
@@ -129,7 +129,7 @@ export async function createPurchaseOrderAction(formData: FormData) {
 
 export async function addPurchaseOrderItemAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
     const materialId = asNumber(formData.get("materialId"));
     const qty = asNumber(formData.get("qty"));
@@ -183,7 +183,7 @@ export async function addPurchaseOrderItemAction(formData: FormData) {
 
 export async function updatePurchaseOrderStatusAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
     const status = String(formData.get("status") ?? "draft").trim();
 
@@ -204,7 +204,7 @@ export async function updatePurchaseOrderStatusAction(formData: FormData) {
 
 export async function receivePurchaseOrderItemAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
     const poItemId = asNumber(formData.get("poItemId"));
     const receivedNow = asNumber(formData.get("receivedNow"));
 
@@ -292,7 +292,7 @@ export async function receivePurchaseOrderItemAction(formData: FormData) {
 
 export async function deletePurchaseOrderAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
 
     if (!purchaseOrderId) {
@@ -310,7 +310,7 @@ export async function deletePurchaseOrderAction(formData: FormData) {
 
 export async function deletePurchaseOrderItemAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const poItemId = asNumber(formData.get("poItemId"));
     const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
 
@@ -328,7 +328,7 @@ export async function deletePurchaseOrderItemAction(formData: FormData) {
 
 export async function cancelPurchaseOrderAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const purchaseOrderId = asNumber(formData.get("purchaseOrderId"));
     if (!purchaseOrderId) {
@@ -412,7 +412,7 @@ export async function latestPurchaseOrdersWithItems(limit = 16) {
 
 export async function exportPurchaseOrdersExcelAction() {
   try {
-    await requireRole(["admin", "compras", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const purchaseOrdersData = await db
       .select({

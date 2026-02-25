@@ -58,7 +58,7 @@ async function recalcInvoiceStatus(invoiceId: number) {
 
 export async function createInvoiceAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
 
     const clientId = asNumber(formData.get("clientId"));
     const subtotalClp = asNumber(formData.get("subtotalClp"));
@@ -98,7 +98,7 @@ export async function createInvoiceAction(formData: FormData) {
 
 export async function registerPaymentAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
     const invoiceId = asNumber(formData.get("invoiceId"));
     const amountClp = asNumber(formData.get("amountClp"));
 
@@ -132,7 +132,7 @@ export async function registerPaymentAction(formData: FormData) {
 
 export async function updateInvoiceStatusAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const invoiceId = asNumber(formData.get("invoiceId"));
     const status = String(formData.get("status") ?? "issued").trim();
 
@@ -153,7 +153,7 @@ export async function updateInvoiceStatusAction(formData: FormData) {
 
 export async function deletePaymentAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const paymentId = asNumber(formData.get("paymentId"));
     const invoiceId = asNumber(formData.get("invoiceId"));
 
@@ -171,7 +171,7 @@ export async function deletePaymentAction(formData: FormData) {
 
 export async function deleteInvoiceAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const invoiceId = asNumber(formData.get("invoiceId"));
 
     if (!invoiceId) {
@@ -253,7 +253,7 @@ export async function latestInvoicesWithPayments(limit = 20) {
 
 export async function exportInvoicesExcelAction() {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const invoicesData = await db
       .select({

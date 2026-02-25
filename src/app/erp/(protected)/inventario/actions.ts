@@ -32,7 +32,7 @@ async function getCurrentStock(materialId: number) {
 
 export async function createMaterialAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const sku = String(formData.get("sku") ?? "").trim().toUpperCase();
     const name = String(formData.get("name") ?? "").trim();
@@ -63,7 +63,7 @@ export async function createMaterialAction(formData: FormData) {
 
 export async function toggleMaterialActiveAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const materialId = asNumber(formData.get("materialId"));
     const isActive = String(formData.get("isActive") ?? "1") === "1";
@@ -85,7 +85,7 @@ export async function toggleMaterialActiveAction(formData: FormData) {
 
 export async function deleteMaterialAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const materialId = asNumber(formData.get("materialId"));
     if (!materialId) {
@@ -137,7 +137,7 @@ export async function deleteMaterialAction(formData: FormData) {
 
 export async function registerInventoryMoveAction(formData: FormData) {
   try {
-    const session = await requireRole(["admin", "finanzas"]);
+    const session = await requireRole(["admin", "produccion"]);
 
     const materialId = asNumber(formData.get("materialId"));
     const moveType = String(formData.get("moveType") ?? "in").trim();
@@ -183,7 +183,7 @@ export async function registerInventoryMoveAction(formData: FormData) {
 
 export async function createMaterialPriceAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const supplierId = asNumber(formData.get("supplierId"));
     const materialId = asNumber(formData.get("materialId"));

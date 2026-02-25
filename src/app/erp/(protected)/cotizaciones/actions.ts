@@ -72,7 +72,7 @@ export async function allQuotesWithDetails(limit = 50) {
 
 export async function updateQuoteAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const quoteId = asNumber(formData.get("quoteId"));
     const status = asText(formData.get("status"));
     const termsText = asText(formData.get("termsText"));
@@ -130,7 +130,7 @@ export async function updateQuoteAction(formData: FormData) {
 
 export async function updateQuoteItemAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
     const itemId = asNumber(formData.get("itemId"));
     const description = asText(formData.get("description"));
     const serviceCategory = asText(formData.get("serviceCategory"));
@@ -208,7 +208,7 @@ async function recalcQuoteTotals(quoteId: number) {
 
 export async function exportQuotesExcelAction() {
   try {
-    await requireRole(["admin", "ventas", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const quotesData = await db
       .select({
@@ -251,7 +251,7 @@ export async function exportQuotesExcelAction() {
 
 export async function deleteQuoteAction(formData: FormData) {
   try {
-    await requireRole(["admin", "finanzas"]);
+    await requireRole(["admin", "produccion"]);
 
     const quoteId = asNumber(formData.get("quoteId"));
 
