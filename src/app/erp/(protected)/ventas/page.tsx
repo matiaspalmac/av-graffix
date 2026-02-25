@@ -17,6 +17,7 @@ import { SubmitButton } from "@/components/erp/submit-button";
 import { WorkTypesSelector } from "@/components/erp/work-types-selector";
 import { MeasurementsInput } from "@/components/erp/measurements-input";
 import { SurfaceTypeSelector } from "@/components/erp/surface-type-selector";
+import { RegionCitySelector } from "@/components/erp/region-city-selector";
 
 type TechnicalSheet = {
   general?: { siteContact?: string; sitePhone?: string; technician?: string };
@@ -94,8 +95,17 @@ export default async function VentasPage() {
               <input name="contactName" placeholder="Ej: Juan Pérez" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
             </label>
             <label className="grid gap-1 text-sm">
+              <span className="text-zinc-600 dark:text-zinc-300">Teléfono</span>
+              <input name="contactPhone" placeholder="+56 9 ..." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <label className="grid gap-1 text-sm">
               <span className="text-zinc-600 dark:text-zinc-300">Email de contacto</span>
               <input name="contactEmail" placeholder="contacto@empresa.cl" type="email" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+            </label>
+            <RegionCitySelector defaultRegion="Araucanía" defaultCity="Temuco" />
+            <label className="grid gap-1 text-sm sm:col-span-2">
+              <span className="text-zinc-600 dark:text-zinc-300">Dirección</span>
+              <input name="address" placeholder="Ej: Av. Alemania 1234" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
             </label>
           </div>
           <SubmitButton>Guardar cliente</SubmitButton>
@@ -278,125 +288,125 @@ export default async function VentasPage() {
           </div>
         ) : (
           recentQuotes.map((quote) => (
-          (() => {
-            const technicalSheet = parseTechnicalSheet(quote.items[0]?.specsJson);
+            (() => {
+              const technicalSheet = parseTechnicalSheet(quote.items[0]?.specsJson);
 
-            return (
-          <div key={quote.id} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
-              <div>
-                <p className="font-bold text-zinc-900 dark:text-zinc-100">{quote.quoteNumber} · {quote.clientName ?? "-"}</p>
-                <p className="text-sm text-zinc-500">{new Date(quote.issueDate).toLocaleDateString("es-CL")} · Subtotal {formatCLP(quote.subtotalClp)} · IVA {formatCLP(quote.taxClp)} · Total {formatCLP(quote.totalClp)}</p>
-              </div>
+              return (
+                <div key={quote.id} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
+                  <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
+                    <div>
+                      <p className="font-bold text-zinc-900 dark:text-zinc-100">{quote.quoteNumber} · {quote.clientName ?? "-"}</p>
+                      <p className="text-sm text-zinc-500">{new Date(quote.issueDate).toLocaleDateString("es-CL")} · Subtotal {formatCLP(quote.subtotalClp)} · IVA {formatCLP(quote.taxClp)} · Total {formatCLP(quote.totalClp)}</p>
+                    </div>
 
-              <div className="flex flex-wrap gap-2">
-                <form action={updateQuoteStatusAction} className="inline-flex gap-2">
-                  <input type="hidden" name="quoteId" value={quote.id} />
-                  <select name="status" defaultValue={quote.status} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1 text-sm">
-                    <option value="draft">Borrador</option>
-                    <option value="sent">Enviada</option>
-                    <option value="approved">Aprobada</option>
-                    <option value="rejected">Rechazada</option>
-                  </select>
-                  <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Guardar</SubmitButton>
-                </form>
+                    <div className="flex flex-wrap gap-2">
+                      <form action={updateQuoteStatusAction} className="inline-flex gap-2">
+                        <input type="hidden" name="quoteId" value={quote.id} />
+                        <select name="status" defaultValue={quote.status} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1 text-sm">
+                          <option value="draft">Borrador</option>
+                          <option value="sent">Enviada</option>
+                          <option value="approved">Aprobada</option>
+                          <option value="rejected">Rechazada</option>
+                        </select>
+                        <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Guardar</SubmitButton>
+                      </form>
 
-                <form action={deleteQuoteAction}>
-                  <input type="hidden" name="quoteId" value={quote.id} />
-                  <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-sm hover:bg-red-50 dark:hover:bg-red-900/20">Eliminar</button>
-                </form>
+                      <form action={deleteQuoteAction}>
+                        <input type="hidden" name="quoteId" value={quote.id} />
+                        <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-sm hover:bg-red-50 dark:hover:bg-red-900/20">Eliminar</button>
+                      </form>
 
-                {quote.status === "approved" && !quote.projectId ? (
-                  <form action={convertQuoteToProjectAction}>
-                    <input type="hidden" name="quoteId" value={quote.id} />
-                    <SubmitButton className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Crear proyecto</SubmitButton>
-                  </form>
-                ) : null}
-
-                {quote.projectId ? (
-                  <span className="rounded-lg border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 text-sm text-emerald-700 dark:text-emerald-300">
-                    Proyecto #{quote.projectId} creado
-                  </span>
-                ) : null}
-              </div>
-            </div>
-
-            {technicalSheet ? (
-              <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 text-sm space-y-2">
-                <p className="font-semibold text-zinc-900 dark:text-zinc-100">Ficha técnica</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-zinc-600 dark:text-zinc-300">
-                  <p>Contacto terreno: {technicalSheet.general?.siteContact || "-"}</p>
-                  <p>Teléfono: {technicalSheet.general?.sitePhone || "-"}</p>
-                  <p>Técnico: {technicalSheet.general?.technician || "-"}</p>
-                  {technicalSheet.jobSpecs?.workTypes && technicalSheet.jobSpecs.workTypes.length > 0 ? (
-                    <p className="sm:col-span-2">Tipos de trabajo: {technicalSheet.jobSpecs.workTypes.join(", ")}</p>
-                  ) : null}
-                  {technicalSheet.jobSpecs?.workTypeOther ? (
-                    <p className="sm:col-span-2">Otro tipo: {technicalSheet.jobSpecs.workTypeOther}</p>
-                  ) : null}
-                  <p>Tipo lugar: {technicalSheet.jobSpecs?.locationType || "-"}</p>
-                  <p>Altura instalación: {technicalSheet.jobSpecs?.installHeightMeters ?? 0} m</p>
-                  <p>Acceso vehicular: {technicalSheet.jobSpecs?.vehicleAccess ? "Sí" : "No"}</p>
-                  <p>Tránsito: {technicalSheet.jobSpecs?.trafficLevel || "-"}</p>
-                  <p>Superficie: {technicalSheet.measurements?.surfaceType || "-"}</p>
-                  {technicalSheet.measurements?.surfaceTypeOther ? (
-                    <p className="sm:col-span-2">Otro tipo superficie: {technicalSheet.measurements.surfaceTypeOther}</p>
-                  ) : null}
-                  <p>Estado superficie: {technicalSheet.measurements?.surfaceCondition || "-"}</p>
-                  <p>Montaje: {technicalSheet.technicalConditions?.mountType || "-"}</p>
-                  <p>Personal estimado: {technicalSheet.technicalConditions?.estimatedPersonnel ?? 0}</p>
-                  <p>Tiempo estimado: {technicalSheet.technicalConditions?.estimatedTimeHours ?? 0} h</p>
-                  <p className="sm:col-span-2">Permisos: {technicalSheet.logistics?.requiredPermits || "-"}</p>
-                </div>
-              </div>
-            ) : null}
-
-            <div className="overflow-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
-                    <th className="py-2">#</th>
-                    <th className="py-2">Descripción</th>
-                    <th className="py-2">Categoría</th>
-                    <th className="py-2">Cantidad</th>
-                    <th className="py-2">Unitario</th>
-                    <th className="py-2">Total</th>
-                    <th className="py-2">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {quote.items.map((item) => (
-                    <tr key={item.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
-                      <td className="py-2">{item.lineNo}</td>
-                      <td className="py-2">{item.description}</td>
-                      <td className="py-2">{item.serviceCategory}</td>
-                      <td className="py-2">{item.qty} {item.unit}</td>
-                      <td className="py-2">{formatCLP(item.unitPriceClp)}</td>
-                      <td className="py-2">{formatCLP(item.lineTotalClp)}</td>
-                      <td className="py-2">
-                        <form action={deleteQuoteItemAction}>
-                          <input type="hidden" name="quoteItemId" value={item.id} />
+                      {quote.status === "approved" && !quote.projectId ? (
+                        <form action={convertQuoteToProjectAction}>
                           <input type="hidden" name="quoteId" value={quote.id} />
-                          <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-xs hover:bg-red-50 dark:hover:bg-red-900/20">Eliminar ítem</button>
+                          <SubmitButton className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Crear proyecto</SubmitButton>
                         </form>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      ) : null}
 
-            <form action={addQuoteItemAction} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-2">
-              <input type="hidden" name="quoteId" value={quote.id} />
-              <input name="description" required placeholder="Nuevo ítem" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5 xl:col-span-2" />
-              <input name="serviceCategory" required placeholder="Categoría" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
-              <input name="qty" type="number" step="0.01" required defaultValue="1" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
-              <input name="unitPriceClp" type="number" step="1" required defaultValue="0" placeholder="Unitario CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
-              <SubmitButton className="rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Agregar ítem</SubmitButton>
-            </form>
-          </div>
-            );
-          })()
+                      {quote.projectId ? (
+                        <span className="rounded-lg border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 text-sm text-emerald-700 dark:text-emerald-300">
+                          Proyecto #{quote.projectId} creado
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {technicalSheet ? (
+                    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 text-sm space-y-2">
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">Ficha técnica</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-zinc-600 dark:text-zinc-300">
+                        <p>Contacto terreno: {technicalSheet.general?.siteContact || "-"}</p>
+                        <p>Teléfono: {technicalSheet.general?.sitePhone || "-"}</p>
+                        <p>Técnico: {technicalSheet.general?.technician || "-"}</p>
+                        {technicalSheet.jobSpecs?.workTypes && technicalSheet.jobSpecs.workTypes.length > 0 ? (
+                          <p className="sm:col-span-2">Tipos de trabajo: {technicalSheet.jobSpecs.workTypes.join(", ")}</p>
+                        ) : null}
+                        {technicalSheet.jobSpecs?.workTypeOther ? (
+                          <p className="sm:col-span-2">Otro tipo: {technicalSheet.jobSpecs.workTypeOther}</p>
+                        ) : null}
+                        <p>Tipo lugar: {technicalSheet.jobSpecs?.locationType || "-"}</p>
+                        <p>Altura instalación: {technicalSheet.jobSpecs?.installHeightMeters ?? 0} m</p>
+                        <p>Acceso vehicular: {technicalSheet.jobSpecs?.vehicleAccess ? "Sí" : "No"}</p>
+                        <p>Tránsito: {technicalSheet.jobSpecs?.trafficLevel || "-"}</p>
+                        <p>Superficie: {technicalSheet.measurements?.surfaceType || "-"}</p>
+                        {technicalSheet.measurements?.surfaceTypeOther ? (
+                          <p className="sm:col-span-2">Otro tipo superficie: {technicalSheet.measurements.surfaceTypeOther}</p>
+                        ) : null}
+                        <p>Estado superficie: {technicalSheet.measurements?.surfaceCondition || "-"}</p>
+                        <p>Montaje: {technicalSheet.technicalConditions?.mountType || "-"}</p>
+                        <p>Personal estimado: {technicalSheet.technicalConditions?.estimatedPersonnel ?? 0}</p>
+                        <p>Tiempo estimado: {technicalSheet.technicalConditions?.estimatedTimeHours ?? 0} h</p>
+                        <p className="sm:col-span-2">Permisos: {technicalSheet.logistics?.requiredPermits || "-"}</p>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="overflow-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+                          <th className="py-2">#</th>
+                          <th className="py-2">Descripción</th>
+                          <th className="py-2">Categoría</th>
+                          <th className="py-2">Cantidad</th>
+                          <th className="py-2">Unitario</th>
+                          <th className="py-2">Total</th>
+                          <th className="py-2">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {quote.items.map((item) => (
+                          <tr key={item.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
+                            <td className="py-2">{item.lineNo}</td>
+                            <td className="py-2">{item.description}</td>
+                            <td className="py-2">{item.serviceCategory}</td>
+                            <td className="py-2">{item.qty} {item.unit}</td>
+                            <td className="py-2">{formatCLP(item.unitPriceClp)}</td>
+                            <td className="py-2">{formatCLP(item.lineTotalClp)}</td>
+                            <td className="py-2">
+                              <form action={deleteQuoteItemAction}>
+                                <input type="hidden" name="quoteItemId" value={item.id} />
+                                <input type="hidden" name="quoteId" value={quote.id} />
+                                <button className="rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 px-2 py-1 text-xs hover:bg-red-50 dark:hover:bg-red-900/20">Eliminar ítem</button>
+                              </form>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <form action={addQuoteItemAction} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-2">
+                    <input type="hidden" name="quoteId" value={quote.id} />
+                    <input name="description" required placeholder="Nuevo ítem" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5 xl:col-span-2" />
+                    <input name="serviceCategory" required placeholder="Categoría" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+                    <input name="qty" type="number" step="0.01" required defaultValue="1" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+                    <input name="unitPriceClp" type="number" step="1" required defaultValue="0" placeholder="Unitario CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+                    <SubmitButton className="rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Agregar ítem</SubmitButton>
+                  </form>
+                </div>
+              );
+            })()
           ))
         )}
       </div>

@@ -6,15 +6,16 @@ import { usePathname } from "next/navigation";
 import { X, Download } from "lucide-react";
 import {
   LayoutDashboard,
-  Handshake,
+  TrendingUp,
   FolderKanban,
-  Factory,
-  Boxes,
+  Printer,
+  Package,
   ShoppingCart,
-  Wallet,
+  Landmark,
   BarChart3,
   ShieldCheck,
   FileText,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "./sidebar-provider";
@@ -27,13 +28,14 @@ interface BeforeInstallPromptEvent extends Event {
 
 const menu = [
   { href: "/erp", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/erp/ventas", label: "CRM & Ventas", icon: Handshake },
+  { href: "/erp/ventas", label: "CRM & Ventas", icon: TrendingUp },
   { href: "/erp/cotizaciones", label: "Cotizaciones", icon: FileText },
+  { href: "/erp/clientes", label: "Clientes", icon: Users },
   { href: "/erp/proyectos", label: "Proyectos", icon: FolderKanban },
-  { href: "/erp/produccion", label: "Producción", icon: Factory },
-  { href: "/erp/inventario", label: "Inventario", icon: Boxes },
+  { href: "/erp/produccion", label: "Producción", icon: Printer },
+  { href: "/erp/inventario", label: "Inventario", icon: Package },
   { href: "/erp/compras", label: "Compras", icon: ShoppingCart },
-  { href: "/erp/finanzas", label: "Finanzas", icon: Wallet },
+  { href: "/erp/finanzas", label: "Finanzas", icon: Landmark },
   { href: "/erp/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/erp/admin", label: "Administración", icon: ShieldCheck },
 ];
@@ -84,7 +86,7 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
+
     if (outcome === 'accepted') {
       console.log('PWA instalada desde el sidebar');
     }
@@ -96,18 +98,16 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
 
   return (
     <>
-      {/* Desktop Sidebar - Estilo Gmail */}
+      {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "hidden lg:flex lg:flex-col lg:fixed lg:top-16 lg:left-0 lg:h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-all duration-300 overflow-hidden",
+          "hidden lg:flex lg:flex-col lg:fixed lg:top-16 lg:left-0 lg:h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden",
+          "transition-[width] duration-300 ease-in-out",
           isCollapsed ? "lg:w-[72px]" : "lg:w-64"
         )}
       >
         <div className="flex w-full flex-col h-full">
-          <nav className={cn(
-            "flex-1 overflow-y-auto py-2",
-            isCollapsed ? "px-2" : "px-3"
-          )}>
+          <nav className="flex-1 overflow-y-auto py-2">
             <div className="space-y-1">
               {menuItems.map((item) => {
                 const Icon = item.icon;
@@ -117,18 +117,27 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl text-sm font-medium transition-colors",
-                      isCollapsed
-                        ? "justify-center p-3 min-h-[48px]"
-                        : "px-3 py-2.5",
+                      "flex items-center h-11 rounded-xl text-sm font-medium transition-colors mx-2",
                       active
                         ? "bg-brand-600 text-white shadow-md shadow-brand-600/20"
                         : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
                     )}
                     title={isCollapsed ? item.label : undefined}
                   >
-                    <Icon size={18} className="flex-shrink-0" />
-                    {!isCollapsed && <span>{item.label}</span>}
+                    {/* Slot fijo de 52px = centrado en los ~72px del sidebar colapsado (72 - 2*mx-2=8px = 64px, icon 18px → padding 23px) */}
+                    <span className="flex items-center justify-center w-[52px] flex-shrink-0">
+                      <Icon size={18} />
+                    </span>
+                    <span
+                      className={cn(
+                        "whitespace-nowrap overflow-hidden transition-[opacity] ease-in-out pr-3",
+                        isCollapsed
+                          ? "opacity-0 duration-100 w-0"
+                          : "opacity-100 duration-200 delay-150"
+                      )}
+                    >
+                      {item.label}
+                    </span>
                   </Link>
                 );
               })}
@@ -137,27 +146,26 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
 
           {/* Botón de instalación PWA - Desktop */}
           {deferredPrompt && !isInstalled && (
-            <div className={cn(
-              "border-t border-zinc-200 dark:border-zinc-800",
-              isCollapsed ? "p-2" : "p-3"
-            )}>
-              {isCollapsed ? (
-                <button
-                  onClick={handleInstall}
-                  className="w-full flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 transition-all shadow-lg shadow-brand-500/20"
-                  title="Instalar App"
-                >
+            <div className="border-t border-zinc-200 dark:border-zinc-800 py-2 px-2">
+              <button
+                onClick={handleInstall}
+                className="w-full flex items-center h-11 rounded-xl text-sm font-medium bg-gradient-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 transition-all shadow-lg shadow-brand-500/20"
+                title={isCollapsed ? "Instalar App" : undefined}
+              >
+                <span className="flex items-center justify-center w-[52px] flex-shrink-0">
                   <Download size={18} />
-                </button>
-              ) : (
-                <button
-                  onClick={handleInstall}
-                  className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium bg-gradient-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 transition-all shadow-lg shadow-brand-500/20"
+                </span>
+                <span
+                  className={cn(
+                    "whitespace-nowrap overflow-hidden transition-[opacity] ease-in-out pr-3",
+                    isCollapsed
+                      ? "opacity-0 duration-100 w-0"
+                      : "opacity-100 duration-200 delay-150"
+                  )}
                 >
-                  <Download size={18} className="flex-shrink-0" />
-                  <span>Instalar App</span>
-                </button>
-              )}
+                  Instalar App
+                </span>
+              </button>
             </div>
           )}
         </div>

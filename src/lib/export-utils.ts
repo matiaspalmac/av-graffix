@@ -65,25 +65,25 @@ export async function exportData<T extends Record<string, unknown>>(
       { col: `${company.email} | ${company.phone}` },
       { col: "" },
     ];
-    
+
     const headerSheet = XLSX.utils.json_to_sheet(headerRows);
-    
+
     // Combinar encabezado con datos
     const mergedData = [
       ...headerRows,
       {},
       ...formattedData,
     ];
-    
+
     const mergedSheet = XLSX.utils.json_to_sheet(mergedData);
-    
+
     // Auto-ajustar ancho de columnas
     const allKeys = Object.keys(formattedData[0]);
     const colWidths = allKeys.map((key) => ({
       wch: Math.max(key.length, 20),
     }));
     mergedSheet["!cols"] = colWidths;
-    
+
     XLSX.utils.book_append_sheet(workbook, mergedSheet, options.sheetName || "Data");
   } else {
     // Auto-ajustar ancho de columnas
@@ -104,7 +104,7 @@ export async function exportData<T extends Record<string, unknown>>(
  */
 export async function exportQuotesToExcel(quotes: any[]): Promise<Buffer> {
   const company = await getCompanySettings();
-  
+
   const formatted = quotes.map((q) => ({
     "N° Cotización": q.quoteNumber,
     Cliente: q.client?.tradeName || "N/A",
@@ -138,7 +138,7 @@ export async function exportQuotesToExcel(quotes: any[]): Promise<Buffer> {
  */
 export async function exportProjectsToExcel(projects: any[]): Promise<Buffer> {
   const company = await getCompanySettings();
-  
+
   const formatted = projects.map((p) => ({
     Código: p.projectCode,
     Nombre: p.name,
@@ -173,7 +173,7 @@ export async function exportProjectsToExcel(projects: any[]): Promise<Buffer> {
  */
 export async function exportInvoicesToExcel(invoices: any[]): Promise<Buffer> {
   const company = await getCompanySettings();
-  
+
   const formatted = invoices.map((i) => ({
     "N° Factura": i.invoiceNumber,
     Cliente: i.client?.tradeName || "N/A",
@@ -208,7 +208,7 @@ export async function exportInvoicesToExcel(invoices: any[]): Promise<Buffer> {
  */
 export async function exportPurchaseOrdersToExcel(purchaseOrders: any[]): Promise<Buffer> {
   const company = await getCompanySettings();
-  
+
   const formatted = purchaseOrders.map((po) => ({
     "N° Orden": po.poNumber,
     Proveedor: po.supplier?.tradeName || "N/A",
@@ -243,7 +243,7 @@ export async function exportPurchaseOrdersToExcel(purchaseOrders: any[]): Promis
  */
 export async function exportMaterialConsumptionToExcel(consumptions: any[]): Promise<Buffer> {
   const company = await getCompanySettings();
-  
+
   const formatted = consumptions.map((c) => ({
     Proyecto: c.project?.projectCode || "N/A",
     Material: c.material?.name || "N/A",
@@ -277,7 +277,7 @@ export async function exportMaterialConsumptionToExcel(consumptions: any[]): Pro
  */
 export async function exportProfitabilityToExcel(projects: any[]): Promise<Buffer> {
   const company = await getCompanySettings();
-  
+
   const formatted = projects.map((p) => ({
     Código: p.projectCode,
     Proyecto: p.name,
