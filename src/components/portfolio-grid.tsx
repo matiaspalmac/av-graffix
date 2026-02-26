@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ChevronLeft, ChevronRight, Building2, Images } from "lucide-react"
+import { X, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Building2, Images } from "lucide-react"
 
 const portfolioItems = [
   {
@@ -71,95 +71,122 @@ type LightboxState = {
   photoIndex: number
 }
 
+// Transition direction: "left" | "right" | "up" | "down"
+type SlideDirection = "left" | "right" | "up" | "down"
+
 export default function PortfolioGrid() {
   const [active, setActive] = useState("Todos")
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
-  const [direction, setDirection] = useState(0)
+  const [slideDir, setSlideDir] = useState<SlideDirection>("right")
+  const savedScrollY = useRef(0)
 
   const touchStartX = useRef(0)
+  const touchStartY = useRef(0)
   const touchDeltaX = useRef(0)
-  const isSwiping = useRef(false)
-  const lightboxRef = useRef<HTMLDivElement>(null)
+  const touchDeltaY = useRef(0)
+  const swipeAxis = useRef<"none" | "horizontal" | "vertical">("none")
 
   const filtered = active === "Todos" ? portfolioItems : portfolioItems.filter(i => i.category === active)
   const currentItem = lightbox !== null ? filtered[lightbox.itemIndex] : null
 
   const openLightbox = (itemIndex: number, photoIndex = 0) => {
-    setDirection(0)
+    setSlideDir("right")
     setLightbox({ itemIndex, photoIndex })
   }
 
   const closeLightbox = () => setLightbox(null)
 
-  // Lock body scroll when lightbox is open
+  // Lock body scroll when lightbox is open — no position:fixed trick
   useEffect(() => {
     if (lightbox) {
-      const scrollY = window.scrollY
-      document.body.style.position = "fixed"
-      document.body.style.top = `-${scrollY}px`
-      document.body.style.left = "0"
-      document.body.style.right = "0"
+      savedScrollY.current = window.scrollY
+      document.documentElement.style.overflow = "hidden"
       document.body.style.overflow = "hidden"
       return () => {
-        document.body.style.position = ""
-        document.body.style.top = ""
-        document.body.style.left = ""
-        document.body.style.right = ""
+        document.documentElement.style.overflow = ""
         document.body.style.overflow = ""
-        window.scrollTo(0, scrollY)
       }
     }
   }, [lightbox])
 
+  // Block wheel scroll on the overlay
+  useEffect(() => {
+    if (!lightbox) return
+    const handler = (e: WheelEvent) => { e.preventDefault() }
+    document.addEventListener("wheel", handler, { passive: false })
+    return () => document.removeEventListener("wheel", handler)
+  }, [lightbox])
+
   const goNextPhoto = useCallback(() => {
-    if (!lightbox || !currentItem) return
-    if (currentItem.images.length <= 1) return
-    setDirection(1)
+    if (!lightbox || !currentItem || currentItem.images.length <= 1) return
+    setSlideDir("left")
     setLightbox(prev => prev ? { ...prev, photoIndex: (prev.photoIndex + 1) % currentItem.images.length } : null)
   }, [lightbox, currentItem])
 
   const goPrevPhoto = useCallback(() => {
-    if (!lightbox || !currentItem) return
-    if (currentItem.images.length <= 1) return
-    setDirection(-1)
+    if (!lightbox || !currentItem || currentItem.images.length <= 1) return
+    setSlideDir("right")
     setLightbox(prev => prev ? { ...prev, photoIndex: (prev.photoIndex - 1 + currentItem.images.length) % currentItem.images.length } : null)
   }, [lightbox, currentItem])
 
-  // Touch handlers - only horizontal swipe for photo navigation
+  const goNextCompany = useCallback(() => {
+    if (!lightbox) return
+    setSlideDir("up")
+    const next = (lightbox.itemIndex + 1) % filtered.length
+    setLightbox({ itemIndex: next, photoIndex: 0 })
+  }, [lightbox, filtered.length])
+
+  const goPrevCompany = useCallback(() => {
+    if (!lightbox) return
+    setSlideDir("down")
+    const prev = (lightbox.itemIndex - 1 + filtered.length) % filtered.length
+    setLightbox({ itemIndex: prev, photoIndex: 0 })
+  }, [lightbox, filtered.length])
+
+  // Touch handlers — detect axis lock then navigate
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
     touchDeltaX.current = 0
-    isSwiping.current = false
+    touchDeltaY.current = 0
+    swipeAxis.current = "none"
   }, [])
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     const dx = e.touches[0].clientX - touchStartX.current
+    const dy = e.touches[0].clientY - touchStartY.current
     touchDeltaX.current = dx
+    touchDeltaY.current = dy
 
-    // Once we detect a horizontal swipe, prevent default to stop page scroll
-    if (Math.abs(dx) > 10 && !isSwiping.current) {
-      isSwiping.current = true
+    // Lock to an axis once threshold is met
+    if (swipeAxis.current === "none" && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+      swipeAxis.current = Math.abs(dx) >= Math.abs(dy) ? "horizontal" : "vertical"
     }
 
-    if (isSwiping.current) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
+    // Always prevent default — the overlay has touch-action:none as well
+    e.preventDefault()
+    e.stopPropagation()
   }, [])
 
   const handleTouchEnd = useCallback(() => {
     const dx = touchDeltaX.current
-    const THRESHOLD = 60
+    const dy = touchDeltaY.current
+    const THRESHOLD = 50
 
-    if (Math.abs(dx) > THRESHOLD) {
+    if (swipeAxis.current === "horizontal" && Math.abs(dx) > THRESHOLD) {
       if (dx < 0) goNextPhoto()
       else goPrevPhoto()
+    } else if (swipeAxis.current === "vertical" && Math.abs(dy) > THRESHOLD) {
+      if (dy < 0) goNextCompany()
+      else goPrevCompany()
     }
 
     touchStartX.current = 0
+    touchStartY.current = 0
     touchDeltaX.current = 0
-    isSwiping.current = false
-  }, [goNextPhoto, goPrevPhoto])
+    touchDeltaY.current = 0
+    swipeAxis.current = "none"
+  }, [goNextPhoto, goPrevPhoto, goNextCompany, goPrevCompany])
 
   // Keyboard navigation
   useEffect(() => {
@@ -167,26 +194,29 @@ export default function PortfolioGrid() {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") goNextPhoto()
       if (e.key === "ArrowLeft") goPrevPhoto()
+      if (e.key === "ArrowDown") { e.preventDefault(); goNextCompany() }
+      if (e.key === "ArrowUp") { e.preventDefault(); goPrevCompany() }
       if (e.key === "Escape") closeLightbox()
     }
     window.addEventListener("keydown", handler)
     return () => window.removeEventListener("keydown", handler)
-  }, [lightbox, goNextPhoto, goPrevPhoto])
+  }, [lightbox, goNextPhoto, goPrevPhoto, goNextCompany, goPrevCompany])
 
-  // Slide variants for image transitions
-  const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir >= 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (dir: number) => ({
-      x: dir >= 0 ? -300 : 300,
-      opacity: 0,
-    }),
+  // Slide variants — direction-aware
+  const getVariants = (dir: SlideDirection) => {
+    const offset = 220
+    const axes: Record<SlideDirection, { x: number; y: number }> = {
+      left: { x: -offset, y: 0 },
+      right: { x: offset, y: 0 },
+      up: { x: 0, y: -offset },
+      down: { x: 0, y: offset },
+    }
+    const enter = axes[dir]
+    return {
+      enter: { x: enter.x, y: enter.y, opacity: 0 },
+      center: { x: 0, y: 0, opacity: 1 },
+      exit: { x: -enter.x, y: -enter.y, opacity: 0 },
+    }
   }
 
   return (
@@ -197,51 +227,66 @@ export default function PortfolioGrid() {
         {lightbox !== null && currentItem && (
           <motion.div
             key="lightbox-overlay"
-            ref={lightboxRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[100] flex items-center justify-center"
             style={{ touchAction: "none" }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-zinc-950/90 backdrop-blur-sm"
+            {/* Backdrop — simple solid with light blur, no position tricks */}
+            <div
+              className="absolute inset-0 bg-zinc-100/95 dark:bg-zinc-950/95 backdrop-blur-md"
               onClick={closeLightbox}
             />
 
             {/* Close button */}
             <button
               onClick={closeLightbox}
-              className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-zinc-800/80 hover:bg-brand-600 text-white flex items-center justify-center backdrop-blur-sm border border-white/10 transition-colors duration-200"
+              className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white flex items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
               aria-label="Cerrar"
             >
               <X size={18} />
             </button>
 
+            {/* Company navigation arrows - vertical */}
+            <button
+              className="hidden md:flex absolute top-4 left-1/2 -translate-x-1/2 md:top-6 z-20 w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
+              onClick={goPrevCompany}
+              aria-label="Empresa anterior"
+            >
+              <ChevronUp size={18} />
+            </button>
+            <button
+              className="hidden md:flex absolute bottom-28 left-1/2 -translate-x-1/2 z-20 w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
+              onClick={goNextCompany}
+              aria-label="Empresa siguiente"
+            >
+              <ChevronDown size={18} />
+            </button>
+
             {/* Counter */}
             {currentItem.images.length > 1 && (
-              <div className="absolute top-4 left-4 md:top-6 md:left-6 z-20 text-white/70 text-sm font-semibold tabular-nums bg-zinc-800/60 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
+              <div className="absolute top-4 left-4 md:top-6 md:left-6 z-20 text-zinc-600 dark:text-zinc-400 text-sm font-semibold tabular-nums bg-zinc-200/80 dark:bg-zinc-800/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700">
                 {lightbox.photoIndex + 1} / {currentItem.images.length}
               </div>
             )}
 
-            {/* Navigation arrows - Desktop */}
+            {/* Navigation arrows - horizontal (Desktop) */}
             {currentItem.images.length > 1 && (
               <>
                 <button
-                  className="hidden md:flex absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-zinc-800/60 hover:bg-brand-600 text-white items-center justify-center backdrop-blur-sm border border-white/10 transition-colors duration-200"
+                  className="hidden md:flex absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
                   onClick={goPrevPhoto}
                   aria-label="Foto anterior"
                 >
                   <ChevronLeft size={22} />
                 </button>
                 <button
-                  className="hidden md:flex absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-zinc-800/60 hover:bg-brand-600 text-white items-center justify-center backdrop-blur-sm border border-white/10 transition-colors duration-200"
+                  className="hidden md:flex absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
                   onClick={goNextPhoto}
                   aria-label="Foto siguiente"
                 >
@@ -253,18 +298,14 @@ export default function PortfolioGrid() {
             {/* Main content area */}
             <div
               className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 md:px-20 py-16 md:py-20"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Image area */}
               <div className="relative flex-1 w-full max-w-5xl flex items-center justify-center overflow-hidden">
-                <AnimatePresence mode="popLayout" custom={direction}>
+                <AnimatePresence mode="popLayout" custom={slideDir}>
                   <motion.div
-                    key={currentItem.company + "-" + lightbox.photoIndex}
-                    custom={direction}
-                    variants={slideVariants}
+                    key={currentItem.company + "-" + lightbox.itemIndex + "-" + lightbox.photoIndex}
+                    variants={getVariants(slideDir)}
                     initial="enter"
                     animate="center"
                     exit="exit"
@@ -284,11 +325,11 @@ export default function PortfolioGrid() {
                 </AnimatePresence>
               </div>
 
-              {/* Bottom info bar */}
+              {/* Bottom info bar — themed for light/dark */}
               <div className="w-full max-w-5xl mt-4 md:mt-6 flex-shrink-0">
-                <div className="flex items-center gap-4 bg-zinc-900/80 backdrop-blur-md rounded-2xl px-5 py-4 border border-white/5">
+                <div className="flex items-center gap-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-2xl px-5 py-4 border border-zinc-200 dark:border-zinc-800 shadow-lg shadow-zinc-900/5 dark:shadow-black/20">
                   {/* Logo */}
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden">
                     {currentItem.logo ? (
                       <Image
                         src={currentItem.logo}
@@ -299,13 +340,18 @@ export default function PortfolioGrid() {
                         unoptimized
                       />
                     ) : (
-                      <Building2 size={18} className="text-zinc-500" />
+                      <Building2 size={18} className="text-zinc-400 dark:text-zinc-500" />
                     )}
                   </div>
                   {/* Text */}
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-white font-bold text-sm md:text-base truncate">{currentItem.company}</h2>
-                    <p className="text-zinc-400 text-xs md:text-sm truncate">{currentItem.description}</p>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-zinc-900 dark:text-zinc-100 font-bold text-sm md:text-base truncate">{currentItem.company}</h2>
+                      <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-500 bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 rounded-md flex-shrink-0">
+                        {lightbox.itemIndex + 1}/{filtered.length}
+                      </span>
+                    </div>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm truncate">{currentItem.description}</p>
                   </div>
                   {/* Thumbnail dots */}
                   {currentItem.images.length > 1 && (
@@ -314,13 +360,13 @@ export default function PortfolioGrid() {
                         <button
                           key={idx}
                           onClick={() => {
-                            setDirection(idx > lightbox.photoIndex ? 1 : -1)
+                            setSlideDir(idx > lightbox.photoIndex ? "left" : "right")
                             setLightbox(prev => prev ? { ...prev, photoIndex: idx } : null)
                           }}
                           className={`rounded-full transition-all duration-200 ${
                             idx === lightbox.photoIndex
                               ? "w-6 h-2 bg-brand-500"
-                              : "w-2 h-2 bg-zinc-600 hover:bg-zinc-400"
+                              : "w-2 h-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-400"
                           }`}
                           aria-label={`Ver foto ${idx + 1}`}
                         />
