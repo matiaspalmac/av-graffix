@@ -72,210 +72,325 @@ export default async function VentasPage() {
       </div>
 
       <div className="space-y-4">
-        <form action={createClientAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
-          <h3 className="text-lg font-bold">Nuevo cliente</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Razón social</span>
-              <input name="legalName" required placeholder="Ej: Empresa Ltda." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Nombre comercial</span>
-              <input name="tradeName" required placeholder="Ej: Empresa" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">RUT</span>
-              <input name="rut" required placeholder="Ej: 12.345.678-9" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Giro</span>
-              <input name="giro" placeholder="Ej: Importación" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-
-            <ContactsListInput />
-
-            <RegionCitySelector defaultRegion="Araucanía" defaultCity="Temuco" />
-            <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-zinc-600 dark:text-zinc-300">Dirección</span>
-              <input name="address" placeholder="Ej: Av. Alemania 1234" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
+        <form action={createClientAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 space-y-8">
+          <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
+            <div>
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Nuevo Cliente</h3>
+              <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mt-1">Registro de datos comerciales</p>
+            </div>
           </div>
-          <SubmitButton>Guardar cliente</SubmitButton>
+
+          <div className="space-y-8">
+            {/* Sección 1: Identificación del Cliente */}
+            <section className="space-y-3">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="h-3.5 w-1 bg-brand-600 rounded-full"></div>
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Identificación</h4>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="grid gap-1 text-sm sm:col-span-2">
+                  <span className="text-zinc-600 dark:text-zinc-300">Razón Social</span>
+                  <input name="legalName" required placeholder="Ej: Importadora y Comercializadora AV Ltda." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Nombre Comercial</span>
+                  <input name="tradeName" required placeholder="Ej: AV GRAFFIX" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">RUT</span>
+                  <input name="rut" required placeholder="Ej: 12.345.678-9" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+                <label className="grid gap-1 text-sm sm:col-span-2">
+                  <span className="text-zinc-600 dark:text-zinc-300">Giro / Actividad Económica</span>
+                  <input name="giro" placeholder="Ej: Servicios de impresión y publicidad" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+              </div>
+            </section>
+
+            {/* Sección 2: Contactos */}
+            <section>
+              <ContactsListInput />
+            </section>
+
+            {/* Sección 3: Ubicación y Dirección */}
+            <section className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="h-3.5 w-1 bg-blue-600 rounded-full"></div>
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Ubicación</h4>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <RegionCitySelector defaultRegion="Araucanía" defaultCity="Temuco" />
+                <label className="grid gap-1 text-sm sm:col-span-2">
+                  <span className="text-zinc-600 dark:text-zinc-300">Dirección</span>
+                  <input name="address" placeholder="Ej: Calle San Martín 456, Depto 201" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+              </div>
+            </section>
+          </div>
+
+          <div className="pt-6 border-t border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row gap-4">
+            <SubmitButton>Guardar Cliente</SubmitButton>
+            <button type="reset" className="hidden sm:block px-6 py-2.5 text-sm font-bold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors uppercase tracking-widest leading-none">
+              Limpiar Formulario
+            </button>
+          </div>
         </form>
 
-        <form action={createQuoteAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
-          <h3 className="text-lg font-bold">Nueva cotización</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Cliente *</span>
-              <select name="clientId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-                <option value="">Selecciona un cliente</option>
-                {clientOptions.map((c) => (
-                  <option key={c.id} value={c.id}>{c.tradeName}</option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Fecha</span>
-              <input name="surveyDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <div className="grid grid-cols-2 gap-3 sm:col-span-2">
-              <label className="grid gap-1 text-sm">
-                <span className="text-zinc-600 dark:text-zinc-300">Contacto en terreno</span>
-                <input name="siteContact" placeholder="Nombre completo" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-              </label>
-              <label className="grid gap-1 text-sm">
-                <span className="text-zinc-600 dark:text-zinc-300">Teléfono contacto</span>
-                <input name="sitePhone" placeholder="+56 9 ..." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-              </label>
+        <form action={createQuoteAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 space-y-8">
+          <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
+            <div>
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Nueva Cotización</h3>
+              <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mt-1">Ingreso de requerimientos y costos</p>
             </div>
-            <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-zinc-600 dark:text-zinc-300">Técnico</span>
-              <input name="technician" placeholder="Nombre del técnico" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Categoría</span>
-              <input name="serviceCategory" placeholder="Categoría (ej. etiquetas)" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-zinc-600 dark:text-zinc-300">Descripción del servicio</span>
-              <input name="description" placeholder="Ej: Diseño de etiqueta" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <WorkTypesSelector />
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Tipo de lugar</span>
-              <select name="locationType" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-                <option value="">Selecciona</option>
-                <option value="Local">Local</option>
-                <option value="Mall">Mall</option>
-                <option value="Oficina">Oficina</option>
-                <option value="Vía pública">Vía pública</option>
-                <option value="Vehículo">Vehículo</option>
-              </select>
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Altura instalación (m)</span>
-              <input name="installHeightMeters" type="number" step="0.1" defaultValue="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Nivel de tránsito</span>
-              <select name="trafficLevel" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-                <option value="">Selecciona</option>
-                <option value="Bajo">Bajo</option>
-                <option value="Medio">Medio</option>
-                <option value="Alto">Alto</option>
-              </select>
-            </label>
-            <label className="inline-flex items-center gap-2 text-sm sm:mt-7">
-              <input type="checkbox" name="vehicleAccess" className="rounded border-zinc-300 dark:border-zinc-700" />
-              <span>Acceso vehicular</span>
-            </label>
-            <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-zinc-600 dark:text-zinc-300">Observaciones de entorno</span>
-              <textarea name="environmentNotes" rows={2} className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <MeasurementsInput />
-            <SurfaceTypeSelector />
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Estado de superficie</span>
-              <select name="surfaceCondition" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-                <option value="">Selecciona</option>
-                <option value="Bueno">Bueno</option>
-                <option value="Regular">Regular</option>
-                <option value="Malo">Malo</option>
-              </select>
-            </label>
-            <fieldset className="sm:col-span-2 rounded-xl border border-zinc-200 dark:border-zinc-800 p-3">
-              <legend className="px-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">Condiciones técnicas</legend>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
-                {[
-                  "Perforación",
-                  "Soldadura",
-                  "Refuerzo",
-                  "Trabajo en altura",
-                  "Andamio",
-                  "Escalera",
-                  "Riesgo eléctrico",
-                  "Zona tránsito",
-                  "Iluminación",
-                ].map((req) => (
-                  <label key={req} className="inline-flex items-center gap-2">
-                    <input type="checkbox" name="technicalRequirements" value={req} className="rounded border-zinc-300 dark:border-zinc-700" />
-                    <span>{req}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Tipo de montaje</span>
-              <select name="mountType" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-                <option value="">Selecciona</option>
-                <option value="Atornillado">Atornillado</option>
-                <option value="Pegado">Pegado</option>
-                <option value="Soldado">Soldado</option>
-                <option value="Suspendido">Suspendido</option>
-              </select>
-            </label>
-            <label className="inline-flex items-center gap-2 text-sm sm:mt-7">
-              <input type="checkbox" name="prePreparationRequired" className="rounded border-zinc-300 dark:border-zinc-700" />
-              <span>Preparación previa requerida</span>
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Personal estimado</span>
-              <input name="estimatedPersonnel" type="number" step="1" defaultValue="1" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Tiempo estimado (horas)</span>
-              <input name="estimatedTimeHours" type="number" step="0.25" defaultValue="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Cantidad</span>
-              <input name="qty" type="number" step="0.01" defaultValue="1" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Unidad</span>
-              <input name="unit" placeholder="Ej: m², ml, un" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Valor unitario CLP</span>
-              <input name="unitPriceClp" type="number" step="1" defaultValue="0" required placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Horas estimadas</span>
-              <input name="hoursEstimated" type="number" step="0.25" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm sm:col-span-2">
-              <span className="text-zinc-600 dark:text-zinc-300">Costo material estimado CLP</span>
-              <input name="materialEstimatedCostClp" type="number" step="1" defaultValue="0" placeholder="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <fieldset className="sm:col-span-2 rounded-xl border border-zinc-200 dark:border-zinc-800 p-3">
-              <legend className="px-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">Logística / Permisos</legend>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" name="specialSchedule" className="rounded border-zinc-300 dark:border-zinc-700" />
-                  <span>Horario especial</span>
-                </label>
-                <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" name="permitsRequired" className="rounded border-zinc-300 dark:border-zinc-700" />
-                  <span>Permisos requeridos</span>
-                </label>
-                <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" name="clientManagesPermits" className="rounded border-zinc-300 dark:border-zinc-700" />
-                  <span>Cliente gestiona permisos</span>
-                </label>
-              </div>
-              <label className="grid gap-1 text-sm mt-3">
-                <span className="text-zinc-600 dark:text-zinc-300">Observaciones</span>
-                <textarea name="logisticsObservations" rows={2} placeholder="Detalles adicionales" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-              </label>
-            </fieldset>
           </div>
-          <SubmitButton>Guardar cotización</SubmitButton>
+
+          <div className="space-y-8">
+            {/* Sección 1: Cliente y Contacto */}
+            <section className="space-y-3">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="h-3.5 w-1 bg-brand-600 rounded-full"></div>
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Cliente y Contacto</h4>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Cliente *</span>
+                  <select name="clientId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all">
+                    <option value="">Selecciona un cliente</option>
+                    {clientOptions.map((c) => (
+                      <option key={c.id} value={c.id}>{c.tradeName}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Fecha de Levantamiento</span>
+                  <input name="surveyDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:col-span-2">
+                  <label className="grid gap-1 text-sm">
+                    <span className="text-zinc-600 dark:text-zinc-300">Contacto en Terreno</span>
+                    <input name="siteContact" placeholder="Nombre completo" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                  </label>
+                  <label className="grid gap-1 text-sm">
+                    <span className="text-zinc-600 dark:text-zinc-300">Teléfono Contacto</span>
+                    <input name="sitePhone" placeholder="+56 9 ..." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                  </label>
+                </div>
+                <label className="grid gap-1 text-sm sm:col-span-2">
+                  <span className="text-zinc-600 dark:text-zinc-300">Técnico Asignado</span>
+                  <input name="technician" placeholder="Nombre del técnico responsable" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+              </div>
+            </section>
+
+            {/* Sección 2: Detalles del Servicio */}
+            <section className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="h-3.5 w-1 bg-orange-600 rounded-full"></div>
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Detalles del Servicio</h4>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="grid gap-1 text-sm sm:col-span-2">
+                  <span className="text-zinc-600 dark:text-zinc-300">Descripción General</span>
+                  <input name="description" placeholder="Ej: Fabricación e instalación de letrero luminoso" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Categoría</span>
+                  <input name="serviceCategory" placeholder="Ej: Corpóreos, Gráfica" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+                <WorkTypesSelector />
+              </div>
+            </section>
+
+            {/* Sección 3: Especificaciones del Lugar */}
+            <section className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="h-3.5 w-1 bg-blue-600 rounded-full"></div>
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Especificaciones del Lugar</h4>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Tipo de Lugar</span>
+                  <select name="locationType" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all">
+                    <option value="">Selecciona</option>
+                    <option value="Local">Local</option>
+                    <option value="Mall">Mall</option>
+                    <option value="Oficina">Oficina</option>
+                    <option value="Vía pública">Vía pública</option>
+                    <option value="Vehículo">Vehículo</option>
+                  </select>
+                </label>
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Altura Inst. (m)</span>
+                  <input name="installHeightMeters" type="number" step="0.1" defaultValue="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Nivel de Tránsito</span>
+                  <select name="trafficLevel" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all">
+                    <option value="">Selecciona</option>
+                    <option value="Bajo">Bajo</option>
+                    <option value="Medio">Medio</option>
+                    <option value="Alto">Alto</option>
+                  </select>
+                </label>
+                <label className="inline-flex items-center gap-3 text-sm font-semibold bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                  <input type="checkbox" name="vehicleAccess" className="w-4 h-4 rounded text-brand-600 border-zinc-300 dark:border-zinc-700 focus:ring-brand-500" />
+                  <span className="text-zinc-700 dark:text-zinc-300">Acceso Vehicular</span>
+                </label>
+                <label className="grid gap-1 text-sm sm:col-span-2">
+                  <span className="text-zinc-600 dark:text-zinc-300">Observaciones del Entorno</span>
+                  <textarea name="environmentNotes" rows={2} placeholder="Obstáculos, horarios, accesibilidad..." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+              </div>
+            </section>
+
+            {/* Sección 4: Medidas y Superficie */}
+            <section className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+              <MeasurementsInput />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                <SurfaceTypeSelector />
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Estado de Superficie</span>
+                  <select name="surfaceCondition" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all">
+                    <option value="">Selecciona</option>
+                    <option value="Bueno">Bueno</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Malo">Malo</option>
+                  </select>
+                </label>
+              </div>
+            </section>
+
+            {/* Sección 5: Condiciones Técnicas y Logística */}
+            <section className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="h-3.5 w-1 bg-red-600 rounded-full"></div>
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Condiciones Técnicas y Logística</h4>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <fieldset className="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50/50 dark:bg-zinc-900/30">
+                  <legend className="px-3 py-1 text-[10px] font-bold uppercase bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full text-zinc-600 dark:text-zinc-300">Requerimientos Especiales</legend>
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    {[
+                      "Perforación", "Soldadura", "Refuerzo",
+                      "Andamio", "Escalera", "Riesgo eléctrico",
+                      "Zona tránsito", "Iluminación", "Trabajo en altura"
+                    ].map((req) => (
+                      <label key={req} className="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer group">
+                        <input type="checkbox" name="technicalRequirements" value={req} className="rounded text-brand-600 border-zinc-300 dark:border-zinc-700 focus:ring-brand-500" />
+                        <span className="group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">{req}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <div className="space-y-4">
+                  <label className="grid gap-1 text-sm">
+                    <span className="text-zinc-600 dark:text-zinc-300">Tipo de Montaje</span>
+                    <select name="mountType" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all">
+                      <option value="">Selecciona</option>
+                      <option value="Atornillado">Atornillado</option>
+                      <option value="Pegado">Pegado</option>
+                      <option value="Soldado">Soldado</option>
+                      <option value="Suspendido">Suspendido</option>
+                    </select>
+                  </label>
+                  <label className="inline-flex items-center gap-3 text-sm font-semibold bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 cursor-pointer w-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                    <input type="checkbox" name="prePreparationRequired" className="w-4 h-4 rounded text-brand-600 border-zinc-300 dark:border-zinc-700 focus:ring-brand-500" />
+                    <span className="text-zinc-700 dark:text-zinc-300">Requiere Preparación Previa</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-bold text-zinc-500">
+                  <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-zinc-950 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                    <input type="checkbox" name="specialSchedule" className="rounded text-brand-600" />
+                    <span>Horario Especial</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-zinc-950 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                    <input type="checkbox" name="permitsRequired" className="rounded text-brand-600" />
+                    <span>Permisos Req.</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-zinc-950 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                    <input type="checkbox" name="clientManagesPermits" className="rounded text-brand-600" />
+                    <span>Cli. Gestiona Permisos</span>
+                  </label>
+                </div>
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Observaciones Logísticas</span>
+                  <textarea name="logisticsObservations" rows={2} placeholder="Restricciones de carga, accesos, etc." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+              </div>
+            </section>
+
+            {/* Sección 6: Presupuesto y Estimación */}
+            <section className="space-y-3 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="h-3.5 w-1 bg-emerald-600 rounded-full"></div>
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Presupuesto y Estimación</h4>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Cantidad</span>
+                  <input name="qty" type="number" step="0.01" defaultValue="1" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-emerald-500/20 transition-all" />
+                </label>
+                <label className="grid gap-1 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-300">Unidad</span>
+                  <input name="unit" placeholder="m², un, ml..." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+                <label className="grid gap-1 text-sm sm:col-span-2">
+                  <span className="text-zinc-600 dark:text-zinc-300">Valor Unitario Neto CLP *</span>
+                  <input name="unitPriceClp" type="number" step="1" defaultValue="0" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-lg font-bold text-brand-600 focus:ring-2 focus:ring-brand-500/20 transition-all" />
+                </label>
+
+                <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-100 dark:border-zinc-800 sm:col-span-2 space-y-3">
+                  <p className="text-xs font-bold text-zinc-500 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                    Mano de obra estimada
+                  </p>
+                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+                    <label className="grid gap-1 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-300">Personal</span>
+                      <input name="estimatedPersonnel" type="number" step="1" defaultValue="1" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all font-bold" />
+                    </label>
+                    <label className="grid gap-1 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-300">Horas totales</span>
+                      <input name="estimatedTimeHours" type="number" step="0.25" defaultValue="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all font-bold" />
+                    </label>
+                  </div>
+                  <label className="grid gap-1 text-sm border-t border-zinc-200 dark:border-zinc-700 pt-3">
+                    <span className="text-zinc-600 dark:text-zinc-300">Horas cotizadas</span>
+                    <input name="hoursEstimated" type="number" step="0.25" defaultValue="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all font-bold text-brand-600" />
+                  </label>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-100 dark:border-zinc-800 sm:col-span-2 space-y-3">
+                  <p className="text-xs font-bold text-zinc-500 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                    Materiales
+                  </p>
+                  <label className="grid gap-1 text-sm">
+                    <span className="text-zinc-600 dark:text-zinc-300">Costo Estimado Materiales CLP</span>
+                    <input name="materialEstimatedCostClp" type="number" step="1" defaultValue="0" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all font-bold text-brand-600 text-lg" />
+                  </label>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div className="pt-6 border-t border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row gap-4">
+            <SubmitButton>Guardar Cotización</SubmitButton>
+            <button type="reset" className="hidden sm:block px-6 py-2.5 text-sm font-bold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors uppercase tracking-widest leading-none">
+              Limpiar Formulario
+            </button>
+          </div>
         </form>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-bold">Cotizaciones recientes (detalle multiproducto)</h3>
+      <div className="space-y-4 pt-4">
+        <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Cotizaciones recientes</h3>
         {recentQuotes.length === 0 ? (
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 text-sm text-zinc-500 dark:text-zinc-400">
             Aún no hay cotizaciones registradas.
@@ -327,7 +442,7 @@ export default async function VentasPage() {
 
                   {technicalSheet ? (
                     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 text-sm space-y-2">
-                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">Ficha técnica</p>
+                      <p className="font-bold text-zinc-900 dark:text-zinc-100">Ficha técnica</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-zinc-600 dark:text-zinc-300">
                         <p>Contacto terreno: {technicalSheet.general?.siteContact || "-"}</p>
                         <p>Teléfono: {technicalSheet.general?.sitePhone || "-"}</p>

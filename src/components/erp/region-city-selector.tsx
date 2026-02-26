@@ -40,7 +40,7 @@ export function RegionCitySelector({ defaultRegion = "Araucanía", defaultCity =
                     name="region"
                     value={selectedRegion}
                     onChange={(e) => setSelectedRegion(e.target.value)}
-                    className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2"
+                    className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all"
                 >
                     {REGION_NAMES.map((r) => (
                         <option key={r} value={r}>{r}</option>
@@ -54,7 +54,7 @@ export function RegionCitySelector({ defaultRegion = "Araucanía", defaultCity =
                     name="city"
                     defaultValue={cities.includes(defaultCity) ? defaultCity : cities[0]}
                     key={selectedRegion}
-                    className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2"
+                    className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 focus:ring-2 focus:ring-brand-500/20 transition-all"
                 >
                     {cities.map((c) => (
                         <option key={c} value={c}>{c}</option>

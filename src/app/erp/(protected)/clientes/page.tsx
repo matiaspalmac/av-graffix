@@ -58,10 +58,29 @@ export default async function ClientesPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                    {client.legalName} · RUT {client.rut} · {client.city}
-                    {client.contactName ? ` · ${client.contactName}` : ""}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-zinc-500 dark:text-zinc-400 mt-2">
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300">{client.legalName}</span>
+                    <span className="hidden sm:inline">·</span>
+                    <span>{client.rut}</span>
+                    <span className="hidden sm:inline">·</span>
+                    <span>{client.city}</span>
+
+                    {client.contacts && client.contacts.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 items-center sm:border-l sm:border-zinc-200 sm:dark:border-zinc-800 sm:pl-3 w-full sm:w-auto mt-1 sm:mt-0">
+                        {client.contacts.slice(0, 2).map((c: any, i: number) => (
+                          <div key={i} className="inline-flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800/50 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-800">
+                            <span className="font-bold text-zinc-600 dark:text-zinc-400">{c.name}</span>
+                            {c.phone && <span className="opacity-50 text-[10px]">{c.phone}</span>}
+                          </div>
+                        ))}
+                        {client.contacts.length > 2 && (
+                          <span className="text-[10px] font-bold text-brand-600 dark:text-brand-500">
+                            +{client.contacts.length - 2} más
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <svg
                   className="w-5 h-5 text-zinc-400 transition-transform group-open:rotate-180"

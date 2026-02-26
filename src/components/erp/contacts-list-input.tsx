@@ -29,9 +29,12 @@ export function ContactsListInput({
     };
 
     return (
-        <div className="sm:col-span-2 lg:col-span-3 space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/50">
-            <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Contactos</h4>
+        <div className="space-y-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="h-3.5 w-1 bg-amber-600 rounded-full"></div>
+                    <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Contactos</h4>
+                </div>
                 <button
                     type="button"
                     onClick={addRow}
@@ -42,68 +45,70 @@ export function ContactsListInput({
                 </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
                 {rows.map((row, index) => (
-                    <div key={row.id} className="flex flex-col sm:flex-row items-start sm:items-end gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
-                        <div className="flex-none pb-2 hidden sm:block">
-                            <button
-                                type="button"
-                                onClick={() => removeRow(row.id)}
-                                className="p-2 rounded-full bg-zinc-50 text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:bg-zinc-900/50 dark:hover:bg-red-900/20 transition-colors"
-                                title="Eliminar fila"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        </div>
+                    <div key={row.id} className="relative group p-4 sm:p-0 rounded-2xl bg-zinc-50 sm:bg-transparent dark:bg-zinc-900/40 sm:dark:bg-transparent border border-zinc-200 sm:border-0 dark:border-zinc-800 sm:dark:border-0 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-end gap-3">
+                            <div className="flex-none pb-2 hidden sm:block">
+                                <button
+                                    type="button"
+                                    onClick={() => removeRow(row.id)}
+                                    className="p-2.5 rounded-xl bg-white text-zinc-400 border border-zinc-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:bg-zinc-900 dark:border-zinc-800 dark:hover:bg-red-900/20 transition-all shadow-sm"
+                                    title="Eliminar fila"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1 w-full">
-                            <input type="hidden" name="contactId" value={row.dbId || ""} />
-                            <label className="grid gap-1 text-[10px] uppercase font-bold text-zinc-400">
-                                <span>Nombre</span>
-                                <input
-                                    name="contactName"
-                                    defaultValue={row.name}
-                                    placeholder="Ej: Juan Pérez"
-                                    required
-                                    className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
-                                />
-                            </label>
-                            <label className="grid gap-1 text-[10px] uppercase font-bold text-zinc-400">
-                                <span>Teléfono</span>
-                                <input
-                                    name="contactPhone"
-                                    defaultValue={row.phone}
-                                    placeholder="+56 9 ..."
-                                    className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
-                                />
-                            </label>
-                            <label className="grid gap-1 text-[10px] uppercase font-bold text-zinc-400">
-                                <span>Email</span>
-                                <input
-                                    name="contactEmail"
-                                    type="email"
-                                    defaultValue={row.email}
-                                    placeholder="contacto@empresa.cl"
-                                    className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
-                                />
-                            </label>
-                        </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1 w-full">
+                                <div className="sm:hidden absolute top-3 right-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => removeRow(row.id)}
+                                        className="p-2 rounded-lg text-zinc-400 hover:text-red-500 transition-colors"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
 
-                        <div className="sm:hidden w-full flex justify-end">
-                            <button
-                                type="button"
-                                onClick={() => removeRow(row.id)}
-                                className="text-xs text-red-600 font-medium py-1 px-2"
-                            >
-                                Quitar contacto
-                            </button>
+                                <input type="hidden" name="contactId" value={row.dbId || ""} />
+                                <label className="grid gap-1 text-sm">
+                                    <span className="text-zinc-600 dark:text-zinc-300">Nombre Completo #{index + 1}</span>
+                                    <input
+                                        name="contactName"
+                                        defaultValue={row.name}
+                                        placeholder="Ej: Juan Pérez"
+                                        required
+                                        className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand-500/20 transition-all w-full"
+                                    />
+                                </label>
+                                <label className="grid gap-1 text-sm">
+                                    <span className="text-zinc-600 dark:text-zinc-300">Teléfono</span>
+                                    <input
+                                        name="contactPhone"
+                                        defaultValue={row.phone}
+                                        placeholder="+56 9 ..."
+                                        className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand-500/20 transition-all w-full"
+                                    />
+                                </label>
+                                <label className="grid gap-1 text-sm">
+                                    <span className="text-zinc-600 dark:text-zinc-300">Correo Electrónico</span>
+                                    <input
+                                        name="contactEmail"
+                                        type="email"
+                                        defaultValue={row.email}
+                                        placeholder="contacto@empresa.cl"
+                                        className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand-500/20 transition-all w-full"
+                                    />
+                                </label>
+                            </div>
                         </div>
                     </div>
                 ))}
 
                 {rows.length === 0 && (
-                    <div className="text-center py-6 border-2 border-dashed border-zinc-100 dark:border-zinc-800/50 rounded-2xl">
-                        <p className="text-sm text-zinc-500 italic">No hay contactos definidos. Usa el botón superior para agregar uno.</p>
+                    <div className="text-center py-10 border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-3xl bg-zinc-50/30 dark:bg-zinc-900/20">
+                        <p className="text-sm text-zinc-400 font-medium">No hay contactos registrados. Pulsa "Agregar Contacto" para comenzar.</p>
                     </div>
                 )}
             </div>
