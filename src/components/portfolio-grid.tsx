@@ -60,7 +60,7 @@ const portfolioItems = [
     company: "Minimarket Isabella",
     category: "Soportes Gráficos",
     logo: null,
-    description: "Señalética integral de fachada, letrero principal y pintura de señalización en suelos.",
+    description: "Señalética integral de fachada, letrero principal.",
   },
 ]
 
@@ -120,7 +120,6 @@ export default function PortfolioGrid() {
     setLightbox({ companyIndex: prev, photoIndex: 0 })
   }, [lightbox, filtered.length])
 
-  // ─── Touch handlers ───────────────────────────────
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX
     touchStartY.current = e.touches[0].clientY
@@ -141,10 +140,8 @@ export default function PortfolioGrid() {
     const THRESHOLD = 50
 
     if (absDy > absDx && absDy > THRESHOLD) {
-      // Vertical swipe → change company
       dy > 0 ? goNextCompany() : goPrevCompany()
     } else if (absDx > absDy && absDx > THRESHOLD) {
-      // Horizontal swipe → change photo
       dx > 0 ? goNextPhoto() : goPrevPhoto()
     }
 
