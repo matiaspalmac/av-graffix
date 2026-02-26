@@ -75,7 +75,6 @@ type SlideDirection = "left" | "right" | "up" | "down"
 
 
 export default function PortfolioGrid() {
-  const [zoom, setZoom] = useState(false)
   const imageAreaRef = useRef<HTMLDivElement>(null)
 
   const [active, setActive] = useState("Todos")
@@ -138,7 +137,12 @@ export default function PortfolioGrid() {
   
   useEffect(() => {
     if (!lightbox) return
+    let lastScroll = 0
+    const THROTTLE_MS = 400
     const handler = (e: WheelEvent) => {
+      const now = Date.now()
+      if (now - lastScroll < THROTTLE_MS) return
+      lastScroll = now
       e.preventDefault()
       // Only vertical scroll
       if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
@@ -230,43 +234,6 @@ export default function PortfolioGrid() {
       exit: { x: -enter.x, y: -enter.y, opacity: 0 },
     }
   }
-
-  // Doble click para zoom
-  const handleDoubleClick = useCallback(() => {
-    setZoom(z => !z)
-  }, [])
-
-  // Pinch-to-zoom (solo básico, para móviles)
-  useEffect(() => {
-    if (!lightbox || !imageAreaRef.current) return
-    let startDist = 0
-    let lastZoom = zoom
-    const el = imageAreaRef.current
-    const handleTouch = (e: TouchEvent) => {
-      if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX
-        const dy = e.touches[0].clientY - e.touches[1].clientY
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        if (!startDist) startDist = dist
-        else {
-          if (dist - startDist > 40 && !lastZoom) {
-            setZoom(true)
-            lastZoom = true
-          } else if (startDist - dist > 40 && lastZoom) {
-            setZoom(false)
-            lastZoom = false
-          }
-        }
-      }
-    }
-    const handleTouchEnd = () => { startDist = 0 }
-    el.addEventListener("touchmove", handleTouch)
-    el.addEventListener("touchend", handleTouchEnd)
-    return () => {
-      el.removeEventListener("touchmove", handleTouch)
-      el.removeEventListener("touchend", handleTouchEnd)
-    }
-  }, [lightbox, zoom])
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -395,33 +362,28 @@ export default function PortfolioGrid() {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Image area */}
-              <div
-                ref={imageAreaRef}
-                className="relative flex-1 w-full max-w-5xl flex flex-col items-center justify-center overflow-hidden"
-                onDoubleClick={handleDoubleClick}
-                style={{ cursor: zoom ? 'zoom-out' : 'zoom-in' }}
-              >
-                <AnimatePresence mode="popLayout" custom={slideDir}>
-                  <motion.div
-                    key={currentItem.company + "-" + lightbox.itemIndex + "-" + lightbox.photoIndex}
-                    variants={getVariants(slideDir)}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-                    className="absolute inset-0 flex items-center justify-center"
-                  >
-                    <Image
-                      src={currentItem.images[lightbox.photoIndex]}
-                      alt={`${currentItem.company} foto ${lightbox.photoIndex + 1}`}
-                      fill
-                      className={`object-contain select-none pointer-events-none transition-transform duration-300 ${zoom ? 'scale-[2] md:scale-[1.5]' : ''}`}
-                      priority
-                      unoptimized
-                      draggable={false}
-                    />
-                  </motion.div>
-                </AnimatePresence>
+                <div className="w-full flex-1 flex items-center justify-center relative">
+                  <AnimatePresence mode="popLayout" custom={slideDir}>
+                    <motion.div
+                      key={currentItem.company + "-" + lightbox.itemIndex + "-" + lightbox.photoIndex}
+                      variants={getVariants(slideDir)}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                      className="absolute inset-0 flex items-center justify-center"
+                    >
+                      <Image
+                        src={currentItem.images[lightbox.photoIndex]}
+                        alt={`${currentItem.company} foto ${lightbox.photoIndex + 1}`}
+                        fill
+                        className={`object-contain select-none pointer-events-none transition-transform duration-300`}
+                        priority
+                        unoptimized
+                        draggable={false}
+                      />
+                    </motion.div>
+                  </AnimatePresence>
                 {/* Logo en móvil (debajo de la imagen) */}
                 <div className="sm:hidden mt-4 mb-2 flex items-center justify-center">
                   {currentItem.logo ? (
@@ -437,29 +399,6 @@ export default function PortfolioGrid() {
                     <Building2 size={36} className="text-zinc-400 dark:text-zinc-500" />
                   )}
                 </div>
-                {/* Galería de miniaturas debajo de la imagen principal */}
-                {currentItem.images.length > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-2 mb-2">
-                    {currentItem.images.map((img, idx) => (
-                      <button
-                        key={img}
-                        onClick={() => setLightbox(prev => prev ? { ...prev, photoIndex: idx } : null)}
-                        className={`border rounded-lg overflow-hidden transition-all duration-200 ${idx === lightbox.photoIndex ? 'border-brand-500 ring-2 ring-brand-500' : 'border-zinc-200 dark:border-zinc-700'}`}
-                        style={{ width: 48, height: 36 }}
-                        aria-label={`Miniatura ${idx + 1}`}
-                      >
-                        <Image
-                          src={img}
-                          alt={`Miniatura ${idx + 1}`}
-                          width={48}
-                          height={36}
-                          className="object-cover w-full h-full"
-                          unoptimized
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Bottom info bar — themed, full description visible */}
