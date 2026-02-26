@@ -73,7 +73,11 @@ type LightboxState = {
 
 type SlideDirection = "left" | "right" | "up" | "down"
 
+
 export default function PortfolioGrid() {
+  const [zoom, setZoom] = useState(false)
+  const imageAreaRef = useRef<HTMLDivElement>(null)
+
   const [active, setActive] = useState("Todos")
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
   const [slideDir, setSlideDir] = useState<SlideDirection>("right")
@@ -108,26 +112,26 @@ export default function PortfolioGrid() {
   
   const goNextPhoto = useCallback(() => {
     if (!lightbox || !currentItem || currentItem.images.length <= 1) return
-    setSlideDir("left")
+    setSlideDir("right")
     setLightbox(prev => prev ? { ...prev, photoIndex: (prev.photoIndex + 1) % currentItem.images.length } : null)
   }, [lightbox, currentItem])
 
   const goPrevPhoto = useCallback(() => {
     if (!lightbox || !currentItem || currentItem.images.length <= 1) return
-    setSlideDir("right")
+    setSlideDir("left")
     setLightbox(prev => prev ? { ...prev, photoIndex: (prev.photoIndex - 1 + currentItem.images.length) % currentItem.images.length } : null)
   }, [lightbox, currentItem])
 
   const goNextCompany = useCallback(() => {
     if (!lightbox) return
-    setSlideDir("up")
+    setSlideDir("down")
     const next = (lightbox.itemIndex + 1) % filtered.length
     setLightbox({ itemIndex: next, photoIndex: 0 })
   }, [lightbox, filtered.length])
 
   const goPrevCompany = useCallback(() => {
     if (!lightbox) return
-    setSlideDir("down")
+    setSlideDir("up")
     const prev = (lightbox.itemIndex - 1 + filtered.length) % filtered.length
     setLightbox({ itemIndex: prev, photoIndex: 0 })
   }, [lightbox, filtered.length])
@@ -226,6 +230,43 @@ export default function PortfolioGrid() {
       exit: { x: -enter.x, y: -enter.y, opacity: 0 },
     }
   }
+
+  // Doble click para zoom
+  const handleDoubleClick = useCallback(() => {
+    setZoom(z => !z)
+  }, [])
+
+  // Pinch-to-zoom (solo básico, para móviles)
+  useEffect(() => {
+    if (!lightbox || !imageAreaRef.current) return
+    let startDist = 0
+    let lastZoom = zoom
+    const el = imageAreaRef.current
+    const handleTouch = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (!startDist) startDist = dist
+        else {
+          if (dist - startDist > 40 && !lastZoom) {
+            setZoom(true)
+            lastZoom = true
+          } else if (startDist - dist > 40 && lastZoom) {
+            setZoom(false)
+            lastZoom = false
+          }
+        }
+      }
+    }
+    const handleTouchEnd = () => { startDist = 0 }
+    el.addEventListener("touchmove", handleTouch)
+    el.addEventListener("touchend", handleTouchEnd)
+    return () => {
+      el.removeEventListener("touchmove", handleTouch)
+      el.removeEventListener("touchend", handleTouchEnd)
+    }
+  }, [lightbox, zoom])
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -354,7 +395,12 @@ export default function PortfolioGrid() {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Image area */}
-              <div className="relative flex-1 w-full max-w-5xl flex items-center justify-center overflow-hidden">
+              <div
+                ref={imageAreaRef}
+                className="relative flex-1 w-full max-w-5xl flex flex-col items-center justify-center overflow-hidden"
+                onDoubleClick={handleDoubleClick}
+                style={{ cursor: zoom ? 'zoom-out' : 'zoom-in' }}
+              >
                 <AnimatePresence mode="popLayout" custom={slideDir}>
                   <motion.div
                     key={currentItem.company + "-" + lightbox.itemIndex + "-" + lightbox.photoIndex}
@@ -369,31 +415,69 @@ export default function PortfolioGrid() {
                       src={currentItem.images[lightbox.photoIndex]}
                       alt={`${currentItem.company} foto ${lightbox.photoIndex + 1}`}
                       fill
-                      className="object-contain select-none pointer-events-none"
+                      className={`object-contain select-none pointer-events-none transition-transform duration-300 ${zoom ? 'scale-[2] md:scale-[1.5]' : ''}`}
                       priority
                       unoptimized
                       draggable={false}
                     />
                   </motion.div>
                 </AnimatePresence>
+                {/* Logo en móvil (debajo de la imagen) */}
+                <div className="sm:hidden mt-4 mb-2 flex items-center justify-center">
+                  {currentItem.logo ? (
+                    <Image
+                      src={currentItem.logo}
+                      alt={currentItem.company}
+                      width={72}
+                      height={72}
+                      className="object-contain rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-2"
+                      unoptimized
+                    />
+                  ) : (
+                    <Building2 size={36} className="text-zinc-400 dark:text-zinc-500" />
+                  )}
+                </div>
+                {/* Galería de miniaturas debajo de la imagen principal */}
+                {currentItem.images.length > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-2 mb-2">
+                    {currentItem.images.map((img, idx) => (
+                      <button
+                        key={img}
+                        onClick={() => setLightbox(prev => prev ? { ...prev, photoIndex: idx } : null)}
+                        className={`border rounded-lg overflow-hidden transition-all duration-200 ${idx === lightbox.photoIndex ? 'border-brand-500 ring-2 ring-brand-500' : 'border-zinc-200 dark:border-zinc-700'}`}
+                        style={{ width: 48, height: 36 }}
+                        aria-label={`Miniatura ${idx + 1}`}
+                      >
+                        <Image
+                          src={img}
+                          alt={`Miniatura ${idx + 1}`}
+                          width={48}
+                          height={36}
+                          className="object-cover w-full h-full"
+                          unoptimized
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Bottom info bar — themed, full description visible */}
               <div className="w-full max-w-5xl mt-3 md:mt-5 flex-shrink-0">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 bg-white dark:bg-zinc-900 rounded-2xl px-5 py-4 border border-zinc-200 dark:border-zinc-800 shadow-lg shadow-zinc-950/5 dark:shadow-black/30" style={{ transition: "none" }}>
-                  {/* Logo */}
-                  <div className="hidden sm:flex flex-shrink-0 w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 items-center justify-center overflow-hidden">
+                  {/* Logo (más grande) */}
+                  <div className="hidden sm:flex flex-shrink-0 w-24 h-24 rounded-3xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 items-center justify-center overflow-hidden">
                     {currentItem.logo ? (
                       <Image
                         src={currentItem.logo}
                         alt={currentItem.company}
-                        width={32}
-                        height={32}
-                        className="object-contain p-1"
+                        width={96}
+                        height={96}
+                        className="object-contain p-4"
                         unoptimized
                       />
                     ) : (
-                      <Building2 size={18} className="text-zinc-400 dark:text-zinc-500" />
+                      <Building2 size={48} className="text-zinc-400 dark:text-zinc-500" />
                     )}
                   </div>
                   {/* Text — full description, no truncate */}
