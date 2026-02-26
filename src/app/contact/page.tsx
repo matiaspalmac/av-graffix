@@ -1,13 +1,13 @@
-import { Mail, Phone, MapPin, Instagram, Facebook, Clock, MessageCircle } from 'lucide-react'
+import { Mail, Phone, MapPin, Instagram, Facebook, Clock, MessageCircle, Linkedin } from 'lucide-react'
 import ContactForm from '@/components/contact-form'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Contacto',
-  description: 'Contáctanos para iniciar tu proyecto de diseño gráfico, impresión o publicidad en Temuco, Araucanía. Respuesta en 24 horas.',
+  description: 'Contáctanos en AV GRAFFIX - Proyectando tus ideas. Tu punto de conexión para diseño, impresión y publicidad en Temuco.',
   openGraph: {
     title: 'Contacto | AV GRAFFIX',
-    description: 'Contáctanos para iniciar tu proyecto de diseño gráfico, impresión o publicidad en Temuco, Araucanía.',
+    description: 'Contáctanos en AV GRAFFIX - Proyectando tus ideas. Respuesta en menos de 24 horas.',
   },
 }
 
@@ -101,15 +101,15 @@ export default function ContactPage() {
               </div>
               <ul className="space-y-3 text-zinc-600 dark:text-zinc-400">
                 <li className="flex justify-between items-center pb-3 border-b border-black/5 dark:border-white/10">
-                  <span>Lunes a Viernes</span>
-                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">9:00 - 18:00</span>
+                  <span>Lunes a Jueves</span>
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">9:00 - 19:00</span>
                 </li>
                 <li className="flex justify-between items-center pb-3 border-b border-black/5 dark:border-white/10">
-                  <span>Sábado</span>
-                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">10:00 - 14:00</span>
+                  <span>Viernes</span>
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">9:00 - 18:00</span>
                 </li>
                 <li className="flex justify-between items-center pt-1">
-                  <span>Domingo</span>
+                  <span>Fin de semana</span>
                   <span className="font-semibold text-brand-600 dark:text-brand-500">Cerrado</span>
                 </li>
               </ul>
@@ -134,12 +134,12 @@ export default function ContactPage() {
             {/* Social */}
             <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-8 rounded-3xl shadow-sm">
               <h3 className="text-lg font-bold mb-6 text-zinc-900 dark:text-white">Síguenos</h3>
-              <div className="flex gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <a
                   href="https://www.facebook.com/publicidad.avgraffix/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 font-medium text-sm"
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 font-medium text-sm"
                 >
                   <Facebook className="w-5 h-5" /> Facebook
                 </a>
@@ -150,6 +150,14 @@ export default function ContactPage() {
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white hover:border-transparent transition-all duration-300 font-medium text-sm"
                 >
                   <Instagram className="w-5 h-5" /> Instagram
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/avgraffix/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-[#0077b5] hover:text-white hover:border-[#0077b5] transition-all duration-300 font-medium text-sm"
+                >
+                  <Linkedin className="w-5 h-5" /> LinkedIn
                 </a>
               </div>
             </div>

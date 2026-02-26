@@ -15,15 +15,15 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL("https://avgraffix.cl"),
   title: {
-    default: "AV GRAFFIX | Agencia de Diseño y Producción",
+    default: "AV GRAFFIX | Proyectando tus ideas",
     template: "%s | AV GRAFFIX",
   },
-  description: "Agencia líder en diseño gráfico, producción pre-prensa y publicidad en la región de la Araucanía. Acompañamos el crecimiento de tu marca.",
+  description: "AV GRAFFIX - Proyectando tus ideas. Agencia líder en diseño gráfico, producción y publicidad en la región de la Araucanía.",
   keywords: ["Diseño Gráfico", "Producción", "Publicidad", "Araucanía", "Temuco", "Branding", "Imprenta"],
   authors: [{ name: "AV GRAFFIX" }],
   openGraph: {
-    title: "AV GRAFFIX | Diseño Gráfico Integral",
-    description: "Soluciones creativas excepcionales que permiten a nuestros clientes destacar y dominar en un mercado competitivo.",
+    title: "AV GRAFFIX | Proyectando tus ideas",
+    description: "Proyectando tus ideas. Soluciones creativas en diseño, producción y publicidad para potenciar tu marca.",
     url: "https://avgraffix.cl",
     siteName: "AV GRAFFIX",
     images: [
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AV GRAFFIX | Diseño Gráfico Integral",
-    description: "Agencia líder en diseño gráfico, producción pre-prensa y publicidad en la región de la Araucanía.",
+    title: "AV GRAFFIX | Proyectando tus ideas",
+    description: "AV GRAFFIX - Proyectando tus ideas. Agencia líder en diseño gráfico, producción y publicidad en la región de la Araucanía.",
     images: ["/avgraffix.png"],
   },
   icons: {
@@ -66,24 +66,25 @@ const jsonLd = {
     addressCountry: "CL",
   },
   description:
-    "Agencia líder en diseño gráfico, producción pre-prensa y publicidad en la región de la Araucanía.",
+    "AV GRAFFIX - Proyectando tus ideas. Agencia líder en diseño gráfico, producción y publicidad en la región de la Araucanía.",
   foundingDate: "2006-11",
   sameAs: [
     "https://www.instagram.com/publicidad.avgraffix/",
     "https://www.facebook.com/publicidad.avgraffix/",
+    "https://www.linkedin.com/company/avgraffix/",
   ],
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday"],
       opens: "09:00",
-      closes: "18:00",
+      closes: "19:00",
     },
     {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: "Saturday",
-      opens: "10:00",
-      closes: "14:00",
+      dayOfWeek: "Friday",
+      opens: "09:00",
+      closes: "18:00",
     },
   ],
 };

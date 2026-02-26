@@ -1,6 +1,13 @@
-import { allClientsWithDetails, updateClientAction, toggleClientStatusAction } from "./actions";
+import {
+  allClientsWithDetails,
+  updateClientAction,
+  toggleClientStatusAction,
+  deleteClientAction,
+} from "./actions";
 import { SubmitButton } from "@/components/erp/submit-button";
 import { RegionCitySelector } from "@/components/erp/region-city-selector";
+import { ContactsListInput } from "@/components/erp/contacts-list-input";
+import { DeleteClientForm } from "@/components/erp/delete-client-form";
 import { cn } from "@/lib/utils";
 
 export default async function ClientesPage() {
@@ -127,46 +134,18 @@ export default async function ClientesPage() {
                     </label>
                   </div>
 
-                  {/* Datos de contacto */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <label className="grid gap-1 text-sm">
-                      <span className="text-zinc-600 dark:text-zinc-300">Nombre Contacto</span>
-                      <input
-                        name="contactName"
-                        defaultValue={client.contactName || ""}
-                        className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2"
-                      />
-                    </label>
+                  {/* Datos de contacto unificados */}
+                  <ContactsListInput initialContacts={client.contacts} />
 
-                    <label className="grid gap-1 text-sm">
-                      <span className="text-zinc-600 dark:text-zinc-300">Teléfono</span>
-                      <input
-                        name="phone"
-                        defaultValue={client.phone || ""}
-                        className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2"
-                      />
-                    </label>
-
-                    <label className="grid gap-1 text-sm">
-                      <span className="text-zinc-600 dark:text-zinc-300">Email</span>
-                      <input
-                        name="email"
-                        type="email"
-                        defaultValue={client.email || ""}
-                        className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2"
-                      />
-                    </label>
-
-                    <div className="flex items-end gap-3 sm:col-span-2 lg:col-span-3">
-                      <SubmitButton className="flex-1 rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        Guardar cambios
-                      </SubmitButton>
-                    </div>
+                  <div className="flex items-end gap-3 sm:col-span-2 lg:col-span-3 pt-4">
+                    <SubmitButton className="flex-1 rounded-xl bg-brand-600 text-white px-4 py-2 font-semibold hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                      Guardar cambios del cliente
+                    </SubmitButton>
                   </div>
                 </form>
 
                 {/* Acciones secundarias */}
-                <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/50 flex justify-end">
+                <div className="mt-8 pt-4 border-t border-zinc-100 dark:border-zinc-800/50 flex justify-end">
                   <form action={toggleClientStatusAction}>
                     <input type="hidden" name="clientId" value={client.id} />
                     <input type="hidden" name="isActive" value={client.isActive ? "true" : "false"} />
@@ -181,8 +160,10 @@ export default async function ClientesPage() {
                       {client.isActive ? "Desactivar cliente" : "Activar cliente"}
                     </SubmitButton>
                   </form>
+                  <DeleteClientForm clientId={client.id} action={deleteClientAction} />
                 </div>
               </div>
+
             </details>
           ))
         )}

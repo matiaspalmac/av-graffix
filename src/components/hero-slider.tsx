@@ -28,9 +28,10 @@ const slides = [
 ];
 
 const phrases = [
-  "Excelencia Gráfica en la Araucanía",
+  "Proyectando tus ideas",
   "Impresión Digital Corporativa",
   "Corte Preciso y Gran Formato",
+  "Diseño y Publicidad"
 ]
 
 export default function HeroSlider() {
@@ -194,11 +195,10 @@ export default function HeroSlider() {
               key={i}
               onClick={() => setCurrentSlide(i)}
               aria-label={`Slide ${i + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                i === currentSlide
+              className={`h-1.5 rounded-full transition-all duration-500 ${i === currentSlide
                   ? "w-8 bg-brand-500"
                   : "w-3 bg-white/30 hover:bg-white/50"
-              }`}
+                }`}
             />
           ))}
         </div>

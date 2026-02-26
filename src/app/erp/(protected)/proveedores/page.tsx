@@ -1,5 +1,6 @@
-import { getSuppliers, updateSupplierAction, toggleSupplierStatusAction } from "./actions";
+import { getSuppliers, updateSupplierAction, toggleSupplierStatusAction, deleteSupplierAction } from "./actions";
 import { SubmitButton } from "@/components/erp/submit-button";
+import { DeleteSupplierForm } from "@/components/erp/delete-supplier-form";
 
 export default async function ProveedoresPage() {
     // getSuppliers() returns all suppliers (ordered by active status and name)
@@ -191,7 +192,7 @@ export default async function ProveedoresPage() {
                                     </div>
                                 </form>
 
-                                {/* Toggle Status Form instead of Delete */}
+                                {/* Toggle Status Form */}
                                 <form action={toggleSupplierStatusAction} className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
                                     <input type="hidden" name="supplierId" value={supplier.id} />
                                     <input type="hidden" name="currentStatus" value={supplier.isActive ? "true" : "false"} />
@@ -205,11 +206,14 @@ export default async function ProveedoresPage() {
                                         {supplier.isActive ? "Desactivar Proveedor (Archivar)" : "Reactivar Proveedor"}
                                     </SubmitButton>
                                 </form>
+
+
+                                <DeleteSupplierForm supplierId={supplier.id} action={deleteSupplierAction} />
                             </div>
                         </details>
                     ))
                 )}
             </div>
-        </div>
+        </div >
     );
 }

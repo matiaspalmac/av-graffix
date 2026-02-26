@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
+  clientContacts,
   clients,
   projectBriefs,
   projectPhases,
@@ -93,7 +94,7 @@ export async function createClientAction(formData: FormData) {
 
     const now = new Date().toISOString();
 
-    await db.insert(clients).values({
+    const inserted = await db.insert(clients).values({
       legalName,
       tradeName,
       rut,
@@ -106,7 +107,26 @@ export async function createClientAction(formData: FormData) {
       contactPhone: String(formData.get("contactPhone") ?? "").trim() || null,
       paymentTermsDays: asNumber(formData.get("paymentTermsDays"), 30),
       updatedAt: now,
-    });
+    }).returning({ id: clients.id });
+
+    const clientId = inserted[0]?.id;
+    if (clientId) {
+      const contactNames = formData.getAll("contactName").map(v => String(v).trim());
+      const contactPhones = formData.getAll("contactPhone").map(v => String(v).trim());
+      const contactEmails = formData.getAll("contactEmail").map(v => String(v).trim());
+
+      for (let i = 0; i < contactNames.length; i++) {
+        if (contactNames[i]) {
+          await db.insert(clientContacts).values({
+            clientId,
+            name: contactNames[i],
+            email: contactEmails[i] || null,
+            phone: contactPhones[i] || null,
+          });
+        }
+      }
+    }
+
 
     revalidatePath("/erp/ventas");
     revalidatePath("/erp/clientes");
@@ -114,6 +134,7 @@ export async function createClientAction(formData: FormData) {
     console.error("createClientAction", toErrorMessage(error));
   }
 }
+
 
 export async function createQuoteAction(formData: FormData) {
   try {
@@ -128,22 +149,25 @@ export async function createQuoteAction(formData: FormData) {
     const workTypes = formData.getAll("workTypes").map((entry) => String(entry));
     const workTypeOther = asText(formData.get("workTypeOther"));
 
-    const measurements = Array.from({ length: 10 }, (_, index) => {
-      const row = index + 1;
-      const support = asText(formData.get(`measureSupport_${row}`));
-      const width = asNumber(formData.get(`measureWidth_${row}`), 0);
-      const height = asNumber(formData.get(`measureHeight_${row}`), 0);
-      const depth = asNumber(formData.get(`measureDepth_${row}`), 0);
+    const supportList = formData.getAll("measureSupport").map(v => asText(v));
+    const widthList = formData.getAll("measureWidth").map(v => asNumber(v, 0));
+    const heightList = formData.getAll("measureHeight").map(v => asNumber(v, 0));
+    const depthList = formData.getAll("measureDepth").map(v => asNumber(v, 0));
+
+    const measurements = supportList.map((support, i) => {
+      const width = widthList[i] ?? 0;
+      const height = heightList[i] ?? 0;
+      const depth = depthList[i] ?? 0;
 
       if (!support && width <= 0 && height <= 0 && depth <= 0) {
         return null;
       }
 
-      return { row, support, width, height, depth };
-    }).filter(
-      (entry): entry is { row: number; support: string; width: number; height: number; depth: number } =>
-        entry !== null
+      return { row: i + 1, support, width, height, depth };
+    }).filter((entry): entry is { row: number; support: string; width: number; height: number; depth: number } =>
+      entry !== null
     );
+
 
     const technicalSheet = {
       general: {
@@ -633,11 +657,25 @@ export async function latestQuotesWithItems(limit = 8) {
 }
 
 export async function availableClients() {
-  return db
+  const allClients = await db
     .select({ id: clients.id, tradeName: clients.tradeName, rut: clients.rut })
     .from(clients)
     .orderBy(desc(clients.id));
+
+  if (allClients.length === 0) return [];
+
+  const clientIds = allClients.map((c) => c.id);
+  const allContacts = await db
+    .select()
+    .from(clientContacts)
+    .where(inArray(clientContacts.clientId, clientIds));
+
+  return allClients.map((client) => ({
+    ...client,
+    contacts: allContacts.filter((c) => c.clientId === client.id),
+  }));
 }
+
 
 export async function getQuoteStats() {
   const [leadsOpen, clientsTotal, quotesOpen] = await Promise.all([

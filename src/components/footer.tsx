@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Mail, Phone, MapPin, Instagram, Facebook, ArrowRight } from 'lucide-react'
+import { Mail, Phone, MapPin, Instagram, Facebook, ArrowRight, Linkedin } from 'lucide-react'
 
 const footerLinks = [
   { href: '/about', label: 'Nosotros' },
@@ -49,7 +49,7 @@ export default function Footer() {
               className="h-14 w-auto drop-shadow-sm dark:drop-shadow-lg filter brightness-110"
             />
             <p className="text-sm leading-relaxed text-zinc-500 max-w-xs">
-              Agencia líder en diseño gráfico, producción y publicidad en la región de la Araucanía desde 2006.
+              AV GRAFFIX - Proyectando tus ideas. Agencia líder en diseño, producción y publicidad en la Araucanía desde 2006.
             </p>
             {/* Social */}
             <div className="flex gap-3">
@@ -70,6 +70,15 @@ export default function Footer() {
                 aria-label="Facebook"
               >
                 <Facebook className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/avgraffix/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all duration-300"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -118,15 +127,15 @@ export default function Footer() {
             <h4 className="text-white text-sm font-bold tracking-widest uppercase mb-6">Horario</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex justify-between">
-                <span className="text-zinc-500">Lun - Vie</span>
+                <span className="text-zinc-500">Lun - Jue</span>
+                <span className="text-zinc-300 font-medium">9:00 - 19:00</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-zinc-500">Viernes</span>
                 <span className="text-zinc-300 font-medium">9:00 - 18:00</span>
               </li>
               <li className="flex justify-between">
-                <span className="text-zinc-500">Sábado</span>
-                <span className="text-zinc-300 font-medium">10:00 - 14:00</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-zinc-500">Domingo</span>
+                <span className="text-zinc-500">Sáb - Dom</span>
                 <span className="text-brand-500 font-medium">Cerrado</span>
               </li>
             </ul>

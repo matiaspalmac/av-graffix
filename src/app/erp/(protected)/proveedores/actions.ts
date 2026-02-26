@@ -149,3 +149,17 @@ export async function toggleSupplierStatusAction(formData: FormData) {
         console.error(`Error toggling supplier action:`, error);
     }
 }
+
+export async function deleteSupplierAction(formData: FormData) {
+    try {
+        const supplierId = asNumber(formData.get("supplierId"));
+        if (!supplierId) return;
+
+        await db.delete(suppliers).where(eq(suppliers.id, supplierId));
+
+        revalidatePath("/erp/proveedores");
+    } catch (error) {
+        console.error(`Error deleting supplier action:`, error);
+    }
+}
+

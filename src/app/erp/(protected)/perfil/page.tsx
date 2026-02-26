@@ -81,13 +81,6 @@ export default async function PerfilPage() {
               </div>
             </div>
           </div>
-
-          {/* Info adicional */}
-          <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4">
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
-              <span className="font-semibold">Nota:</span> Para cambiar tu contraseña o información personal, contacta con el administrador del sistema.
-            </p>
-          </div>
         </div>
       </div>
 

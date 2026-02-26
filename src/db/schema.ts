@@ -77,6 +77,24 @@ export const clients = sqliteTable(
   ]
 );
 
+export const clientContacts = sqliteTable(
+  "client_contacts",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    clientId: integer("client_id")
+      .notNull()
+      .references(() => clients.id),
+    name: text("name").notNull(),
+    email: text("email"),
+    phone: text("phone"),
+    role: text("role"),
+    isMain: integer("is_main", { mode: "boolean" }).notNull().default(false),
+    ...timestamps,
+  },
+  (table) => [index("client_contacts_client_idx").on(table.clientId)]
+);
+
+
 export const leads = sqliteTable(
   "leads",
   {

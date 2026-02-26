@@ -18,6 +18,7 @@ import { WorkTypesSelector } from "@/components/erp/work-types-selector";
 import { MeasurementsInput } from "@/components/erp/measurements-input";
 import { SurfaceTypeSelector } from "@/components/erp/surface-type-selector";
 import { RegionCitySelector } from "@/components/erp/region-city-selector";
+import { ContactsListInput } from "@/components/erp/contacts-list-input";
 
 type TechnicalSheet = {
   general?: { siteContact?: string; sitePhone?: string; technician?: string };
@@ -90,18 +91,9 @@ export default async function VentasPage() {
               <span className="text-zinc-600 dark:text-zinc-300">Giro</span>
               <input name="giro" placeholder="Ej: Importación" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
             </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Contacto</span>
-              <input name="contactName" placeholder="Ej: Juan Pérez" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Teléfono</span>
-              <input name="contactPhone" placeholder="+56 9 ..." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Email de contacto</span>
-              <input name="contactEmail" placeholder="contacto@empresa.cl" type="email" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
+
+            <ContactsListInput />
+
             <RegionCitySelector defaultRegion="Araucanía" defaultCity="Temuco" />
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-zinc-600 dark:text-zinc-300">Dirección</span>
@@ -115,11 +107,11 @@ export default async function VentasPage() {
           <h3 className="text-lg font-bold">Nueva cotización</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Cliente</span>
+              <span className="text-zinc-600 dark:text-zinc-300">Cliente *</span>
               <select name="clientId" required className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2">
-                <option value="">Selecciona cliente</option>
-                {clientOptions.map((client) => (
-                  <option key={client.id} value={client.id}>{client.tradeName} · {client.rut}</option>
+                <option value="">Selecciona un cliente</option>
+                {clientOptions.map((c) => (
+                  <option key={c.id} value={c.id}>{c.tradeName}</option>
                 ))}
               </select>
             </label>
@@ -127,14 +119,16 @@ export default async function VentasPage() {
               <span className="text-zinc-600 dark:text-zinc-300">Fecha</span>
               <input name="surveyDate" type="date" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
             </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Contacto en terreno</span>
-              <input name="siteContact" placeholder="Nombre de contacto" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
-            <label className="grid gap-1 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">Teléfono</span>
-              <input name="sitePhone" placeholder="+56 9 ..." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
-            </label>
+            <div className="grid grid-cols-2 gap-3 sm:col-span-2">
+              <label className="grid gap-1 text-sm">
+                <span className="text-zinc-600 dark:text-zinc-300">Contacto en terreno</span>
+                <input name="siteContact" placeholder="Nombre completo" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+              </label>
+              <label className="grid gap-1 text-sm">
+                <span className="text-zinc-600 dark:text-zinc-300">Teléfono contacto</span>
+                <input name="sitePhone" placeholder="+56 9 ..." className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
+              </label>
+            </div>
             <label className="grid gap-1 text-sm sm:col-span-2">
               <span className="text-zinc-600 dark:text-zinc-300">Técnico</span>
               <input name="technician" placeholder="Nombre del técnico" className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2" />
