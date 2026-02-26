@@ -232,21 +232,23 @@ export default function PortfolioGrid() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[100] flex items-center justify-center"
-            style={{ touchAction: "none" }}
+            style={{ touchAction: "none", transition: "none" }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Backdrop — simple solid with light blur, no position tricks */}
+            {/* Backdrop — fully opaque, themed, no blur artifacts */}
             <div
-              className="absolute inset-0 bg-zinc-100/95 dark:bg-zinc-950/95 backdrop-blur-md"
+              className="absolute inset-0 bg-zinc-50 dark:bg-zinc-950"
+              style={{ transition: "none" }}
               onClick={closeLightbox}
             />
 
             {/* Close button */}
             <button
               onClick={closeLightbox}
-              className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white flex items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
+              className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white flex items-center justify-center border border-zinc-300 dark:border-zinc-700"
+              style={{ transition: "background-color 0.15s, color 0.15s" }}
               aria-label="Cerrar"
             >
               <X size={18} />
@@ -254,14 +256,16 @@ export default function PortfolioGrid() {
 
             {/* Company navigation arrows - vertical */}
             <button
-              className="hidden md:flex absolute top-4 left-1/2 -translate-x-1/2 md:top-6 z-20 w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
+              className="hidden md:flex absolute top-4 left-1/2 -translate-x-1/2 md:top-6 z-20 w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700"
+              style={{ transition: "background-color 0.15s, color 0.15s" }}
               onClick={goPrevCompany}
               aria-label="Empresa anterior"
             >
               <ChevronUp size={18} />
             </button>
             <button
-              className="hidden md:flex absolute bottom-28 left-1/2 -translate-x-1/2 z-20 w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
+              className="hidden md:flex absolute bottom-28 left-1/2 -translate-x-1/2 z-20 w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700"
+              style={{ transition: "background-color 0.15s, color 0.15s" }}
               onClick={goNextCompany}
               aria-label="Empresa siguiente"
             >
@@ -270,7 +274,7 @@ export default function PortfolioGrid() {
 
             {/* Counter */}
             {currentItem.images.length > 1 && (
-              <div className="absolute top-4 left-4 md:top-6 md:left-6 z-20 text-zinc-600 dark:text-zinc-400 text-sm font-semibold tabular-nums bg-zinc-200/80 dark:bg-zinc-800/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700">
+              <div className="absolute top-4 left-4 md:top-6 md:left-6 z-20 text-zinc-600 dark:text-zinc-400 text-sm font-semibold tabular-nums bg-zinc-200 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-zinc-300 dark:border-zinc-700" style={{ transition: "none" }}>
                 {lightbox.photoIndex + 1} / {currentItem.images.length}
               </div>
             )}
@@ -279,14 +283,16 @@ export default function PortfolioGrid() {
             {currentItem.images.length > 1 && (
               <>
                 <button
-                  className="hidden md:flex absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
+                  className="hidden md:flex absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700"
+                  style={{ transition: "background-color 0.15s, color 0.15s" }}
                   onClick={goPrevPhoto}
                   aria-label="Foto anterior"
                 >
                   <ChevronLeft size={22} />
                 </button>
                 <button
-                  className="hidden md:flex absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700 transition-colors duration-200"
+                  className="hidden md:flex absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-brand-600 text-zinc-700 dark:text-zinc-200 hover:text-white items-center justify-center border border-zinc-300 dark:border-zinc-700"
+                  style={{ transition: "background-color 0.15s, color 0.15s" }}
                   onClick={goNextPhoto}
                   aria-label="Foto siguiente"
                 >
@@ -325,9 +331,9 @@ export default function PortfolioGrid() {
                 </AnimatePresence>
               </div>
 
-              {/* Bottom info bar — themed for light/dark */}
+              {/* Bottom info bar — solid themed light/dark */}
               <div className="w-full max-w-5xl mt-4 md:mt-6 flex-shrink-0">
-                <div className="flex items-center gap-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-2xl px-5 py-4 border border-zinc-200 dark:border-zinc-800 shadow-lg shadow-zinc-900/5 dark:shadow-black/20">
+                <div className="flex items-center gap-4 bg-white dark:bg-zinc-900 rounded-2xl px-5 py-4 border border-zinc-200 dark:border-zinc-800 shadow-lg shadow-zinc-950/5 dark:shadow-black/30" style={{ transition: "none" }}>
                   {/* Logo */}
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden">
                     {currentItem.logo ? (
@@ -347,13 +353,13 @@ export default function PortfolioGrid() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h2 className="text-zinc-900 dark:text-zinc-100 font-bold text-sm md:text-base truncate">{currentItem.company}</h2>
-                      <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-500 bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 rounded-md flex-shrink-0">
+                      <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950 px-2 py-0.5 rounded-md flex-shrink-0">
                         {lightbox.itemIndex + 1}/{filtered.length}
                       </span>
                     </div>
                     <p className="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm truncate">{currentItem.description}</p>
                   </div>
-                  {/* Thumbnail dots */}
+                  {/* Dot indicators */}
                   {currentItem.images.length > 1 && (
                     <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
                       {currentItem.images.map((_, idx) => (
@@ -366,13 +372,23 @@ export default function PortfolioGrid() {
                           className={`rounded-full transition-all duration-200 ${
                             idx === lightbox.photoIndex
                               ? "w-6 h-2 bg-brand-500"
-                              : "w-2 h-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-400"
+                              : "w-2 h-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500"
                           }`}
                           aria-label={`Ver foto ${idx + 1}`}
                         />
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* Swipe hint — mobile only */}
+                <div className="flex md:hidden justify-center gap-4 mt-3 text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  <span className="flex items-center gap-1">
+                    <ChevronLeft size={10} /><ChevronRight size={10} /> Fotos
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <ChevronUp size={10} /><ChevronDown size={10} /> Empresas
+                  </span>
                 </div>
               </div>
             </div>
