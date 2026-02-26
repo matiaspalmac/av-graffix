@@ -35,7 +35,7 @@ export function ErpTopbar({
   const toggleTheme = () => {
     const html = document.documentElement;
     const isDark = html.classList.contains("dark");
-    
+
     // Cambiar inmediatamente en el DOM
     if (isDark) {
       html.classList.remove("dark");
@@ -56,7 +56,7 @@ export function ErpTopbar({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 border-b border-zinc-200 dark:border-brand-900/30 bg-white dark:bg-gradient-to-r dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-30 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
       <div className="flex h-16 items-center">
         {/* Izquierda: Hamburguesa (72px fijos para alinear con sidebar) */}
         <div className="hidden lg:flex items-center justify-center w-[72px] flex-shrink-0 h-full">
@@ -68,7 +68,7 @@ export function ErpTopbar({
                 toggleCollapsed();
               }
             }}
-            className="inline-flex items-center justify-center rounded-lg p-2 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+            className="inline-flex items-center justify-center rounded-full p-2.5 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
             aria-label="Menú"
             type="button"
           >
@@ -87,8 +87,8 @@ export function ErpTopbar({
             />
           </div>
           <div>
-            <h1 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">AV GRAFFIX ERP</h1>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">Gestión interna de producción y rentabilidad</p>
+            <h1 className="text-base sm:text-lg font-bold text-zinc-800 dark:text-zinc-100 leading-tight">AV GRAFFIX ERP</h1>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">Gestión interna de producción</p>
           </div>
         </div>
 
@@ -101,7 +101,7 @@ export function ErpTopbar({
               toggleCollapsed();
             }
           }}
-          className="lg:hidden inline-flex items-center justify-center rounded-lg p-2 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition px-4"
+          className="lg:hidden inline-flex items-center justify-center rounded-full p-2.5 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors mx-2"
           aria-label="Menú"
           type="button"
         >
@@ -110,7 +110,7 @@ export function ErpTopbar({
 
         {/* Centro: Búsqueda de módulos - centrada */}
         <div className="flex-1 flex justify-center px-4">
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-2xl">
             <GlobalSearch role={role} />
           </div>
         </div>
@@ -130,7 +130,7 @@ export function ErpTopbar({
 
           <button
             onClick={toggleTheme}
-            className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+            className="inline-flex items-center justify-center w-10 h-10 rounded-full text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             aria-label="Cambiar tema"
             type="button"
           >

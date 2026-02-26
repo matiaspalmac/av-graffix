@@ -67,11 +67,13 @@ export const clients = sqliteTable(
     contactPhone: text("contact_phone"),
     paymentTermsDays: integer("payment_terms_days").notNull().default(30),
     isRetainer: integer("is_retainer", { mode: "boolean" }).notNull().default(false),
+    isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
     ...timestamps,
   },
   (table) => [
     uniqueIndex("clients_rut_uq").on(table.rut),
     index("clients_trade_name_idx").on(table.tradeName),
+    index("clients_active_idx").on(table.isActive),
   ]
 );
 

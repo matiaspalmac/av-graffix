@@ -31,6 +31,7 @@ export async function allClientsWithDetails(limit = 50) {
       email: clients.contactEmail,
       paymentTermsDays: clients.paymentTermsDays,
       isRetainer: clients.isRetainer,
+      isActive: clients.isActive,
       createdAt: clients.createdAt,
       updatedAt: clients.updatedAt,
     })
@@ -71,15 +72,24 @@ export async function updateClientAction(formData: FormData) {
   }
 }
 
-export async function deleteClientAction(formData: FormData) {
+export async function toggleClientStatusAction(formData: FormData) {
   try {
-    await requireRole(["admin"]);
+    await requireRole(["admin", "produccion"]);
     const clientId = asNumber(formData.get("clientId"));
+    const currentStatus = formData.get("isActive") === "true";
+
     if (!clientId) return;
-    await db.delete(clients).where(eq(clients.id, clientId));
+
+    await db
+      .update(clients)
+      .set({
+        isActive: !currentStatus,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(clients.id, clientId));
+
     revalidatePath("/erp/clientes");
   } catch (error) {
-    console.error("deleteClientAction", toErrorMessage(error));
-    throw error;
+    console.error("toggleClientStatusAction", toErrorMessage(error));
   }
 }

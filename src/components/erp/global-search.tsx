@@ -5,14 +5,17 @@ import { Search, X } from "lucide-react";
 
 const quickLinks = [
   { label: "Dashboard", href: "/erp" },
-  { label: "Ventas", href: "/erp/ventas" },
+  { label: "CRM & Ventas", href: "/erp/ventas" },
+  { label: "Cotizaciones", href: "/erp/cotizaciones" },
+  { label: "Clientes", href: "/erp/clientes" },
   { label: "Proyectos", href: "/erp/proyectos" },
   { label: "Producción", href: "/erp/produccion" },
   { label: "Inventario", href: "/erp/inventario" },
   { label: "Compras", href: "/erp/compras" },
+  { label: "Proveedores", href: "/erp/proveedores" },
   { label: "Finanzas", href: "/erp/finanzas" },
   { label: "Reportes", href: "/erp/reportes" },
-  { label: "Administración", href: "/erp/admin" },
+  { label: "Configuración", href: "/erp/admin" },
 ];
 
 type GlobalSearchProps = {
@@ -71,7 +74,7 @@ export function GlobalSearch({ role }: GlobalSearchProps) {
   };
 
   return (
-    <div ref={containerRef} className="relative flex-1 max-w-md">
+    <div ref={containerRef} className="relative flex-1 w-full">
       <div className="relative">
         <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" />
         <input
@@ -83,7 +86,7 @@ export function GlobalSearch({ role }: GlobalSearchProps) {
             setIsOpen(true);
             resetTimeout();
           }}
-          className="w-full pl-9 pr-9 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-sm placeholder-zinc-400 dark:placeholder-zinc-500"
+          className="w-full pl-[52px] pr-12 py-3 rounded-full border-none bg-zinc-100 dark:bg-zinc-800/50 text-base placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:bg-white dark:focus:bg-zinc-900 focus:shadow-[0_1px_3px_rgba(0,0,0,0.1)] transition-all"
         />
         {query && (
           <button
@@ -91,7 +94,7 @@ export function GlobalSearch({ role }: GlobalSearchProps) {
               setQuery("");
               setIsOpen(false);
             }}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 p-1 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
           >
             <X size={16} />
           </button>
@@ -99,7 +102,7 @@ export function GlobalSearch({ role }: GlobalSearchProps) {
       </div>
 
       {isOpen && (filtered.length > 0 || query) && (
-        <div className="erp-dropdown-surface absolute top-full left-0 right-0 mt-2 rounded-xl border backdrop-blur-sm z-50 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl z-50 overflow-hidden">
           {filtered.length > 0 ? (
             <div className="p-2 space-y-1">
               {filtered.map((link) => (

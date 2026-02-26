@@ -29,6 +29,7 @@ import {
 } from "@/db/schema";
 import { formatCLP, formatPercent } from "@/lib/format";
 import { KpiCard } from "@/components/erp/kpi-card";
+import { Welcome } from "@/components/erp/welcome";
 import { updateTaskStatusQuickAction } from "@/app/erp/(protected)/dashboard-actions";
 
 function monthStartISO() {
@@ -89,14 +90,14 @@ export default async function ErpDashboardPage() {
       `),
     db.select({ value: sql<number>`count(*)` }).from(projects).where(sql`${projects.status} = 'in_progress'`),
     // % de merma/desperdicio real vs planificado
-    db.select({ 
+    db.select({
       wastePct: sql<number>`
         case 
           when coalesce(sum(${materialConsumptions.qtyPlanned}),0) > 0 
           then (coalesce(sum(${materialConsumptions.wasteQty}),0) * 100.0) / coalesce(sum(${materialConsumptions.qtyPlanned}),1)
           else 0
         end
-      ` 
+      `
     }).from(materialConsumptions).where(sql`${materialConsumptions.consumptionDate} >= ${monthStart}`),
     // Tasa de conversión de cotizaciones (aprobadas / total del mes)
     db.select({
@@ -154,16 +155,16 @@ export default async function ErpDashboardPage() {
 
   const userTasks = currentUserId
     ? await db
-        .select({
-          id: tasks.id,
-          title: tasks.title,
-          status: tasks.status,
-          dueAt: tasks.dueAt,
-          priority: tasks.priority,
-        })
-        .from(tasks)
-        .where(sql`${tasks.assigneeUserId} = ${currentUserId} and ${tasks.status} in ('todo','in_progress')`)
-        .orderBy(sql`
+      .select({
+        id: tasks.id,
+        title: tasks.title,
+        status: tasks.status,
+        dueAt: tasks.dueAt,
+        priority: tasks.priority,
+      })
+      .from(tasks)
+      .where(sql`${tasks.assigneeUserId} = ${currentUserId} and ${tasks.status} in ('todo','in_progress')`)
+      .orderBy(sql`
           case ${tasks.priority}
             when 'high' then 1
             when 'normal' then 2
@@ -172,7 +173,7 @@ export default async function ErpDashboardPage() {
           coalesce(${tasks.dueAt}, '9999-12-31') asc,
           ${tasks.id} desc
         `)
-        .limit(8)
+      .limit(8)
     : [];
 
   const activeProjects = Number(activeProjectsResult[0]?.value ?? 0);
@@ -183,7 +184,7 @@ export default async function ErpDashboardPage() {
   const pendingCollections = Number(pendingCollectionsResult[0]?.value ?? 0);
   const criticalStock = Number(criticalStockResult[0]?.value ?? 0);
   const productionProjects = Number(productionProjectsResult[0]?.value ?? 0);
-  
+
   // KPIs dinámicos
   const materialWastePct = Number(materialWasteResult[0]?.wastePct ?? 0);
   const quotesTotal = Number(quotesConversionResult[0]?.total ?? 0);
@@ -216,11 +217,14 @@ export default async function ErpDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
         <div>
           <p className="text-xs uppercase tracking-widest text-brand-600 font-semibold">Dashboard Ejecutivo</p>
           <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">Control AV GRAFFIX ERP</h2>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">Costos reales por horas + materiales en CLP</p>
+        </div>
+        <div className="text-right">
+          <Welcome name={session?.user?.name || "Usuario"} />
         </div>
       </div>
 
@@ -309,10 +313,10 @@ export default async function ErpDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-          <div className="rounded-xl border border-orange-200 dark:border-orange-900/40 p-4 bg-orange-50/60 dark:bg-orange-950/20">
+          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-800/20 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800/50">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Stock crítico</p>
-              <span className="text-xs rounded-full bg-white/80 dark:bg-zinc-900 px-2 py-1 border border-orange-200 dark:border-orange-900/40">
+              <p className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Stock crítico</p>
+              <span className="text-xs font-semibold rounded-full bg-white dark:bg-zinc-900 px-2 py-1 border border-zinc-200 dark:border-zinc-700 shadow-sm text-zinc-700 dark:text-zinc-300">
                 {criticalMaterials.length}
               </span>
             </div>
@@ -335,10 +339,10 @@ export default async function ErpDashboardPage() {
             </Link>
           </div>
 
-          <div className="rounded-xl border border-amber-200 dark:border-amber-900/40 p-4 bg-amber-50/60 dark:bg-amber-950/20">
+          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-800/20 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800/50">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">OC atrasadas</p>
-              <span className="text-xs rounded-full bg-white/80 dark:bg-zinc-900 px-2 py-1 border border-amber-200 dark:border-amber-900/40">
+              <p className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">OC atrasadas</p>
+              <span className="text-xs font-semibold rounded-full bg-white dark:bg-zinc-900 px-2 py-1 border border-zinc-200 dark:border-zinc-700 shadow-sm text-zinc-700 dark:text-zinc-300">
                 {delayedPurchaseOrders.length}
               </span>
             </div>
@@ -361,10 +365,10 @@ export default async function ErpDashboardPage() {
             </Link>
           </div>
 
-          <div className="rounded-xl border border-violet-200 dark:border-violet-900/40 p-4 bg-violet-50/60 dark:bg-violet-950/20">
+          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50 dark:bg-zinc-800/20 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800/50">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Cobranza vencida</p>
-              <span className="text-xs rounded-full bg-white/80 dark:bg-zinc-900 px-2 py-1 border border-violet-200 dark:border-violet-900/40">
+              <p className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Cobranza vencida</p>
+              <span className="text-xs font-semibold rounded-full bg-white dark:bg-zinc-900 px-2 py-1 border border-zinc-200 dark:border-zinc-700 shadow-sm text-zinc-700 dark:text-zinc-300">
                 {overdueInvoices.length}
               </span>
             </div>

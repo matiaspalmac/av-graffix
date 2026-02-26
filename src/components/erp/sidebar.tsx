@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   FileText,
   Users,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "./sidebar-provider";
@@ -26,18 +27,39 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const menu = [
-  { href: "/erp", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/erp/ventas", label: "CRM & Ventas", icon: TrendingUp },
-  { href: "/erp/cotizaciones", label: "Cotizaciones", icon: FileText },
-  { href: "/erp/clientes", label: "Clientes", icon: Users },
-  { href: "/erp/proyectos", label: "Proyectos", icon: FolderKanban },
-  { href: "/erp/produccion", label: "Producción", icon: Printer },
-  { href: "/erp/inventario", label: "Inventario", icon: Package },
-  { href: "/erp/compras", label: "Compras", icon: ShoppingCart },
-  { href: "/erp/finanzas", label: "Finanzas", icon: Landmark },
-  { href: "/erp/reportes", label: "Reportes", icon: BarChart3 },
-  { href: "/erp/admin", label: "Administración", icon: ShieldCheck },
+const menuGroups = [
+  {
+    label: "Principal",
+    items: [
+      { href: "/erp", label: "Dashboard", icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: "Comercial & Operaciones",
+    items: [
+      { href: "/erp/ventas", label: "CRM & Ventas", icon: TrendingUp },
+      { href: "/erp/cotizaciones", label: "Cotizaciones", icon: FileText },
+      { href: "/erp/clientes", label: "Clientes", icon: Users },
+      { href: "/erp/proyectos", label: "Proyectos", icon: FolderKanban },
+      { href: "/erp/produccion", label: "Producción", icon: Printer },
+    ],
+  },
+  {
+    label: "Suministro",
+    items: [
+      { href: "/erp/inventario", label: "Inventario", icon: Package },
+      { href: "/erp/compras", label: "Compras", icon: ShoppingCart },
+      { href: "/erp/proveedores", label: "Proveedores", icon: Building2 },
+    ],
+  },
+  {
+    label: "Administración",
+    items: [
+      { href: "/erp/finanzas", label: "Finanzas", icon: Landmark },
+      { href: "/erp/reportes", label: "Reportes", icon: BarChart3 },
+      { href: "/erp/admin", label: "Configuración", icon: ShieldCheck },
+    ],
+  }
 ];
 
 type ErpSidebarProps = {
@@ -94,73 +116,121 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
     setDeferredPrompt(null);
   };
 
-  const menuItems = menu.filter((item) => (item.href === "/erp/admin" ? role === "admin" : true));
+  const filteredGroups = menuGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => (item.href === "/erp/admin" ? role === "admin" : true)),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <>
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "hidden lg:flex lg:flex-col lg:fixed lg:top-16 lg:left-0 lg:h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden",
-          "transition-[width] duration-300 ease-in-out",
+          "hidden lg:flex lg:flex-col lg:fixed lg:top-16 lg:left-0 lg:h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 z-20",
+          "transition-[width] duration-300 ease-in-out overflow-x-hidden",
           isCollapsed ? "lg:w-[72px]" : "lg:w-64"
         )}
       >
-        <div className="flex w-full flex-col h-full">
-          <nav className="flex-1 overflow-y-auto py-2">
-            <div className="space-y-1">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                const active = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
+        <div className="flex w-full flex-col h-full overflow-hidden">
+          <nav className="flex-1 overflow-y-auto overflow-x-hidden py-2 custom-scrollbar">
+            <div className="space-y-6">
+              {filteredGroups.map((group, groupIdx) => (
+                <div key={group.label} className="space-y-1 relative">
+
+                  {/* Animación fluida de la etiqueta */}
+                  <div
                     className={cn(
-                      "flex items-center h-11 rounded-xl text-sm font-medium transition-colors mx-2",
-                      active
-                        ? "bg-brand-600 text-white shadow-md shadow-brand-600/20"
-                        : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                      "overflow-hidden transition-all duration-300 ease-in-out",
+                      isCollapsed ? "max-h-0 opacity-0" : "max-h-12 opacity-100"
                     )}
-                    title={isCollapsed ? item.label : undefined}
                   >
-                    {/* Slot fijo de 52px = centrado en los ~72px del sidebar colapsado (72 - 2*mx-2=8px = 64px, icon 18px → padding 23px) */}
-                    <span className="flex items-center justify-center w-[52px] flex-shrink-0">
-                      <Icon size={18} />
-                    </span>
-                    <span
+                    <p className="px-6 pb-2 pt-2 text-[11px] font-bold text-zinc-500 uppercase tracking-wider whitespace-nowrap">
+                      {group.label}
+                    </p>
+                  </div>
+
+                  {/* Divisor animado (solo aparece colapsado) */}
+                  {groupIdx > 0 && (
+                    <div
                       className={cn(
-                        "whitespace-nowrap overflow-hidden transition-[opacity] ease-in-out pr-3",
-                        isCollapsed
-                          ? "opacity-0 duration-100 w-0"
-                          : "opacity-100 duration-200 delay-150"
+                        "overflow-hidden transition-all duration-300 ease-in-out",
+                        isCollapsed ? "max-h-4 opacity-100 mt-2 mb-2" : "max-h-0 opacity-0 mt-0 mb-0 pointer-events-none"
                       )}
                     >
-                      {item.label}
-                    </span>
-                  </Link>
-                );
-              })}
+                      <div className="mx-4 border-t border-zinc-200 dark:border-zinc-800" />
+                    </div>
+                  )}
+
+                  {group.items.map((item) => {
+                    const Icon = item.icon;
+                    const active = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "relative flex items-center h-[52px] text-sm font-medium transition-all duration-300",
+                          isCollapsed
+                            ? "w-[52px] ml-[10px] rounded-full"
+                            : "w-[calc(100%-16px)] ml-0 mr-4 rounded-r-full",
+                          active
+                            ? "bg-brand-600 text-white shadow-md shadow-brand-600/20"
+                            : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                        )}
+                        title={isCollapsed ? item.label : undefined}
+                      >
+                        {/* Animating icon center position seamlessly */}
+                        <span className={cn(
+                          "flex items-center justify-center flex-shrink-0 transition-all duration-300",
+                          isCollapsed ? "w-[52px]" : "w-[72px]"
+                        )}>
+                          <Icon size={18} />
+                        </span>
+                        <span
+                          className={cn(
+                            "absolute flex items-center h-full whitespace-nowrap transition-all duration-300 ease-in-out",
+                            isCollapsed
+                              ? "opacity-0 left-[52px] pointer-events-none"
+                              : "opacity-100 left-[72px]"
+                          )}
+                        >
+                          {item.label}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           </nav>
 
           {/* Botón de instalación PWA - Desktop */}
           {deferredPrompt && !isInstalled && (
-            <div className="border-t border-zinc-200 dark:border-zinc-800 py-2 px-2">
+            <div className="border-t border-zinc-200 dark:border-zinc-800 py-2">
               <button
                 onClick={handleInstall}
-                className="w-full flex items-center h-11 rounded-xl text-sm font-medium bg-gradient-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 transition-all shadow-lg shadow-brand-500/20"
+                className={cn(
+                  "relative flex items-center h-[52px] text-sm font-medium bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-300 dark:hover:bg-brand-900/40 transition-all duration-300",
+                  isCollapsed
+                    ? "w-[52px] ml-[10px] rounded-full"
+                    : "w-[calc(100%-16px)] ml-0 mr-4 rounded-r-full"
+                )}
                 title={isCollapsed ? "Instalar App" : undefined}
               >
-                <span className="flex items-center justify-center w-[52px] flex-shrink-0">
+                <span className={cn(
+                  "flex items-center justify-center flex-shrink-0 transition-all duration-300",
+                  isCollapsed ? "w-[52px]" : "w-[72px]"
+                )}>
                   <Download size={18} />
                 </span>
                 <span
                   className={cn(
-                    "whitespace-nowrap overflow-hidden transition-[opacity] ease-in-out pr-3",
+                    "absolute flex items-center h-full whitespace-nowrap transition-all duration-300 ease-in-out",
                     isCollapsed
-                      ? "opacity-0 duration-100 w-0"
-                      : "opacity-100 duration-200 delay-150"
+                      ? "opacity-0 left-[52px] pointer-events-none"
+                      : "opacity-100 left-[72px]"
                   )}
                 >
                   Instalar App
@@ -204,38 +274,51 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
             </button>
           </div>
 
-          <nav className="space-y-1">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                    active
-                      ? "bg-brand-600 text-white shadow-md shadow-brand-600/20"
-                      : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-                  )}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <Icon size={18} />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+          <nav className="space-y-6">
+            {filteredGroups.map((group) => (
+              <div key={group.label} className="space-y-1">
+                <p className="px-6 pb-2 text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                  {group.label}
+                </p>
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const active = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center h-[52px] rounded-r-full text-sm font-medium transition-colors w-[calc(100%-16px)] ml-0 mr-4",
+                        active
+                          ? "bg-brand-600 text-white shadow-md shadow-brand-600/20"
+                          : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                      )}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className="flex items-center justify-center w-[72px] flex-shrink-0">
+                        <Icon size={18} />
+                      </span>
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </nav>
 
           {/* Botón de instalación PWA - Mobile */}
           {deferredPrompt && !isInstalled && (
-            <button
-              onClick={handleInstall}
-              className="mt-4 w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium bg-gradient-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 transition-all shadow-lg shadow-brand-500/20 border-t border-zinc-200 dark:border-zinc-800 pt-4"
-            >
-              <Download size={18} className="flex-shrink-0" />
-              <span>Instalar App</span>
-            </button>
+            <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4 mt-4">
+              <button
+                onClick={handleInstall}
+                className="w-[calc(100%-16px)] ml-0 mr-4 flex items-center h-[52px] rounded-r-full text-sm font-medium bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors dark:bg-brand-900/20 dark:text-brand-300 dark:hover:bg-brand-900/40"
+              >
+                <span className="flex items-center justify-center w-[72px] flex-shrink-0">
+                  <Download size={18} />
+                </span>
+                <span className="font-medium">Instalar App</span>
+              </button>
+            </div>
           )}
         </div>
       </aside>

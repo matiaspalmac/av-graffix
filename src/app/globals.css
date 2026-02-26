@@ -264,3 +264,9 @@ html.high-contrast .dark .text-zinc-400 {
   background-color: rgba(24, 24, 27, 0.96);
   box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.75);
 }
+
+/* Global color transitions for smooth Dark Mode toggling */
+html, body, 
+*, *::before, *::after {
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.2s ease-in-out, fill 0.2s ease-in-out, stroke 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+}
