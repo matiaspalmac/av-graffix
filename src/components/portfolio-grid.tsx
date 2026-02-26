@@ -31,14 +31,14 @@ const portfolioItems = [
     images: ["/trabajos/sofo_1.jpg", "/trabajos/sofo_2.jpg", "/trabajos/sofo_3.jpg"],
     company: "SOFO & Super Cerdo",
     category: "Material Promocional y Eventos",
-    logo: null,
+    logo: "/logos/sofo.png",
     description: "Producción de material promocional, pendones y señalética de stands para ferias agropecuarias masivas.",
   },
   {
     images: ["/trabajos/prt_1.jpg", "/trabajos/prt_2.jpg", "/trabajos/prt_3.jpeg"],
     company: "PRT",
     category: "Señalética Industrial y de Seguridad",
-    logo: null,
+    logo: "/logos/prt.png",
     description: "Señalética vial e informativa corporativa para plantas de revisión técnica vehicular.",
   },
   {
@@ -52,14 +52,14 @@ const portfolioItems = [
     images: ["/trabajos/b2autos_1.jpeg", "/trabajos/b2autos_2.jpeg"],
     company: "B2 Autos",
     category: "Rotulación y Branding Vehicular",
-    logo: null,
+    logo: "/logos/b2autos.png",
     description: "Rotulación completa de vehículos y señalética exterior para puntos de venta automotriz.",
   },
   {
     images: ["/trabajos/minimarketisabella_1.jpeg", "/trabajos/minimarketisabella_2.jpeg", "/trabajos/minimarketisabella_3.jpeg"],
     company: "Minimarket Isabella",
     category: "Señalética Comercial y Fachadas",
-    logo: null,
+    logo: "/logos/minimarketisabella.jpg",
     description: "Señalética integral de fachada y letrero principal.",
   },
 ];

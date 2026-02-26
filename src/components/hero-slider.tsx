@@ -4,13 +4,28 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, ArrowRight } from "lucide-react"
+import { ChevronDown, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 
 const slides = [
-  { image: "/hero1.jpeg" },
-  { image: "/hero2.jpeg" },
-  { image: "/hero3.jpeg" },
-]
+  { image: "/trabajos/aguasaraucania_1.jpeg" },
+  { image: "/trabajos/aguasaraucania_2.jpeg" },
+  { image: "/trabajos/cifuentes_1.jpeg" },
+  { image: "/trabajos/cifuentes_2.jpeg" },
+  { image: "/trabajos/bidfood_1.jpg" },
+  { image: "/trabajos/bidfood_2.jpg" },
+  { image: "/trabajos/sofo_1.jpg" },
+  { image: "/trabajos/sofo_2.jpg" },
+  { image: "/trabajos/sofo_3.jpg" },
+  { image: "/trabajos/prt_1.jpg" },
+  { image: "/trabajos/prt_2.jpg" },
+  { image: "/trabajos/prt_3.jpeg" },
+  { image: "/trabajos/farellones_1.jpeg" },
+  { image: "/trabajos/b2autos_1.jpeg" },
+  { image: "/trabajos/b2autos_2.jpeg" },
+  { image: "/trabajos/minimarketisabella_1.jpeg" },
+  { image: "/trabajos/minimarketisabella_2.jpeg" },
+  { image: "/trabajos/minimarketisabella_3.jpeg" }
+];
 
 const phrases = [
   "Excelencia Gráfica en la Araucanía",
@@ -25,12 +40,19 @@ export default function HeroSlider() {
   const [loopNum, setLoopNum] = useState(0)
   const [typingSpeed, setTypingSpeed] = useState(100)
 
-  // Background slider
+  // Para evitar hydration mismatch, inicia el auto-slide solo después de montar
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length)
-    }, 6000)
-    return () => clearInterval(timer)
+    let mounted = true;
+    let timer: NodeJS.Timeout | null = null;
+    if (mounted) {
+      timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % slides.length)
+      }, 5000)
+    }
+    return () => {
+      mounted = false;
+      if (timer) clearInterval(timer)
+    }
   }, [])
 
   // Typewriter
@@ -74,10 +96,10 @@ export default function HeroSlider() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
-          initial={{ opacity: 0, scale: 1.1 }}
+          initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="absolute inset-0"
         >
           <Image
@@ -92,6 +114,23 @@ export default function HeroSlider() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/30 via-zinc-950/50 to-zinc-950/90" />
           <div className="absolute inset-0 bg-black/20" />
+          {/* Flechas de navegación dentro del contenedor animado */}
+          <button
+            aria-label="Anterior"
+            onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white rounded-full p-2 transition-colors duration-200 focus:outline-none"
+            style={{ backdropFilter: 'blur(2px)' }}
+          >
+            <ChevronLeft size={32} />
+          </button>
+          <button
+            aria-label="Siguiente"
+            onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white rounded-full p-2 transition-colors duration-200 focus:outline-none"
+            style={{ backdropFilter: 'blur(2px)' }}
+          >
+            <ChevronRight size={32} />
+          </button>
         </motion.div>
       </AnimatePresence>
 
