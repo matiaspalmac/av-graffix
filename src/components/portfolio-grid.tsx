@@ -62,6 +62,21 @@ const portfolioItems = [
     logo: "/logos/minimarketisabella.jpg",
     description: "Señalética integral de fachada y letrero principal.",
   },
+  {
+    images: [
+      "/trabajos/decarmotors_1.jpeg", "/trabajos/decarmotors_2.jpeg",
+      "/trabajos/decarmotors_3.jpeg", "/trabajos/decarmotors_4.jpeg",
+      "/trabajos/decarmotors_5.jpeg", "/trabajos/decarmotors_6.jpeg",
+      "/trabajos/decarmotors_7.jpeg", "/trabajos/decarmotors_8.jpeg",
+      "/trabajos/decarmotors_9.jpeg", "/trabajos/decarmotors_10.jpeg",
+      "/trabajos/decarmotors_11.jpeg", "/trabajos/decarmotors_12.jpeg",
+      "/trabajos/decarmotors_13.jpeg", "/trabajos/decarmotors_14.jpeg"
+    ],
+    company: "DECAR Motors",
+    category: "Rotulacion y Branding Vehicular",
+    logo: "/logos/decarmotors_claro.png",
+    description: "Rotulación completa de vehículos para presentar modelos llegados a la automotora.",
+  }
 ];
 
 const categories = ["Todos", ...Array.from(new Set(portfolioItems.map(i => i.category)))]
@@ -279,8 +294,8 @@ export default function PortfolioGrid() {
                         setLightbox({ itemIndex: idx, photoIndex: 0 })
                       }}
                       className={`rounded-full transition-all duration-200 ${idx === lightbox.itemIndex
-                          ? "w-2 h-5 bg-brand-500"
-                          : "w-2 h-2 bg-zinc-400 dark:bg-zinc-600 hover:bg-zinc-500 dark:hover:bg-zinc-500"
+                        ? "w-2 h-5 bg-brand-500"
+                        : "w-2 h-2 bg-zinc-400 dark:bg-zinc-600 hover:bg-zinc-500 dark:hover:bg-zinc-500"
                         }`}
                       aria-label={`Empresa ${idx + 1}`}
                     />
@@ -314,8 +329,8 @@ export default function PortfolioGrid() {
                           setLightbox(prev => prev ? { ...prev, photoIndex: idx } : null)
                         }}
                         className={`rounded-full transition-all duration-200 ${idx === lightbox.photoIndex
-                            ? "w-5 h-2 bg-brand-500"
-                            : "w-2 h-2 bg-zinc-400 dark:bg-zinc-600 hover:bg-zinc-500 dark:hover:bg-zinc-500"
+                          ? "w-5 h-2 bg-brand-500"
+                          : "w-2 h-2 bg-zinc-400 dark:bg-zinc-600 hover:bg-zinc-500 dark:hover:bg-zinc-500"
                           }`}
                         aria-label={`Foto ${idx + 1}`}
                       />
@@ -404,8 +419,8 @@ export default function PortfolioGrid() {
                         <span
                           key={idx}
                           className={`rounded-full transition-all duration-200 ${idx === lightbox.photoIndex
-                              ? "w-5 h-1.5 bg-brand-500"
-                              : "w-1.5 h-1.5 bg-zinc-300 dark:bg-zinc-600"
+                            ? "w-5 h-1.5 bg-brand-500"
+                            : "w-1.5 h-1.5 bg-zinc-300 dark:bg-zinc-600"
                             }`}
                         />
                       ))}
@@ -431,8 +446,8 @@ export default function PortfolioGrid() {
             key={cat}
             onClick={() => setActive(cat)}
             className={`px-5 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all duration-200 ${active === cat
-                ? "bg-brand-600 text-white shadow-lg shadow-brand-600/30"
-                : "bg-zinc-100 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200"
+              ? "bg-brand-600 text-white shadow-lg shadow-brand-600/30"
+              : "bg-zinc-100 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200"
               }`}
           >
             {cat}
