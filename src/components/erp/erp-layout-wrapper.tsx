@@ -31,7 +31,6 @@ function ErpLayoutContent({
 
   return (
     <div className="erp-theme min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-      {/* Topbar - Siempre full width, independiente del sidebar */}
       <ErpTopbar
         userName={userName}
         role={role}
@@ -40,14 +39,9 @@ function ErpLayoutContent({
         criticalStockCount={criticalStock}
         overdueInvoicesCount={overdueInvoices}
       />
-      
-      {/* Layout con sidebar y contenido */}
       <div className="flex pt-16">
-        {/* Sidebar a la izquierda */}
         <ErpSidebar role={role} />
-        
-        {/* Contenido principal que se ajusta al sidebar */}
-        <div 
+        <div
           className={cn(
             "flex-1 flex flex-col min-w-0 transition-all duration-300",
             isCollapsed ? "lg:ml-[72px]" : "lg:ml-64"
@@ -78,7 +72,7 @@ function ErpLayoutContent({
           </footer>
         </div>
       </div>
-      
+
       <OfflineIndicator />
     </div>
   );

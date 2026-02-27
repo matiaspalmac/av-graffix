@@ -81,7 +81,6 @@ export default async function VentasPage() {
           </div>
 
           <div className="space-y-8">
-            {/* Sección 1: Identificación del Cliente */}
             <section className="space-y-3">
               <div className="flex items-center gap-2 mb-1">
                 <div className="h-3.5 w-1 bg-brand-600 rounded-full"></div>
@@ -106,13 +105,9 @@ export default async function VentasPage() {
                 </label>
               </div>
             </section>
-
-            {/* Sección 2: Contactos */}
             <section>
               <ContactsListInput />
             </section>
-
-            {/* Sección 3: Ubicación y Dirección */}
             <section className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
               <div className="flex items-center gap-2 mb-1">
                 <div className="h-3.5 w-1 bg-blue-600 rounded-full"></div>
@@ -127,7 +122,6 @@ export default async function VentasPage() {
               </div>
             </section>
           </div>
-
           <div className="pt-6 border-t border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row gap-4">
             <SubmitButton>Guardar Cliente</SubmitButton>
             <button type="reset" className="hidden sm:block px-6 py-2.5 text-sm font-bold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors uppercase tracking-widest leading-none">
@@ -135,7 +129,6 @@ export default async function VentasPage() {
             </button>
           </div>
         </form>
-
         <form action={createQuoteAction} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 space-y-8">
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
             <div>
@@ -145,7 +138,6 @@ export default async function VentasPage() {
           </div>
 
           <div className="space-y-8">
-            {/* Sección 1: Cliente y Contacto */}
             <section className="space-y-3">
               <div className="flex items-center gap-2 mb-1">
                 <div className="h-3.5 w-1 bg-brand-600 rounded-full"></div>
@@ -181,8 +173,6 @@ export default async function VentasPage() {
                 </label>
               </div>
             </section>
-
-            {/* Sección 2: Detalles del Servicio */}
             <section className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
               <div className="flex items-center gap-2 mb-1">
                 <div className="h-3.5 w-1 bg-orange-600 rounded-full"></div>
@@ -200,8 +190,6 @@ export default async function VentasPage() {
                 <WorkTypesSelector />
               </div>
             </section>
-
-            {/* Sección 3: Especificaciones del Lugar */}
             <section className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
               <div className="flex items-center gap-2 mb-1">
                 <div className="h-3.5 w-1 bg-blue-600 rounded-full"></div>
@@ -242,8 +230,6 @@ export default async function VentasPage() {
                 </label>
               </div>
             </section>
-
-            {/* Sección 4: Medidas y Superficie */}
             <section className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
               <MeasurementsInput />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
@@ -259,8 +245,6 @@ export default async function VentasPage() {
                 </label>
               </div>
             </section>
-
-            {/* Sección 5: Condiciones Técnicas y Logística */}
             <section className="space-y-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
               <div className="flex items-center gap-2 mb-1">
                 <div className="h-3.5 w-1 bg-red-600 rounded-full"></div>
@@ -323,8 +307,6 @@ export default async function VentasPage() {
                 </label>
               </div>
             </section>
-
-            {/* Sección 6: Presupuesto y Estimación */}
             <section className="space-y-3 pt-6 border-t border-zinc-100 dark:border-zinc-800">
               <div className="flex items-center gap-2 mb-1">
                 <div className="h-3.5 w-1 bg-emerald-600 rounded-full"></div>

@@ -95,8 +95,6 @@ export default async function ClientesPage() {
               <div className="border-t border-zinc-200 dark:border-zinc-800 p-5 space-y-4">
                 <form action={updateClientAction} className="space-y-3">
                   <input type="hidden" name="clientId" value={client.id} />
-
-                  {/* Datos de empresa */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <label className="grid gap-1 text-sm">
                       <span className="text-zinc-600 dark:text-zinc-300">Razón Social *</span>
@@ -152,8 +150,6 @@ export default async function ClientesPage() {
                       />
                     </label>
                   </div>
-
-                  {/* Datos de contacto unificados */}
                   <ContactsListInput initialContacts={client.contacts} />
 
                   <div className="flex items-end gap-3 sm:col-span-2 lg:col-span-3 pt-4">
@@ -162,8 +158,6 @@ export default async function ClientesPage() {
                     </SubmitButton>
                   </div>
                 </form>
-
-                {/* Acciones secundarias */}
                 <div className="mt-8 pt-4 border-t border-zinc-100 dark:border-zinc-800/50 flex justify-end">
                   <form action={toggleClientStatusAction}>
                     <input type="hidden" name="clientId" value={client.id} />

@@ -23,7 +23,6 @@ export default function WhatsAppCTA() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex items-end gap-3">
-      {/* Tooltip bubble */}
       {tooltip && (
         <div className="relative bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-sm font-medium px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-black/5 dark:border-white/10 max-w-[200px] animate-fade-in">
           <button
@@ -36,8 +35,6 @@ export default function WhatsAppCTA() {
           <p>¿Necesitas una cotización? ¡Escríbenos!</p>
         </div>
       )}
-
-      {/* WhatsApp button */}
       <a
         href="https://wa.me/56992791148?text=Hola%20AV%20GRAFFIX%2C%20me%20gustar%C3%ADa%20cotizar%20un%20proyecto."
         target="_blank"
@@ -45,7 +42,6 @@ export default function WhatsAppCTA() {
         aria-label="Contactar por WhatsApp"
         className="group relative w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-green-500/30 hover:scale-110 transition-all duration-300"
       >
-        {/* Ping animation */}
         <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-20" />
         <MessageCircle size={26} className="relative z-10 fill-white" />
       </a>

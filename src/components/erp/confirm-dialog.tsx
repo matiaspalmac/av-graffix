@@ -61,29 +61,21 @@ export function ConfirmDialog({
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 z-40 transition-opacity"
         onClick={onCancel}
       />
-
-      {/* Dialog */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm z-50">
         <div className={`rounded-2xl border ${variantStyles[variant]} p-6 shadow-xl`}>
-          {/* Header */}
           <div className="flex items-start gap-3 mb-4">
             <AlertTriangle size={24} className={iconColor[variant]} />
             <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
               {title}
             </h2>
           </div>
-
-          {/* Description */}
           <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-6">
             {description}
           </p>
-
-          {/* Actions */}
           <div className="flex gap-3">
             <button
               onClick={onCancel}

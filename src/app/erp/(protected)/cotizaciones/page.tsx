@@ -7,8 +7,8 @@ import { DeleteQuoteForm } from "@/components/erp/delete-quote-form";
 type TechnicalSheet = {
   general?: { siteContact?: string; sitePhone?: string; technician?: string };
   jobSpecs?: { workTypes?: string[]; workTypeOther?: string; locationType?: string };
-  measurements?: { 
-    items?: Array<{ row: number; support: string; width: number; height: number; depth: number }>; 
+  measurements?: {
+    items?: Array<{ row: number; support: string; width: number; height: number; depth: number }>;
     surfaceType?: string;
     surfaceTypeOther?: string;
     observations?: string;
@@ -68,15 +68,14 @@ export default async function CotizacionesPage() {
                     <div className="flex items-center gap-3 flex-wrap">
                       <p className="font-bold text-zinc-900 dark:text-zinc-100">{quote.quoteNumber}</p>
                       <span
-                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          quote.status === "draft"
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${quote.status === "draft"
                             ? "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
                             : quote.status === "sent"
                               ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
                               : quote.status === "approved"
                                 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
                                 : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
-                        }`}
+                          }`}
                       >
                         {quote.status === "draft" ? "Borrador" : quote.status === "sent" ? "Enviada" : quote.status === "approved" ? "Aprobada" : "Rechazada"}
                       </span>
@@ -96,10 +95,9 @@ export default async function CotizacionesPage() {
                 </summary>
 
                 <div className="border-t border-zinc-200 dark:border-zinc-800 p-5 space-y-4">
-                  {/* Datos generales de la cotización */}
                   <form action={updateQuoteAction} className="space-y-3">
                     <input type="hidden" name="quoteId" value={quote.id} />
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                       <label className="grid gap-1 text-sm">
                         <span className="text-zinc-600 dark:text-zinc-300">Estado</span>
@@ -155,8 +153,6 @@ export default async function CotizacionesPage() {
                       />
                     </label>
                   </form>
-
-                  {/* Resumen financiero */}
                   <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                       <div>
@@ -177,8 +173,6 @@ export default async function CotizacionesPage() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Ficha técnica */}
                   {technicalSheet && (
                     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 text-sm space-y-2">
                       <p className="font-semibold text-zinc-900 dark:text-zinc-100">Ficha técnica</p>
@@ -218,8 +212,6 @@ export default async function CotizacionesPage() {
                       )}
                     </div>
                   )}
-
-                  {/* Ítems de la cotización */}
                   <div className="space-y-3">
                     <h4 className="font-semibold text-zinc-900 dark:text-zinc-100">Ítems de la cotización</h4>
                     {quote.items.map((item) => (
@@ -229,7 +221,7 @@ export default async function CotizacionesPage() {
                         className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 space-y-3"
                       >
                         <input type="hidden" name="itemId" value={item.id} />
-                        
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           <label className="grid gap-1 text-sm lg:col-span-2">
                             <span className="text-zinc-600 dark:text-zinc-300">Descripción</span>

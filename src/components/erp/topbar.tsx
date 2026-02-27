@@ -58,7 +58,6 @@ export function ErpTopbar({
   return (
     <header className="fixed top-0 left-0 right-0 z-30 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
       <div className="flex h-16 items-center">
-        {/* Izquierda: Hamburguesa (72px fijos para alinear con sidebar) */}
         <div className="hidden lg:flex items-center justify-center w-[72px] flex-shrink-0 h-full">
           <button
             onClick={() => {
@@ -75,8 +74,6 @@ export function ErpTopbar({
             <Menu size={20} />
           </button>
         </div>
-
-        {/* Logo + Título - visible a partir de sm, con padding */}
         <div className="hidden sm:flex items-center gap-2 px-4 sm:px-6 lg:px-4">
           <div className="relative w-10 h-10 flex-shrink-0">
             <Image
@@ -91,8 +88,6 @@ export function ErpTopbar({
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Gestión interna de producción</p>
           </div>
         </div>
-
-        {/* En mobile, mostrar hamburguesa al lado del padding */}
         <button
           onClick={() => {
             if (window.innerWidth < 1024) {
@@ -107,15 +102,11 @@ export function ErpTopbar({
         >
           <Menu size={20} />
         </button>
-
-        {/* Centro: Búsqueda de módulos - centrada */}
         <div className="flex-1 flex justify-center px-4">
           <div className="w-full max-w-2xl">
             <GlobalSearch role={role} />
           </div>
         </div>
-
-        {/* Derecha: Stats + Notificaciones + Tema + Usuario - con mismo padding */}
         <div className="flex items-center gap-3 flex-shrink-0 px-4 sm:px-6 lg:px-4">
           <QuickStatsTopbar
             monthlyRevenue={monthlyRevenue}

@@ -41,7 +41,6 @@ export default function HeroSlider() {
   const [loopNum, setLoopNum] = useState(0)
   const [typingSpeed, setTypingSpeed] = useState(100)
 
-  // Para evitar hydration mismatch, inicia el auto-slide solo después de montar
   useEffect(() => {
     let mounted = true;
     let timer: NodeJS.Timeout | null = null;
@@ -56,7 +55,6 @@ export default function HeroSlider() {
     }
   }, [])
 
-  // Typewriter
   useEffect(() => {
     const handleType = () => {
       const i = loopNum % phrases.length
@@ -84,7 +82,6 @@ export default function HeroSlider() {
 
   return (
     <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-zinc-950">
-      {/* Floating particles */}
       <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-2 h-2 rounded-full bg-brand-500/20 animate-float" />
         <div className="absolute top-1/3 right-1/3 w-3 h-3 rounded-full bg-white/10 animate-float-delayed" />
@@ -115,7 +112,6 @@ export default function HeroSlider() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/30 via-zinc-950/50 to-zinc-950/90" />
           <div className="absolute inset-0 bg-black/20" />
-          {/* Flechas de navegación dentro del contenedor animado */}
           <button
             aria-label="Anterior"
             onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
@@ -188,7 +184,6 @@ export default function HeroSlider() {
         transition={{ duration: 1, delay: 0.8 }}
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-3"
       >
-        {/* Slide indicators */}
         <div className="flex gap-2 mb-4">
           {slides.map((_, i) => (
             <button
@@ -196,8 +191,8 @@ export default function HeroSlider() {
               onClick={() => setCurrentSlide(i)}
               aria-label={`Slide ${i + 1}`}
               className={`h-1.5 rounded-full transition-all duration-500 ${i === currentSlide
-                  ? "w-8 bg-brand-500"
-                  : "w-3 bg-white/30 hover:bg-white/50"
+                ? "w-8 bg-brand-500"
+                : "w-3 bg-white/30 hover:bg-white/50"
                 }`}
             />
           ))}

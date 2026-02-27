@@ -21,7 +21,6 @@ export default async function ConfigPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
         <Link
           href="/erp"
@@ -33,13 +32,9 @@ export default async function ConfigPage() {
         <h1 className="text-3xl font-black text-zinc-900 dark:text-zinc-100">Configuración</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Personaliza tu experiencia en el ERP</p>
       </div>
-
-      {/* Configuración Card */}
       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 sm:p-8">
         <ConfigSettingsPanel initialPreferences={preferences} />
       </div>
-
-      {/* Cambiar Contraseña */}
       <div className="mt-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 sm:p-8">
         <div className="flex items-center gap-2 mb-6">
           <Lock size={20} className="text-zinc-900 dark:text-zinc-100" />
@@ -47,8 +42,6 @@ export default async function ConfigPage() {
         </div>
         <ChangePasswordForm />
       </div>
-
-      {/* Sesiones Activas */}
       <div className="mt-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 sm:p-8">
         <div className="flex items-center gap-2 mb-6">
           <Monitor size={20} className="text-zinc-900 dark:text-zinc-100" />
@@ -59,8 +52,6 @@ export default async function ConfigPage() {
         </p>
         <ActiveSessionsList sessions={sessions} />
       </div>
-
-      {/* Info adicional */}
       <div className="mt-8 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl">
         <p className="text-xs text-zinc-600 dark:text-zinc-400">
           <span className="font-semibold">💡 Nota:</span> Tus preferencias se guardan automáticamente en la base de datos. Los cambios surtirán efecto inmediatamente.

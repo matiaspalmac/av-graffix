@@ -15,8 +15,6 @@ export const metadata: Metadata = {
 export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans">
-
-      {/* Hero Header */}
       <section className="relative py-32 overflow-hidden bg-zinc-900 dark:bg-zinc-950">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
         <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-brand-600/5 rounded-full blur-3xl" />
@@ -36,8 +34,6 @@ export default function PortfolioPage() {
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <PortfolioGrid />
-
-        {/* CTA Section */}
         <div className="bg-zinc-900 dark:bg-zinc-900 rounded-[2.5rem] p-12 md:p-20 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl" />

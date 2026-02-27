@@ -65,8 +65,6 @@ const steps = [
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans">
-
-      {/* Hero Header */}
       <section className="relative py-32 overflow-hidden bg-zinc-900 dark:bg-zinc-950">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-600/5 rounded-full blur-3xl" />
@@ -85,8 +83,6 @@ export default function ServicesPage() {
       </section>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Services — Alternating Cards */}
         <section className="py-32 space-y-20">
           {services.map((service, index) => {
             const Icon = service.icon
@@ -97,7 +93,6 @@ export default function ServicesPage() {
                 key={index}
                 className={`group grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center ${isReversed ? 'lg:direction-rtl' : ''}`}
               >
-                {/* Info Side */}
                 <div className={`space-y-6 ${isReversed ? 'lg:order-2' : ''}`}>
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-brand-50 dark:bg-brand-950/30 border border-brand-100 dark:border-brand-900/30 rounded-2xl flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white group-hover:border-brand-600 transition-all duration-300">
@@ -131,8 +126,6 @@ export default function ServicesPage() {
                     ))}
                   </div>
                 </div>
-
-                {/* Price Card Side */}
                 <div className={`${isReversed ? 'lg:order-1' : ''}`}>
                   <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-10 rounded-3xl shadow-sm group-hover:shadow-xl transition-all duration-500 relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl" />
@@ -156,8 +149,6 @@ export default function ServicesPage() {
             )
           })}
         </section>
-
-        {/* Workflow Process */}
         <section className="pb-32">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 text-zinc-900 dark:text-white">
@@ -170,7 +161,6 @@ export default function ServicesPage() {
           </div>
 
           <div className="relative max-w-5xl mx-auto">
-            {/* Connection line */}
             <div className="hidden md:block absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-600/20 to-transparent -translate-y-1/2" />
 
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
@@ -192,8 +182,6 @@ export default function ServicesPage() {
             </div>
           </div>
         </section>
-
-        {/* CTA */}
         <section className="pb-32">
           <div className="bg-zinc-900 dark:bg-zinc-900 rounded-[2.5rem] p-12 md:p-20 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />

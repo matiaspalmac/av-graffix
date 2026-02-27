@@ -32,8 +32,6 @@ const sections = [
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans">
-
-      {/* Hero Header */}
       <section className="relative py-24 overflow-hidden bg-zinc-900 dark:bg-zinc-950">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

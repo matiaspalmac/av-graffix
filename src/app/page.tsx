@@ -9,10 +9,8 @@ import { companies, homeProducts } from "@/lib/data"
 export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 selection:bg-brand-500/30 selection:text-zinc-900 dark:selection:text-white font-sans overflow-x-hidden">
-      {/* Hero Section — Client Component */}
       <HeroSlider />
 
-      {/* Quick Stats Section */}
       <section className="py-16 bg-zinc-900 dark:bg-zinc-900 relative z-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-brand-600/10 via-transparent to-brand-600/10" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -54,7 +52,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Products Section */}
       <section className="py-32 relative bg-zinc-50 dark:bg-zinc-950">
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,7 +86,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Companies Section — Infinite Carousel */}
       <section className="py-32 bg-white dark:bg-zinc-900/20 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent"></div>
 
@@ -109,7 +105,6 @@ export default function Home() {
         <LogoCarousel companies={companies} />
       </section>
 
-      {/* ¿Por qué elegirnos? */}
       <section className="py-32 bg-zinc-50 dark:bg-zinc-950 relative">
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -165,7 +160,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Banner */}
       <section className="relative overflow-hidden">
         <div className="bg-gradient-to-br from-brand-600 via-brand-600 to-brand-700 dark:from-brand-700 dark:via-brand-600 dark:to-brand-800 py-24">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDE4YzAtOS45NC04LjA2LTE4LTE4LTE4UzAgOC4wNiAwIDE4czguMDYgMTggMTggMTggMTgtOC4wNiAxOC0xOHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-50" />

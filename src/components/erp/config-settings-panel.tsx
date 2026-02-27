@@ -75,18 +75,15 @@ export default function ConfigSettingsPanel({ initialPreferences }: ConfigSettin
   };
 
   const ToggleSwitch = ({ checked }: { checked: boolean }) => (
-    <div className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${
-      checked ? "bg-brand-600" : "bg-zinc-300 dark:bg-zinc-700"
-    }`}>
-      <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all ${
-        checked ? "right-0.5" : "left-0.5"
-      }`}></div>
+    <div className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${checked ? "bg-brand-600" : "bg-zinc-300 dark:bg-zinc-700"
+      }`}>
+      <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all ${checked ? "right-0.5" : "left-0.5"
+        }`}></div>
     </div>
   );
 
   return (
     <div className="space-y-8">
-      {/* Sección Interfaz */}
       <div>
         <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
           <Eye size={20} />
@@ -118,11 +115,7 @@ export default function ConfigSettingsPanel({ initialPreferences }: ConfigSettin
           </button>
         </div>
       </div>
-
-      {/* Divider */}
       <div className="border-t border-zinc-200 dark:border-zinc-800"></div>
-
-      {/* Sección Notificaciones */}
       <div>
         <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
           <Bell size={20} />
@@ -166,8 +159,6 @@ export default function ConfigSettingsPanel({ initialPreferences }: ConfigSettin
           </button>
         </div>
       </div>
-
-      {/* Estado de guardado */}
       {saved && (
         <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
           <p className="text-sm text-green-700 dark:text-green-400">✓ Cambios guardados correctamente</p>

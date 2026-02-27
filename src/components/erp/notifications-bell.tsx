@@ -89,7 +89,6 @@ export function NotificationsBell({
 
       {isOpen && (
         <>
-          {/* Backdrop for mobile to help focusing on notifications */}
           <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40 lg:hidden" />
 
           <div className="
@@ -115,8 +114,8 @@ export function NotificationsBell({
                     <div
                       key={notif.id}
                       className={`p-4 rounded-xl border-l-4 transition-all hover:scale-[1.02] ${notif.type === "error"
-                          ? "border-l-red-600 bg-red-50 dark:bg-red-950/20"
-                          : "border-l-yellow-600 bg-yellow-50 dark:bg-yellow-950/20"
+                        ? "border-l-red-600 bg-red-50 dark:bg-red-950/20"
+                        : "border-l-yellow-600 bg-yellow-50 dark:bg-yellow-950/20"
                         }`}
                     >
                       <div className="flex justify-between items-start mb-1">

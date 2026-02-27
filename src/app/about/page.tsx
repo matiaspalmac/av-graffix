@@ -34,7 +34,6 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans selection:bg-brand-500/30 selection:text-zinc-900 dark:selection:text-white">
 
-      {/* Hero Header */}
       <section className="relative py-32 overflow-hidden bg-zinc-900 dark:bg-zinc-950">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-brand-600/5 rounded-full blur-3xl" />
@@ -54,7 +53,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Stats Strip */}
       <section className="relative z-20 -mt-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl dark:shadow-none border border-black/5 dark:border-white/5 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-zinc-100 dark:divide-zinc-800">
@@ -76,7 +74,6 @@ export default function AboutPage() {
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* History + Image */}
         <section className="py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <div className="order-2 lg:order-1 relative group">
@@ -112,8 +109,6 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
-
-        {/* Timeline */}
         <section className="pb-32">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 text-zinc-900 dark:text-white">
@@ -123,15 +118,11 @@ export default function AboutPage() {
           </div>
 
           <div className="relative max-w-4xl mx-auto">
-            {/* Vertical line */}
             <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-brand-600/30 to-transparent md:-translate-x-px" />
 
             {timeline.map((item, i) => (
               <div key={i} className={`relative flex items-start mb-12 last:mb-0 ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-                {/* Dot */}
                 <div className="absolute left-4 md:left-1/2 w-3 h-3 bg-brand-600 rounded-full border-4 border-zinc-50 dark:border-zinc-950 -translate-x-1.5 md:-translate-x-1.5 mt-2 z-10 shadow-lg shadow-brand-600/20" />
-
-                {/* Content */}
                 <div className={`ml-12 md:ml-0 md:w-1/2 ${i % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
                   <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 group">
                     <span className="text-brand-600 dark:text-brand-500 font-black text-sm tracking-widest">{item.year}</span>
@@ -143,8 +134,6 @@ export default function AboutPage() {
             ))}
           </div>
         </section>
-
-        {/* Values */}
         <section className="pb-32">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 text-zinc-900 dark:text-white">
@@ -171,8 +160,6 @@ export default function AboutPage() {
             ))}
           </div>
         </section>
-
-        {/* Mission Banner */}
         <section className="pb-32">
           <div className="relative bg-zinc-900 dark:bg-zinc-900 p-12 md:p-20 rounded-[2.5rem] overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
@@ -186,8 +173,6 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
-
-        {/* Team Section */}
         <section className="pb-32">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 text-zinc-900 dark:text-white">

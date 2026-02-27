@@ -125,7 +125,6 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <aside
         className={cn(
           "hidden lg:flex lg:flex-col lg:fixed lg:top-16 lg:left-0 lg:h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 z-20",
@@ -138,8 +137,6 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
             <div className="space-y-6">
               {filteredGroups.map((group, groupIdx) => (
                 <div key={group.label} className="space-y-1 relative">
-
-                  {/* Animación fluida de la etiqueta */}
                   <div
                     className={cn(
                       "overflow-hidden transition-all duration-300 ease-in-out",
@@ -150,8 +147,6 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
                       {group.label}
                     </p>
                   </div>
-
-                  {/* Divisor animado (solo aparece colapsado) */}
                   {groupIdx > 0 && (
                     <div
                       className={cn(
@@ -181,7 +176,6 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
                         )}
                         title={isCollapsed ? item.label : undefined}
                       >
-                        {/* Animating icon center position seamlessly */}
                         <span className={cn(
                           "flex items-center justify-center flex-shrink-0 transition-all duration-300",
                           isCollapsed ? "w-[52px]" : "w-[72px]"
@@ -205,8 +199,6 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
               ))}
             </div>
           </nav>
-
-          {/* Botón de instalación PWA - Desktop */}
           {deferredPrompt && !isInstalled && (
             <div className="border-t border-zinc-200 dark:border-zinc-800 py-2">
               <button
@@ -240,16 +232,12 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
           )}
         </div>
       </aside>
-
-      {/* Mobile Drawer Overlay */}
       {isMobileOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
-
-      {/* Mobile Drawer */}
       <aside
         className={cn(
           "fixed left-0 top-0 h-screen w-72 bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 lg:hidden transition-transform duration-300 overflow-y-auto",
@@ -305,8 +293,6 @@ export function ErpSidebar({ role }: ErpSidebarProps) {
               </div>
             ))}
           </nav>
-
-          {/* Botón de instalación PWA - Mobile */}
           {deferredPrompt && !isInstalled && (
             <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4 mt-4">
               <button

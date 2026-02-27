@@ -14,7 +14,6 @@ export default async function PerfilPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
         <Link
           href="/erp"
@@ -26,10 +25,7 @@ export default async function PerfilPage() {
         <h1 className="text-3xl font-black text-zinc-900 dark:text-zinc-100">Mi Perfil</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Gestiona tu información personal</p>
       </div>
-
-      {/* Perfil Card */}
       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 sm:p-8">
-        {/* Avatar Section */}
         <div className="flex items-center gap-6 mb-8 pb-8 border-b border-zinc-200 dark:border-zinc-800">
           <div className="w-20 h-20 rounded-full bg-brand-600 text-white font-semibold text-xl flex items-center justify-center">
             {(user.name || "U")
@@ -44,8 +40,6 @@ export default async function PerfilPage() {
             <p className="text-sm text-zinc-600 dark:text-zinc-400">{user.role || "Empleado"}</p>
           </div>
         </div>
-
-        {/* Información Personal */}
         <div className="space-y-6">
           <div>
             <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-4">Información Personal</h3>
@@ -65,8 +59,6 @@ export default async function PerfilPage() {
               </div>
             </div>
           </div>
-
-          {/* Rol y Permisos */}
           <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800">
             <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-4">Rol y Permisos</h3>
             <div className="space-y-4">
@@ -83,8 +75,6 @@ export default async function PerfilPage() {
           </div>
         </div>
       </div>
-
-      {/* Divider */}
       <div className="mt-8 pt-8 border-t border-zinc-200 dark:border-zinc-800">
         <p className="text-xs text-zinc-500 dark:text-zinc-500">
           Última actualización: {new Date().toLocaleDateString("es-CL")}

@@ -32,7 +32,6 @@ export default function ProductNav() {
 
   return (
     <>
-      {/* Desktop Nav */}
       <nav ref={navRef} aria-label="Categorías de productos" className="hidden md:block bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg border-b border-black/5 dark:border-white/5 relative transition-colors duration-500">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-1 py-2" role="menubar">
@@ -43,11 +42,10 @@ export default function ProductNav() {
               return (
                 <div key={category.name} className="relative" role="none">
                   <button
-                    className={`flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] font-bold px-4 py-2.5 rounded-full transition-all duration-300 ${
-                      isOpen
+                    className={`flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] font-bold px-4 py-2.5 rounded-full transition-all duration-300 ${isOpen
                         ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20'
                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                    }`}
+                      }`}
                     onClick={() => toggleCategory(category.name)}
                     aria-expanded={isOpen}
                     aria-haspopup="true"
@@ -57,11 +55,8 @@ export default function ProductNav() {
                     <span>{category.name}</span>
                     <ChevronDown size={12} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                   </button>
-
-                  {/* Dropdown */}
                   <div className={`absolute z-50 left-1/2 -translate-x-1/2 pt-3 transition-all duration-200 ${isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none'}`} role="menu">
                     <div className="w-72 bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/10 shadow-2xl dark:shadow-black/40 rounded-2xl overflow-hidden">
-                      {/* Category header */}
                       <div className="px-5 pt-4 pb-3 border-b border-black/5 dark:border-white/5">
                         <div className="flex items-center gap-2.5">
                           <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-950/30 text-brand-600 dark:text-brand-500">
@@ -70,8 +65,6 @@ export default function ProductNav() {
                           <span className="text-sm font-bold text-zinc-900 dark:text-white">{category.name}</span>
                         </div>
                       </div>
-
-                      {/* Subcategories */}
                       <ul className="py-1.5 max-h-64 overflow-y-auto custom-scrollbar">
                         {category.subcategories.map((sub) => (
                           <li key={sub} role="none">
@@ -87,8 +80,6 @@ export default function ProductNav() {
                           </li>
                         ))}
                       </ul>
-
-                      {/* Footer */}
                       <div className="border-t border-black/5 dark:border-white/5">
                         <Link
                           href="/catalogo"
@@ -104,8 +95,6 @@ export default function ProductNav() {
                 </div>
               )
             })}
-
-            {/* Divider + Catalog link */}
             <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-700 mx-2" />
             <Link
               href="/catalogo"
@@ -116,8 +105,6 @@ export default function ProductNav() {
           </div>
         </div>
       </nav>
-
-      {/* Mobile: Simple "Explorar Catálogo" button — no drawer to avoid freezing */}
       <div className="md:hidden bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg border-b border-black/5 dark:border-white/5 transition-colors duration-500">
         <div className="container mx-auto px-4">
           <Link

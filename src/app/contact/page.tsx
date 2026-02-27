@@ -34,8 +34,6 @@ const contactInfo = [
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans">
-
-      {/* Hero Header */}
       <section className="relative py-32 overflow-hidden bg-zinc-900 dark:bg-zinc-950">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
         <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-brand-600/5 rounded-full blur-3xl" />
@@ -52,8 +50,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-
-      {/* Contact Cards Strip */}
       <section className="relative z-20 -mt-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -83,15 +79,10 @@ export default function ContactPage() {
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
-
-          {/* Form */}
           <div className="lg:col-span-3">
             <ContactForm />
           </div>
-
-          {/* Sidebar */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Schedule */}
             <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-8 rounded-3xl shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-brand-50 dark:bg-brand-950/30 text-brand-600 dark:text-brand-500 rounded-xl flex items-center justify-center">
@@ -114,8 +105,6 @@ export default function ContactPage() {
                 </li>
               </ul>
             </div>
-
-            {/* Quick WhatsApp */}
             <a
               href="https://wa.me/56992791148"
               target="_blank"
@@ -130,8 +119,6 @@ export default function ContactPage() {
                 <p className="text-green-100 text-sm font-light">Escríbenos por WhatsApp ahora</p>
               </div>
             </a>
-
-            {/* Social */}
             <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-8 rounded-3xl shadow-sm">
               <h3 className="text-lg font-bold mb-6 text-zinc-900 dark:text-white">Síguenos</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -161,8 +148,6 @@ export default function ContactPage() {
                 </a>
               </div>
             </div>
-
-            {/* Map Placeholder */}
             <div className="bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 rounded-3xl overflow-hidden shadow-sm">
               <div className="aspect-[4/3] bg-zinc-100 dark:bg-zinc-800/50 flex items-center justify-center relative">
                 <div className="text-center">

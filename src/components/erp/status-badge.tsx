@@ -55,7 +55,6 @@ const statusConfig: Record<
     icon: React.ReactNode;
   }
 > = {
-  // Completed/Success states
   completed: {
     label: "Completado",
     bgColor: "bg-emerald-100 dark:bg-emerald-950/30",
@@ -99,7 +98,6 @@ const statusConfig: Record<
     icon: <CheckCircle2 size={16} />,
   },
 
-  // Active/Running states
   active: {
     label: "Activo",
     bgColor: "bg-blue-100 dark:bg-blue-950/30",
@@ -122,7 +120,6 @@ const statusConfig: Record<
     icon: <Zap size={16} />,
   },
 
-  // Pending states
   pending: {
     label: "Pendiente",
     bgColor: "bg-amber-100 dark:bg-amber-950/30",
@@ -152,7 +149,6 @@ const statusConfig: Record<
     icon: <AlertCircle size={16} />,
   },
 
-  // Draft/Planned states
   draft: {
     label: "Borrador",
     bgColor: "bg-zinc-100 dark:bg-zinc-800/30",
@@ -196,7 +192,6 @@ const statusConfig: Record<
     icon: <Eye size={16} />,
   },
 
-  // Negative states
   cancelled: {
     label: "Cancelado",
     bgColor: "bg-red-100 dark:bg-red-950/30",
@@ -278,7 +273,6 @@ export function StatusBadge({
     );
   }
 
-  // Default: soft variant
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-lg ${config.bgColor} ${config.textColor} ${sizeClasses[size]} font-semibold`}

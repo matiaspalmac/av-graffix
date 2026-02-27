@@ -55,7 +55,6 @@ export function ProductCard({
       whileHover={{ y: -8, transition: { duration: 0.3 } }}
       className="group relative bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 p-10 rounded-3xl hover:shadow-xl dark:hover:shadow-none transition-all duration-300 overflow-hidden"
     >
-      {/* Hover gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
 
       <div className="relative z-10 flex flex-col h-full">
@@ -69,8 +68,6 @@ export function ProductCard({
         <p className="text-zinc-600 dark:text-zinc-400 mb-6 flex-grow text-lg leading-relaxed font-light">
           {product.desc}
         </p>
-
-        {/* Bottom accent line */}
         <div className="h-0.5 w-0 group-hover:w-full bg-gradient-to-r from-brand-600 to-brand-400 rounded-full transition-all duration-500" />
       </div>
     </motion.div>

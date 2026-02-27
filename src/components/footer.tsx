@@ -13,10 +13,7 @@ const footerLinks = [
 export default function Footer() {
   return (
     <footer className="bg-zinc-900 dark:bg-zinc-950 text-zinc-400 relative overflow-hidden transition-colors duration-500">
-      {/* Top accent */}
       <div className="h-1 bg-gradient-to-r from-transparent via-brand-600 to-transparent" />
-
-      {/* CTA Strip */}
       <div className="border-b border-white/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -35,11 +32,8 @@ export default function Footer() {
           </div>
         </div>
       </div>
-
-      {/* Main Footer */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-          {/* Brand */}
           <div className="lg:col-span-1 space-y-6">
             <Image
               src="/avgraffix.png"
@@ -51,7 +45,6 @@ export default function Footer() {
             <p className="text-sm leading-relaxed text-zinc-500 max-w-xs">
               AV GRAFFIX - Proyectando tus ideas. Agencia líder en diseño, producción y publicidad en la Araucanía desde 2006.
             </p>
-            {/* Social */}
             <div className="flex gap-3">
               <a
                 href="https://www.instagram.com/publicidad.avgraffix/?hl=es-la"
@@ -82,8 +75,6 @@ export default function Footer() {
               </a>
             </div>
           </div>
-
-          {/* Quick Links */}
           <div>
             <h4 className="text-white text-sm font-bold tracking-widest uppercase mb-6">Explorar</h4>
             <ul className="space-y-3">
@@ -100,8 +91,6 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-
-          {/* Contact */}
           <div>
             <h4 className="text-white text-sm font-bold tracking-widest uppercase mb-6">Contacto</h4>
             <ul className="space-y-4 text-sm">
@@ -121,8 +110,6 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Hours */}
           <div>
             <h4 className="text-white text-sm font-bold tracking-widest uppercase mb-6">Horario</h4>
             <ul className="space-y-3 text-sm">
@@ -142,8 +129,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-
-      {/* Bottom Bar */}
       <div className="border-t border-white/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">

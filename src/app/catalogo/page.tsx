@@ -17,8 +17,6 @@ const categoryIcons = [Palette, FileText, ImageIcon, Gift, Layers]
 export default function CatalogoPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 font-sans">
-
-      {/* Hero Header */}
       <section className="relative py-32 overflow-hidden bg-zinc-900 dark:bg-zinc-950">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-600/5 rounded-full blur-3xl" />
@@ -35,8 +33,6 @@ export default function CatalogoPage() {
           </div>
         </div>
       </section>
-
-      {/* Quick Jump Nav */}
       <section className="relative z-20 -mt-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl dark:shadow-none border border-black/5 dark:border-white/5 p-4">
@@ -69,7 +65,6 @@ export default function CatalogoPage() {
                 id={`cat-${index}`}
                 className="scroll-mt-32 group bg-white dark:bg-zinc-900/40 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden"
               >
-                {/* Category Header */}
                 <div className="flex items-center gap-6 p-8 md:p-10 border-b border-zinc-100 dark:border-zinc-800">
                   <div className="w-14 h-14 bg-brand-50 dark:bg-brand-950/30 border border-brand-100 dark:border-brand-900/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-brand-600 group-hover:text-white group-hover:border-brand-600 transition-all duration-300">
                     <Icon className="w-7 h-7 text-brand-600 dark:text-brand-500 group-hover:text-white transition-colors" strokeWidth={1.5} />
@@ -86,8 +81,6 @@ export default function CatalogoPage() {
                     {category.subcategories.length}
                   </div>
                 </div>
-
-                {/* Subcategories */}
                 <div className="p-8 md:p-10">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {category.subcategories.map((item, idx) => (
@@ -107,8 +100,6 @@ export default function CatalogoPage() {
             )
           })}
         </div>
-
-        {/* CTA */}
         <div className="mt-24">
           <div className="bg-zinc-900 dark:bg-zinc-900 rounded-[2.5rem] p-12 md:p-20 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-brand-600/10 via-transparent to-brand-600/5" />

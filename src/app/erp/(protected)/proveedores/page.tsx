@@ -57,8 +57,6 @@ export default async function ProveedoresPage() {
                             <div className="border-t border-zinc-200 dark:border-zinc-800 p-5 space-y-4">
                                 <form action={updateSupplierAction} className="space-y-3">
                                     <input type="hidden" name="supplierId" value={supplier.id} />
-
-                                    {/* Datos de empresa */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                         <label className="grid gap-1 text-sm">
                                             <span className="text-zinc-600 dark:text-zinc-300">Razón Social *</span>
@@ -117,8 +115,6 @@ export default async function ProveedoresPage() {
                                             />
                                         </label>
                                     </div>
-
-                                    {/* Datos de contacto */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                         <label className="grid gap-1 text-sm">
                                             <span className="text-zinc-600 dark:text-zinc-300">Nombre Contacto</span>
@@ -148,8 +144,6 @@ export default async function ProveedoresPage() {
                                             />
                                         </label>
                                     </div>
-
-                                    {/* Términos comerciales */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                         <label className="grid gap-1 text-sm">
                                             <span className="text-zinc-600 dark:text-zinc-300">Lead Time (Días)</span>
@@ -191,8 +185,6 @@ export default async function ProveedoresPage() {
                                         </SubmitButton>
                                     </div>
                                 </form>
-
-                                {/* Toggle Status Form */}
                                 <form action={toggleSupplierStatusAction} className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
                                     <input type="hidden" name="supplierId" value={supplier.id} />
                                     <input type="hidden" name="currentStatus" value={supplier.isActive ? "true" : "false"} />
