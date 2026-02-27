@@ -35,11 +35,9 @@ const menuGroups = [
     ],
   },
   {
-    label: "Comercial & Operaciones",
+    label: "Operaciones",
     items: [
       { href: "/erp/ventas", label: "CRM & Ventas", icon: TrendingUp },
-      { href: "/erp/cotizaciones", label: "Cotizaciones", icon: FileText },
-      { href: "/erp/clientes", label: "Clientes", icon: Users },
       { href: "/erp/proyectos", label: "Proyectos", icon: FolderKanban },
       { href: "/erp/produccion", label: "Producción", icon: Printer },
     ],
@@ -56,7 +54,15 @@ const menuGroups = [
     label: "Administración",
     items: [
       { href: "/erp/finanzas", label: "Finanzas", icon: Landmark },
+      { href: "/erp/finanzas/gastos", label: "Gastos Extras", icon: ShoppingCart },
       { href: "/erp/reportes", label: "Reportes", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Gestión & Datos",
+    items: [
+      { href: "/erp/cotizaciones", label: "Cotizaciones", icon: FileText },
+      { href: "/erp/clientes", label: "Clientes", icon: Users },
       { href: "/erp/admin", label: "Configuración", icon: ShieldCheck },
     ],
   }

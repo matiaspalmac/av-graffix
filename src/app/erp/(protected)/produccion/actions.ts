@@ -11,6 +11,8 @@ import {
   projectPhases,
   projects,
   supplierMaterialPrices,
+  users,
+  workOrders,
 } from "@/db/schema";
 import { requireRole, toErrorMessage } from "@/lib/server-action";
 
@@ -143,6 +145,84 @@ export async function updateProjectStatusAction(formData: FormData) {
   }
 }
 
+export async function createWorkOrderAction(formData: FormData) {
+  try {
+    const session = await requireRole(["admin", "produccion"]);
+
+    const projectId = asNumber(formData.get("projectId"));
+    const operatorId = asNumber(formData.get("operatorId"), 0) || null;
+    const description = String(formData.get("description") ?? "").trim();
+    const dueDate = String(formData.get("dueDate") ?? "").trim() || null;
+
+    if (!projectId || !description) {
+      return;
+    }
+
+    // Capture technical sheet snapshot from project brief
+    const brief = await db
+      .select({ technicalSheet: projectBriefs.technicalSheetJson })
+      .from(projectBriefs)
+      .where(eq(projectBriefs.projectId, projectId))
+      .get();
+
+    const stamp = Date.now().toString().slice(-4);
+    const orderNumber = `OT-${new Date().getFullYear()}-${stamp}`;
+    const now = new Date().toISOString();
+
+    await db.insert(workOrders).values({
+      orderNumber,
+      projectId,
+      description,
+      operatorId,
+      status: "pending",
+      dueDate,
+      technicalSpecsJson: brief?.technicalSheet || null,
+      updatedAt: now,
+    });
+
+    revalidatePath("/erp/produccion");
+  } catch (error) {
+    console.error("createWorkOrderAction", toErrorMessage(error));
+  }
+}
+
+export async function updateWorkOrderStatusAction(formData: FormData) {
+  try {
+    await requireRole(["admin", "produccion"]);
+
+    const id = asNumber(formData.get("workOrderId"));
+    const status = String(formData.get("status") ?? "pending").trim();
+
+    if (!id) {
+      return;
+    }
+
+    await db
+      .update(workOrders)
+      .set({ status, updatedAt: new Date().toISOString() })
+      .where(eq(workOrders.id, id));
+
+    revalidatePath("/erp/produccion");
+  } catch (error) {
+    console.error("updateWorkOrderStatusAction", toErrorMessage(error));
+  }
+}
+
+export async function deleteWorkOrderAction(formData: FormData) {
+  try {
+    await requireRole(["admin", "produccion"]);
+
+    const id = asNumber(formData.get("workOrderId"));
+    if (!id) return;
+
+    await db.delete(workOrders).where(eq(workOrders.id, id));
+
+    revalidatePath("/erp/produccion");
+  } catch (error) {
+    console.error("deleteWorkOrderAction", toErrorMessage(error));
+  }
+}
+
 export async function approveProjectPhaseAction(formData: FormData) {
   try {
     await requireRole(["admin", "produccion"]);
@@ -170,12 +250,13 @@ export async function approveProjectPhaseAction(formData: FormData) {
 }
 
 export async function productionOptions() {
-  const [projectOptions, materialOptions] = await Promise.all([
+  const [projectOptions, materialOptions, operatorOptions] = await Promise.all([
     db
-      .select({ 
-        id: projects.id, 
-        name: projects.name, 
+      .select({
+        id: projects.id,
+        name: projects.name,
         status: projects.status,
+        technicalSheet: projectBriefs.technicalSheetJson,
       })
       .from(projects)
       .leftJoin(projectBriefs, eq(projects.id, projectBriefs.projectId))
@@ -186,9 +267,33 @@ export async function productionOptions() {
       .from(materials)
       .where(eq(materials.isActive, true))
       .orderBy(desc(materials.id)),
+    db
+      .select({ id: users.id, fullName: users.fullName })
+      .from(users)
+      .where(eq(users.isActive, true))
+      .orderBy(asc(users.fullName)),
   ]);
 
-  return { projectOptions, materialOptions };
+  return { projectOptions, materialOptions, operatorOptions };
+}
+
+export async function latestWorkOrders(limit = 10) {
+  return db
+    .select({
+      id: workOrders.id,
+      orderNumber: workOrders.orderNumber,
+      description: workOrders.description,
+      status: workOrders.status,
+      dueDate: workOrders.dueDate,
+      projectName: projects.name,
+      operatorName: users.fullName,
+      technicalSheet: workOrders.technicalSpecsJson,
+    })
+    .from(workOrders)
+    .leftJoin(projects, eq(workOrders.projectId, projects.id))
+    .leftJoin(users, eq(workOrders.operatorId, users.id))
+    .orderBy(desc(workOrders.id))
+    .limit(limit);
 }
 
 export async function latestConsumptions(limit = 15) {

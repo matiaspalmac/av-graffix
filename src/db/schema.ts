@@ -631,3 +631,45 @@ export const companySettings = sqliteTable(
     uniqueIndex("company_settings_key_uq").on(table.key),
   ]
 );
+
+export const workOrders = sqliteTable(
+  "work_orders",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    orderNumber: text("order_number").notNull(),
+    projectId: integer("project_id").notNull().references(() => projects.id),
+    description: text("description").notNull(),
+    operatorId: integer("operator_id").references(() => users.id),
+    status: text("status").notNull().default("pending"),
+    dueDate: text("due_date"),
+    technicalSpecsJson: text("technical_specs_json"),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("work_orders_number_uq").on(table.orderNumber),
+    index("work_orders_project_idx").on(table.projectId),
+    index("work_orders_operator_idx").on(table.operatorId),
+  ]
+);
+
+export const extraExpenses = sqliteTable(
+  "extra_expenses",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    projectId: integer("project_id").references(() => projects.id),
+    userId: integer("user_id").notNull().references(() => users.id),
+    amountClp: real("amount_clp").notNull().default(0),
+    category: text("category").notNull(), // 'Peaje', 'Comida', 'Bencina', 'Otros'
+    description: text("description").notNull(),
+    expenseDate: text("expense_date").notNull(),
+    status: text("status").notNull().default("pending"), // 'pending', 'approved', 'rejected'
+    receiptUrl: text("receipt_url"),
+    ...timestamps,
+  },
+  (table) => [
+    index("extra_expenses_project_idx").on(table.projectId),
+    index("extra_expenses_user_date_idx").on(table.userId, table.expenseDate),
+    index("extra_expenses_status_idx").on(table.status),
+  ]
+);
+

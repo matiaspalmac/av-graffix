@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { cn } from "@/lib/utils";
 
 interface SubmitButtonProps {
   children: React.ReactNode;
@@ -11,15 +12,17 @@ interface SubmitButtonProps {
 export function SubmitButton({ children, variant = "primary", className }: SubmitButtonProps) {
   const { pending } = useFormStatus();
 
-  const baseClasses = "rounded-xl px-4 py-2 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-opacity";
-  
   const variantClasses = {
     primary: "bg-brand-600 text-white hover:bg-brand-700",
     secondary: "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900",
     destructive: "rounded-lg border border-red-200 text-red-700 dark:border-red-900/40 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20",
   };
 
-  const classes = className || `${baseClasses} ${variantClasses[variant]}`;
+  const classes = cn(
+    "rounded-xl px-4 py-2 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-opacity transition-colors",
+    variantClasses[variant],
+    className
+  );
 
   return (
     <button type="submit" disabled={pending} className={classes}>

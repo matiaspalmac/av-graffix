@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import { clients, projectBriefs, projects, quotes, users } from "@/db/schema";
 import { requireRole, toErrorMessage } from "@/lib/server-action";
@@ -140,9 +140,9 @@ export async function projectFormOptions() {
   const [clientOptions, quoteOptions] = await Promise.all([
     db.select({ id: clients.id, tradeName: clients.tradeName }).from(clients).orderBy(desc(clients.id)),
     db
-      .select({ id: quotes.id, quoteNumber: quotes.quoteNumber })
+      .select({ id: quotes.id, quoteNumber: quotes.quoteNumber, clientId: quotes.clientId })
       .from(quotes)
-      .where(eq(quotes.status, "approved"))
+      .where(sql`${quotes.status} in ('draft', 'sent', 'approved')`)
       .orderBy(desc(quotes.id)),
   ]);
 
