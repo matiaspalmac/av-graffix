@@ -17,6 +17,7 @@ import {
   FileText,
   Users,
   Building2,
+  CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "./sidebar-provider";
@@ -40,14 +41,14 @@ const menuGroups = [
       { href: "/erp/ventas", label: "CRM & Ventas", icon: TrendingUp },
       { href: "/erp/proyectos", label: "Proyectos", icon: FolderKanban },
       { href: "/erp/produccion", label: "Producción", icon: Printer },
+      { href: "/erp/cronograma", label: "Cronograma", icon: CalendarDays },
     ],
   },
   {
     label: "Suministro",
     items: [
       { href: "/erp/inventario", label: "Inventario", icon: Package },
-      { href: "/erp/compras", label: "Compras", icon: ShoppingCart },
-      { href: "/erp/proveedores", label: "Proveedores", icon: Building2 },
+      { href: "/erp/compras", label: "Compras", icon: ShoppingCart }
     ],
   },
   {
@@ -63,6 +64,7 @@ const menuGroups = [
     items: [
       { href: "/erp/cotizaciones", label: "Cotizaciones", icon: FileText },
       { href: "/erp/clientes", label: "Clientes", icon: Users },
+      { href: "/erp/proveedores", label: "Proveedores", icon: Building2 },
       { href: "/erp/admin", label: "Configuración", icon: ShieldCheck },
     ],
   }

@@ -8,6 +8,9 @@ import { ToastProvider } from "@/components/toast-provider";
 import { ErpLayoutWrapper } from "@/components/erp/erp-layout-wrapper";
 import { PwaSetup } from "@/components/erp/pwa-setup";
 import { ErpPreferencesLoader } from "@/components/erp/preferences-loader";
+import { Suspense } from "react";
+import { Bell } from "lucide-react";
+import { NotificationsBellWrapper } from "@/components/erp/notifications-bell-wrapper";
 
 export const metadata: Metadata = {
   title: "AV GRAFFIX ERP",
@@ -46,9 +49,9 @@ export default async function ProtectedErpLayout({ children }: { children: React
 
   const monthStart = monthStartISO();
 
-  // Obtener preferencias del usuario
+  // Obtener preferencias y registrar último acceso
   const userRecord = await db
-    .select({ id: users.id })
+    .select({ id: users.id, lastLoginAt: users.lastLoginAt })
     .from(users)
     .where(eq(users.email, session.user.email))
     .limit(1);
@@ -59,6 +62,17 @@ export default async function ProtectedErpLayout({ children }: { children: React
   };
 
   if (userRecord.length) {
+    const user = userRecord[0];
+
+    // Actualizar último acceso si han pasado más de 30 minutos
+    const now = new Date();
+    const lastLogin = user.lastLoginAt ? new Date(user.lastLoginAt) : new Date(0);
+    if (now.getTime() - lastLogin.getTime() > 30 * 60 * 1000) {
+      await db.update(users)
+        .set({ lastLoginAt: now.toISOString(), updatedAt: now.toISOString() })
+        .where(eq(users.id, user.id));
+    }
+
     const prefs = await db
       .select({
         themeDarkMode: userPreferences.themeDarkMode,
@@ -76,8 +90,6 @@ export default async function ProtectedErpLayout({ children }: { children: React
   const [
     monthlyRevenueResult,
     activeProjectsResult,
-    criticalStockResult,
-    overdueInvoicesResult,
   ] = await Promise.all([
     db
       .select({ value: sql<number>`coalesce(sum(${invoices.totalClp}),0)` })
@@ -87,22 +99,10 @@ export default async function ProtectedErpLayout({ children }: { children: React
       .select({ value: sql<number>`count(*)` })
       .from(projects)
       .where(sql`${projects.status} = 'in_progress'`),
-    db
-      .select({ value: sql<number>`count(*)` })
-      .from(materials)
-      .where(
-        sql`coalesce((select sum(${inventoryTransactions.qtyIn} - ${inventoryTransactions.qtyOut}) from ${inventoryTransactions} where ${inventoryTransactions.materialId} = ${materials.id}),0) <= ${materials.reorderPoint}`
-      ),
-    db
-      .select({ value: sql<number>`count(*)` })
-      .from(invoices)
-      .where(sql`${invoices.status} = 'overdue'`),
   ]);
 
   const monthlyRevenue = monthlyRevenueResult[0]?.value || 0;
   const activeProjects = activeProjectsResult[0]?.value || 0;
-  const criticalStock = criticalStockResult[0]?.value || 0;
-  const overdueInvoices = overdueInvoicesResult[0]?.value || 0;
 
   return (
     <>
@@ -114,8 +114,15 @@ export default async function ProtectedErpLayout({ children }: { children: React
         role={session.user?.role}
         monthlyRevenue={monthlyRevenue}
         activeProjects={activeProjects}
-        criticalStock={criticalStock}
-        overdueInvoices={overdueInvoices}
+        notificationsSlot={
+          <Suspense fallback={
+            <button className="relative inline-flex items-center justify-center w-10 h-10 rounded-xl border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition animate-pulse" aria-label="Cargando Notificaciones">
+              <Bell size={18} />
+            </button>
+          }>
+            <NotificationsBellWrapper />
+          </Suspense>
+        }
       >
         {children}
       </ErpLayoutWrapper>

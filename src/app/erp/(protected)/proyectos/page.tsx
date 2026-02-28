@@ -59,6 +59,9 @@ function parseTechnicalSheet(rawSpecs: string | null | undefined): TechnicalShee
   }
 }
 
+import { EmptyState } from "@/components/ui/empty-state";
+
+export const dynamic = 'force-dynamic';
 export default async function ProyectosPage() {
   const [activeProjects, activePhases, openTasks] = await Promise.all([
     db.select({ v: sql<number>`count(*)` }).from(projects).where(sql`${projects.status} in ('planning','in_progress')`),

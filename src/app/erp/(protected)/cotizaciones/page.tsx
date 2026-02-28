@@ -1,4 +1,8 @@
 import { formatCLP } from "@/lib/format";
+import { FileText, MoreVertical, FileDown, CheckCircle, Clock } from "lucide-react";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { allQuotesWithDetails, updateQuoteAction, updateQuoteItemAction, exportQuotesExcelAction, deleteQuoteAction } from "./actions";
 import { SubmitButton } from "@/components/erp/submit-button";
 import { ExportButton } from "@/components/erp/export-button";
@@ -51,8 +55,16 @@ export default async function CotizacionesPage() {
 
       <div className="space-y-4">
         {quotesWithDetails.length === 0 ? (
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 text-sm text-zinc-500 dark:text-zinc-400">
-            No hay cotizaciones registradas.
+          <div className="p-8">
+            <EmptyState
+              icon={FileText}
+              title="No hay cotizaciones registradas"
+              description="Aún no se ha emitido ninguna cotización a los clientes."
+              action={{
+                label: "Crear Cotización",
+                href: "/erp/cotizaciones/nueva"
+              }}
+            />
           </div>
         ) : (
           quotesWithDetails.map((quote) => {
@@ -69,12 +81,12 @@ export default async function CotizacionesPage() {
                       <p className="font-bold text-zinc-900 dark:text-zinc-100">{quote.quoteNumber}</p>
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-medium ${quote.status === "draft"
-                            ? "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                            : quote.status === "sent"
-                              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                              : quote.status === "approved"
-                                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
-                                : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                          ? "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                          : quote.status === "sent"
+                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                            : quote.status === "approved"
+                              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                              : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
                           }`}
                       >
                         {quote.status === "draft" ? "Borrador" : quote.status === "sent" ? "Enviada" : quote.status === "approved" ? "Aprobada" : "Rechazada"}

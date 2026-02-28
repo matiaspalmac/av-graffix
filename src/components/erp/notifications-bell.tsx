@@ -2,60 +2,18 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
-
-type Notification = {
-  id: string;
-  type: "warning" | "error" | "info";
-  title: string;
-  message: string;
-};
+import Link from "next/link";
+import { AppNotification } from "@/app/erp/(protected)/actions/notifications";
 
 type NotificationsBellProps = {
-  criticalStockCount?: number;
-  overdueInvoicesCount?: number;
-  delayedPurchaseOrdersCount?: number;
+  notifications?: AppNotification[];
 };
 
 export function NotificationsBell({
-  criticalStockCount = 0,
-  overdueInvoicesCount = 0,
-  delayedPurchaseOrdersCount = 0,
+  notifications = [],
 }: NotificationsBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  const notifications: Notification[] = [
-    ...(criticalStockCount > 0
-      ? [
-        {
-          id: "stock",
-          type: "warning" as const,
-          title: "Stock Crítico",
-          message: `${criticalStockCount} material(es) bajo stock mínimo`,
-        },
-      ]
-      : []),
-    ...(overdueInvoicesCount > 0
-      ? [
-        {
-          id: "invoices",
-          type: "error" as const,
-          title: "Facturas Vencidas",
-          message: `${overdueInvoicesCount} factura(s) sin pagar`,
-        },
-      ]
-      : []),
-    ...(delayedPurchaseOrdersCount > 0
-      ? [
-        {
-          id: "orders",
-          type: "warning" as const,
-          title: "Órdenes Atrasadas",
-          message: `${delayedPurchaseOrdersCount} orden(es) de compra retrasada(s)`,
-        },
-      ]
-      : []),
-  ];
 
   const unreadCount = notifications.length;
 
@@ -113,23 +71,38 @@ export function NotificationsBell({
                   {notifications.map((notif) => (
                     <div
                       key={notif.id}
-                      className={`p-4 rounded-xl border-l-4 transition-all hover:scale-[1.02] ${notif.type === "error"
+                      className={`p-4 rounded-xl border-l-4 transition-all hover:scale-[1.02] ${notif.type === "critical"
                         ? "border-l-red-600 bg-red-50 dark:bg-red-950/20"
-                        : "border-l-yellow-600 bg-yellow-50 dark:bg-yellow-950/20"
+                        : notif.type === "warning"
+                          ? "border-l-yellow-500 bg-yellow-50 dark:bg-yellow-950/20"
+                          : "border-l-blue-500 bg-blue-50 dark:bg-blue-950/20"
                         }`}
                     >
                       <div className="flex justify-between items-start mb-1">
                         <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
                           {notif.title}
                         </p>
-                        <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${notif.type === "error" ? "bg-red-200 text-red-800 dark:bg-red-900/40 dark:text-red-300" : "bg-yellow-200 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
+                        <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${notif.type === "critical"
+                          ? "bg-red-200 text-red-800 dark:bg-red-900/40 dark:text-red-300"
+                          : notif.type === "warning"
+                            ? "bg-yellow-200 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
+                            : "bg-blue-200 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
                           }`}>
-                          {notif.type === "error" ? "Urgente" : "Atención"}
+                          {notif.type === "critical" ? "Urgente" : notif.type === "warning" ? "Atención" : "Info"}
                         </span>
                       </div>
                       <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                         {notif.message}
                       </p>
+                      {notif.actionUrl && (
+                        <Link
+                          href={notif.actionUrl}
+                          onClick={() => setIsOpen(false)}
+                          className="mt-2 text-xs font-semibold underline underline-offset-2 opacity-80 hover:opacity-100 transition-opacity inline-block"
+                        >
+                          Ver detalles
+                        </Link>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -141,8 +114,11 @@ export function NotificationsBell({
               )}
             </div>
             <div className="p-3 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-200 dark:border-zinc-800">
-              <button className="w-full text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors uppercase tracking-widest py-1">
-                Marcar todas como leídas
+              <button
+                onClick={() => setIsOpen(false)}
+                className="w-full text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors uppercase tracking-widest py-1"
+              >
+                Cerrar panel
               </button>
             </div>
           </div>

@@ -4,30 +4,25 @@ import Image from "next/image";
 import { Menu, Sun, Moon } from "lucide-react";
 import { UserAvatarMenu } from "./user-avatar-menu";
 import { GlobalSearch } from "./global-search";
-import { NotificationsBell } from "./notifications-bell";
 import { QuickStatsTopbar } from "./quick-stats-topbar";
 import { useSidebar } from "./sidebar-provider";
 import { toggleThemeAction } from "./topbar-theme-actions";
-import { useTransition } from "react";
+import { useTransition, ReactNode } from "react";
 
 type ErpTopbarProps = {
   userName?: string | null;
   role?: string | null;
-  criticalStockCount?: number;
-  overdueInvoicesCount?: number;
-  delayedPurchaseOrdersCount?: number;
   monthlyRevenue?: number;
   activeProjects?: number;
+  notificationsSlot?: ReactNode;
 };
 
 export function ErpTopbar({
   userName,
   role,
-  criticalStockCount = 0,
-  overdueInvoicesCount = 0,
-  delayedPurchaseOrdersCount = 0,
   monthlyRevenue = 0,
   activeProjects = 0,
+  notificationsSlot,
 }: ErpTopbarProps) {
   const { setMobileOpen, toggleCollapsed } = useSidebar();
   const [, startTransition] = useTransition();
@@ -113,11 +108,7 @@ export function ErpTopbar({
             activeProjects={activeProjects}
           />
 
-          <NotificationsBell
-            criticalStockCount={criticalStockCount}
-            overdueInvoicesCount={overdueInvoicesCount}
-            delayedPurchaseOrdersCount={delayedPurchaseOrdersCount}
-          />
+          {notificationsSlot}
 
           <button
             onClick={toggleTheme}

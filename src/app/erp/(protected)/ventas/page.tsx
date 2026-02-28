@@ -19,6 +19,8 @@ import { MeasurementsInput } from "@/components/erp/measurements-input";
 import { SurfaceTypeSelector } from "@/components/erp/surface-type-selector";
 import { RegionCitySelector } from "@/components/erp/region-city-selector";
 import { ContactsListInput } from "@/components/erp/contacts-list-input";
+import { EmptyState } from "@/components/ui/empty-state";
+import { FileText } from "lucide-react";
 
 type TechnicalSheet = {
   general?: { siteContact?: string; sitePhone?: string; technician?: string };
@@ -374,8 +376,12 @@ export default async function VentasPage() {
       <div className="space-y-4 pt-4">
         <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Cotizaciones recientes</h3>
         {recentQuotes.length === 0 ? (
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 text-sm text-zinc-500 dark:text-zinc-400">
-            Aún no hay cotizaciones registradas.
+          <div className="p-4 sm:p-8">
+            <EmptyState
+              icon={FileText}
+              title="Sin cotizaciones recientes"
+              description="Las cotizaciones generadas aparecerán aquí para seguimiento."
+            />
           </div>
         ) : (
           recentQuotes.map((quote) => (

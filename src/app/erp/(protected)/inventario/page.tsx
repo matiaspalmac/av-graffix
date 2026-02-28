@@ -14,6 +14,8 @@ import {
 } from "@/app/erp/(protected)/inventario/actions";
 import { DeleteMaterialForm } from "@/components/erp/delete-material-form";
 import { SubmitButton } from "@/components/erp/submit-button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Package, Activity } from "lucide-react";
 
 export default async function InventarioPage() {
   const [materialsTotal, stockMovements, currentPrices, lowStock] = await Promise.all([
@@ -164,87 +166,102 @@ export default async function InventarioPage() {
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 overflow-auto">
         <h3 className="text-lg font-bold mb-4">Materiales</h3>
         {materialRows.length === 0 ? (
-          <div className="p-8 text-center">
-            <p className="text-zinc-500 dark:text-zinc-400">No hay materiales registrados en el catálogo aún.</p>
-            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Crea tu primer material usando el formulario de arriba.</p>
+          <div className="p-8">
+            <EmptyState
+              icon={Package}
+              title="El catálogo está vacío"
+              description="Aún no tienes materiales registrados."
+              action={{
+                label: "Crear desde el formulario",
+                onClick: () => {
+                  if (typeof document !== 'undefined') {
+                    const skuInput = document.querySelector('input[name="sku"]') as HTMLInputElement;
+                    if (skuInput) skuInput.focus();
+                  }
+                }
+              }}
+            />
           </div>
         ) : (
           <div className="overflow-x-auto -mx-5 px-5">
             <table className="w-full text-sm min-w-[800px]">
               <thead className="sticky top-0 bg-white dark:bg-zinc-900 z-10">
                 <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
-              <th className="py-2">SKU</th>
-              <th className="py-2">Material</th>
-              <th className="py-2">Categoría</th>
-              <th className="py-2">Stock</th>
-              <th className="py-2">Mínimo</th>
-              <th className="py-2">Precio actual</th>
-              <th className="py-2">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {materialRows.map((material) => (
-              <tr key={material.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
-                <td className="py-2">{material.sku}</td>
-                <td className="py-2">{material.name}</td>
-                <td className="py-2">{material.category}</td>
-                <td className="py-2">{Number(material.stock).toFixed(2)} {material.baseUnit}</td>
-                <td className="py-2">{Number(material.reorderPoint).toFixed(2)}</td>
-                <td className="py-2">{formatCLP(material.currentPriceClp)}</td>
-                <td className="py-2">
-                  <div className="flex flex-wrap gap-2">
-                    <form action={toggleMaterialActiveAction}>
-                      <input type="hidden" name="materialId" value={material.id} />
-                      <input type="hidden" name="isActive" value={material.isActive ? "1" : "0"} />
-                      <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">
-                        {material.isActive ? "Desactivar" : "Activar"}
-                      </button>
-                    </form>
-                    <DeleteMaterialForm materialId={material.id} action={deleteMaterialAction} />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>        </div>        )}
+                  <th className="py-2">SKU</th>
+                  <th className="py-2">Material</th>
+                  <th className="py-2">Categoría</th>
+                  <th className="py-2">Stock</th>
+                  <th className="py-2">Mínimo</th>
+                  <th className="py-2">Precio actual</th>
+                  <th className="py-2">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {materialRows.map((material) => (
+                  <tr key={material.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
+                    <td className="py-2">{material.sku}</td>
+                    <td className="py-2">{material.name}</td>
+                    <td className="py-2">{material.category}</td>
+                    <td className="py-2">{Number(material.stock).toFixed(2)} {material.baseUnit}</td>
+                    <td className="py-2">{Number(material.reorderPoint).toFixed(2)}</td>
+                    <td className="py-2">{formatCLP(material.currentPriceClp)}</td>
+                    <td className="py-2">
+                      <div className="flex flex-wrap gap-2">
+                        <form action={toggleMaterialActiveAction}>
+                          <input type="hidden" name="materialId" value={material.id} />
+                          <input type="hidden" name="isActive" value={material.isActive ? "1" : "0"} />
+                          <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">
+                            {material.isActive ? "Desactivar" : "Activar"}
+                          </button>
+                        </form>
+                        <DeleteMaterialForm materialId={material.id} action={deleteMaterialAction} />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>        </div>)}
       </div>
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 overflow-auto">
         <h3 className="text-lg font-bold mb-4">Últimos movimientos</h3>
         {movementRows.length === 0 ? (
-          <div className="p-8 text-center">
-            <p className="text-zinc-500 dark:text-zinc-400">No hay movimientos de inventario registrados aún.</p>
-            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Los movimientos se generan automáticamente al recibir OC o registrar consumos.</p>
+          <div className="p-8">
+            <EmptyState
+              icon={Activity}
+              title="Aún no hay movimientos de kardex"
+              description="Los movimientos se generan automáticamente al recibir OC o registrar consumos."
+            />
           </div>
         ) : (
           <div className="overflow-x-auto -mx-5 px-5">
             <table className="w-full text-sm min-w-[800px]">
               <thead className="sticky top-0 bg-white dark:bg-zinc-900 z-10">
                 <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
-              <th className="py-2">Fecha</th>
-              <th className="py-2">Material</th>
-              <th className="py-2">Tipo</th>
-              <th className="py-2">Entrada</th>
-              <th className="py-2">Salida</th>
-              <th className="py-2">Costo</th>
-              <th className="py-2">Stock final</th>
-            </tr>
-          </thead>
-          <tbody>
-            {movementRows.map((row) => (
-              <tr key={row.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
-                <td className="py-2">{new Date(row.txnDate).toLocaleDateString("es-CL")}</td>
-                <td className="py-2">{row.materialName ?? "-"}</td>
-                <td className="py-2">{row.txnType}</td>
-                <td className="py-2">{Number(row.qtyIn).toFixed(2)}</td>
-                <td className="py-2">{Number(row.qtyOut).toFixed(2)}</td>
-                <td className="py-2">{formatCLP(row.totalCostClp)}</td>
-                <td className="py-2">{Number(row.stockAfter).toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
+                  <th className="py-2">Fecha</th>
+                  <th className="py-2">Material</th>
+                  <th className="py-2">Tipo</th>
+                  <th className="py-2">Entrada</th>
+                  <th className="py-2">Salida</th>
+                  <th className="py-2">Costo</th>
+                  <th className="py-2">Stock final</th>
+                </tr>
+              </thead>
+              <tbody>
+                {movementRows.map((row) => (
+                  <tr key={row.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
+                    <td className="py-2">{new Date(row.txnDate).toLocaleDateString("es-CL")}</td>
+                    <td className="py-2">{row.materialName ?? "-"}</td>
+                    <td className="py-2">{row.txnType}</td>
+                    <td className="py-2">{Number(row.qtyIn).toFixed(2)}</td>
+                    <td className="py-2">{Number(row.qtyOut).toFixed(2)}</td>
+                    <td className="py-2">{formatCLP(row.totalCostClp)}</td>
+                    <td className="py-2">{Number(row.stockAfter).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

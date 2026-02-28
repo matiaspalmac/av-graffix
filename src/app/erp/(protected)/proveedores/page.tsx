@@ -1,6 +1,8 @@
 import { getSuppliers, updateSupplierAction, toggleSupplierStatusAction, deleteSupplierAction } from "./actions";
 import { SubmitButton } from "@/components/erp/submit-button";
 import { DeleteSupplierForm } from "@/components/erp/delete-supplier-form";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Building2 } from "lucide-react";
 
 export default async function ProveedoresPage() {
     // getSuppliers() returns all suppliers (ordered by active status and name)
@@ -17,8 +19,12 @@ export default async function ProveedoresPage() {
 
             <div className="space-y-4">
                 {suppliers.length === 0 ? (
-                    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 text-sm text-zinc-500 dark:text-zinc-400">
-                        No hay proveedores registrados.
+                    <div className="p-4 sm:p-8">
+                        <EmptyState
+                            icon={Building2}
+                            title="No hay proveedores registrados"
+                            description="Tus proveedores y socios comerciales aparecerán aquí."
+                        />
                     </div>
                 ) : (
                     suppliers.map((supplier) => (

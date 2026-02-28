@@ -14,8 +14,7 @@ interface ErpLayoutWrapperProps {
   role?: string | null;
   monthlyRevenue: number;
   activeProjects: number;
-  criticalStock: number;
-  overdueInvoices: number;
+  notificationsSlot?: ReactNode;
 }
 
 function ErpLayoutContent({
@@ -24,8 +23,7 @@ function ErpLayoutContent({
   role,
   monthlyRevenue,
   activeProjects,
-  criticalStock,
-  overdueInvoices,
+  notificationsSlot,
 }: ErpLayoutWrapperProps) {
   const { isCollapsed } = useSidebar();
 
@@ -36,8 +34,7 @@ function ErpLayoutContent({
         role={role}
         monthlyRevenue={monthlyRevenue}
         activeProjects={activeProjects}
-        criticalStockCount={criticalStock}
-        overdueInvoicesCount={overdueInvoices}
+        notificationsSlot={notificationsSlot}
       />
       <div className="flex pt-16">
         <ErpSidebar role={role} />

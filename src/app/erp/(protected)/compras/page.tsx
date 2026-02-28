@@ -20,6 +20,8 @@ import { DeletePurchaseOrderForm } from "@/components/erp/delete-purchase-order-
 import { CancelPurchaseOrderForm } from "@/components/erp/cancel-purchase-order-form";
 import { DeletePurchaseOrderItemForm } from "@/components/erp/delete-purchase-order-item-form";
 import { ExportButton } from "@/components/erp/export-button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ShoppingCart } from "lucide-react";
 
 export default async function ComprasPage() {
   const [suppliersTotal, openOrders, delayedOrders] = await Promise.all([
@@ -140,100 +142,103 @@ export default async function ComprasPage() {
       <div className="space-y-4">
         <h3 className="text-lg font-bold">Órdenes de compra recientes</h3>
         {recentOrders.length === 0 ? (
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 text-center">
-            <p className="text-zinc-500 dark:text-zinc-400">No hay órdenes de compra registradas aún.</p>
-            <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-1">Crea tu primera orden usando el formulario de arriba.</p>
+          <div className="p-4 sm:p-8">
+            <EmptyState
+              icon={ShoppingCart}
+              title="Aún no hay órdenes de compra"
+              description="Las órdenes que crees para tus proveedores aparecerán aquí."
+            />
           </div>
         ) : (
           recentOrders.map((order) => (
-          <div key={order.id} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
-              <div>
-                <p className="font-bold text-zinc-900 dark:text-zinc-100">{order.poNumber} · {order.supplierName ?? "-"}</p>
-                <p className="text-sm text-zinc-500">
-                  {new Date(order.issueDate).toLocaleDateString("es-CL")} · Subtotal {formatCLP(order.subtotalClp)} · IVA {formatCLP(order.taxClp)} · Total {formatCLP(order.totalClp)}
-                </p>
+            <div key={order.id} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
+              <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
+                <div>
+                  <p className="font-bold text-zinc-900 dark:text-zinc-100">{order.poNumber} · {order.supplierName ?? "-"}</p>
+                  <p className="text-sm text-zinc-500">
+                    {new Date(order.issueDate).toLocaleDateString("es-CL")} · Subtotal {formatCLP(order.subtotalClp)} · IVA {formatCLP(order.taxClp)} · Total {formatCLP(order.totalClp)}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <form action={updatePurchaseOrderStatusAction} className="inline-flex gap-2">
+                    <input type="hidden" name="purchaseOrderId" value={order.id} />
+                    <select name="status" defaultValue={order.status} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1 text-sm">
+                      <option value="draft">Borrador</option>
+                      <option value="sent">Enviada</option>
+                      <option value="partial">Parcial</option>
+                      <option value="received">Recibida</option>
+                      <option value="cancelled">Cancelada</option>
+                    </select>
+                    <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Guardar</SubmitButton>
+                  </form>
+
+                  <DeletePurchaseOrderForm purchaseOrderId={order.id} action={deletePurchaseOrderAction} />
+
+                  {order.status !== "cancelled" ? (
+                    <CancelPurchaseOrderForm purchaseOrderId={order.id} action={cancelPurchaseOrderAction} />
+                  ) : null}
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <form action={updatePurchaseOrderStatusAction} className="inline-flex gap-2">
-                  <input type="hidden" name="purchaseOrderId" value={order.id} />
-                  <select name="status" defaultValue={order.status} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1 text-sm">
-                    <option value="draft">Borrador</option>
-                    <option value="sent">Enviada</option>
-                    <option value="partial">Parcial</option>
-                    <option value="received">Recibida</option>
-                    <option value="cancelled">Cancelada</option>
-                  </select>
-                  <SubmitButton className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-sm transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Guardar</SubmitButton>
-                </form>
-
-                <DeletePurchaseOrderForm purchaseOrderId={order.id} action={deletePurchaseOrderAction} />
-
-                {order.status !== "cancelled" ? (
-                  <CancelPurchaseOrderForm purchaseOrderId={order.id} action={cancelPurchaseOrderAction} />
-                ) : null}
-              </div>
-            </div>
-
-            <div className="overflow-x-auto -mx-5 px-5">
-              <table className="w-full text-sm min-w-[900px]">
-                <thead className="sticky top-0 bg-white dark:bg-zinc-900">
-                  <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
-                    <th className="py-2">#</th>
-                    <th className="py-2">Material</th>
-                    <th className="py-2">Cant.</th>
-                    <th className="py-2">Recibido</th>
-                    <th className="py-2">Unitario</th>
-                    <th className="py-2">Total</th>
-                    <th className="py-2">Recepción</th>
-                    <th className="py-2">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.items.map((item) => (
-                    <tr key={item.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
-                      <td className="py-2">{item.lineNo}</td>
-                      <td className="py-2">{item.materialName ?? "-"}</td>
-                      <td className="py-2">{Number(item.qty).toFixed(2)} {item.unit}</td>
-                      <td className="py-2">{Number(item.receivedQty).toFixed(2)}</td>
-                      <td className="py-2">{formatCLP(item.unitPriceClp)}</td>
-                      <td className="py-2">{formatCLP(item.lineTotalClp)}</td>
-                      <td className="py-2">
-                        <form action={receivePurchaseOrderItemAction} className="flex items-center gap-2">
-                          <input type="hidden" name="poItemId" value={item.id} />
-                          <input name="receivedNow" type="number" step="0.01" defaultValue="0" className="w-24 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1" />
-                          <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">Recibir</button>
-                        </form>
-                      </td>
-                      <td className="py-2">
-                        <DeletePurchaseOrderItemForm
-                          poItemId={item.id}
-                          purchaseOrderId={order.id}
-                          action={deletePurchaseOrderItemAction}
-                        />
-                      </td>
+              <div className="overflow-x-auto -mx-5 px-5">
+                <table className="w-full text-sm min-w-[900px]">
+                  <thead className="sticky top-0 bg-white dark:bg-zinc-900">
+                    <tr className="text-left text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+                      <th className="py-2">#</th>
+                      <th className="py-2">Material</th>
+                      <th className="py-2">Cant.</th>
+                      <th className="py-2">Recibido</th>
+                      <th className="py-2">Unitario</th>
+                      <th className="py-2">Total</th>
+                      <th className="py-2">Recepción</th>
+                      <th className="py-2">Acciones</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {order.items.map((item) => (
+                      <tr key={item.id} className="border-b border-zinc-100 dark:border-zinc-800/60">
+                        <td className="py-2">{item.lineNo}</td>
+                        <td className="py-2">{item.materialName ?? "-"}</td>
+                        <td className="py-2">{Number(item.qty).toFixed(2)} {item.unit}</td>
+                        <td className="py-2">{Number(item.receivedQty).toFixed(2)}</td>
+                        <td className="py-2">{formatCLP(item.unitPriceClp)}</td>
+                        <td className="py-2">{formatCLP(item.lineTotalClp)}</td>
+                        <td className="py-2">
+                          <form action={receivePurchaseOrderItemAction} className="flex items-center gap-2">
+                            <input type="hidden" name="poItemId" value={item.id} />
+                            <input name="receivedNow" type="number" step="0.01" defaultValue="0" className="w-24 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1" />
+                            <button className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-xs">Recibir</button>
+                          </form>
+                        </td>
+                        <td className="py-2">
+                          <DeletePurchaseOrderItemForm
+                            poItemId={item.id}
+                            purchaseOrderId={order.id}
+                            action={deletePurchaseOrderItemAction}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-            <form action={addPurchaseOrderItemAction} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-2">
-              <input type="hidden" name="purchaseOrderId" value={order.id} />
-              <select name="materialId" required className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5 xl:col-span-2">
-                <option value="">Material</option>
-                {materialOptions.map((material) => (
-                  <option key={material.id} value={material.id}>{material.name}</option>
-                ))}
-              </select>
-              <input name="qty" type="number" step="0.01" required defaultValue="1" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
-              <input name="unitPriceClp" type="number" step="1" required defaultValue="0" placeholder="Unitario CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
-              <input name="lineDiscountClp" type="number" step="1" defaultValue="0" placeholder="Desc. CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
-              <SubmitButton className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Agregar ítem</SubmitButton>
-            </form>
-          </div>
-        ))  
+              <form action={addPurchaseOrderItemAction} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-2">
+                <input type="hidden" name="purchaseOrderId" value={order.id} />
+                <select name="materialId" required className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5 xl:col-span-2">
+                  <option value="">Material</option>
+                  {materialOptions.map((material) => (
+                    <option key={material.id} value={material.id}>{material.name}</option>
+                  ))}
+                </select>
+                <input name="qty" type="number" step="0.01" required defaultValue="1" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+                <input name="unitPriceClp" type="number" step="1" required defaultValue="0" placeholder="Unitario CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+                <input name="lineDiscountClp" type="number" step="1" defaultValue="0" placeholder="Desc. CLP" className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-2 py-1.5" />
+                <SubmitButton className="rounded-lg bg-brand-600 text-white px-3 py-1.5 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">Agregar ítem</SubmitButton>
+              </form>
+            </div>
+          ))
         )}
       </div>
     </div>
