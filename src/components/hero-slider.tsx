@@ -8,23 +8,13 @@ import { ChevronDown, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react
 
 const slides = [
   { image: "/trabajos/aguasaraucania_1.jpeg" },
-  { image: "/trabajos/aguasaraucania_2.jpeg" },
   { image: "/trabajos/cifuentes_1.jpeg" },
-  { image: "/trabajos/cifuentes_2.jpeg" },
   { image: "/trabajos/bidfood_1.jpg" },
-  { image: "/trabajos/bidfood_2.jpg" },
   { image: "/trabajos/sofo_1.jpg" },
-  { image: "/trabajos/sofo_2.jpg" },
-  { image: "/trabajos/sofo_3.jpg" },
   { image: "/trabajos/prt_1.jpg" },
-  { image: "/trabajos/prt_2.jpg" },
-  { image: "/trabajos/prt_3.jpeg" },
   { image: "/trabajos/farellones_1.jpeg" },
   { image: "/trabajos/b2autos_1.jpeg" },
-  { image: "/trabajos/b2autos_2.jpeg" },
   { image: "/trabajos/minimarketisabella_1.jpeg" },
-  { image: "/trabajos/minimarketisabella_2.jpeg" },
-  { image: "/trabajos/minimarketisabella_3.jpeg" }
 ];
 
 const phrases = [
