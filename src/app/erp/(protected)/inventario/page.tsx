@@ -171,15 +171,7 @@ export default async function InventarioPage() {
               icon={Package}
               title="El catálogo está vacío"
               description="Aún no tienes materiales registrados."
-              action={{
-                label: "Crear desde el formulario",
-                onClick: () => {
-                  if (typeof document !== 'undefined') {
-                    const skuInput = document.querySelector('input[name="sku"]') as HTMLInputElement;
-                    if (skuInput) skuInput.focus();
-                  }
-                }
-              }}
+
             />
           </div>
         ) : (
